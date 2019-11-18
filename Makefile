@@ -27,10 +27,10 @@ all : hdf5_correlator delay2phase hdf5corr2others
 #	cp *! $(BIGHORNS)/bin/
 
 hdf5_correlator : main.cpp hdf5_commons.cpp eda2_tpm_coefficients.cpp calsolutions.cpp
-	g++ main.cpp hdf5_commons.cpp eda1_tpm_coefficients.cpp eda2_tpm_coefficients.cpp calsolutions.cpp -o hdf5_correlator $(OPT) ${HDF5_LIB} ${COMMON_INCLUDES} -lfftw3 $(COMMON_LIBS) $(OPT) -D_UNIX
+	g++ main.cpp hdf5_commons.cpp eda1_tpm_coefficients.cpp eda2_tpm_coefficients.cpp calsolutions.cpp -o hdf5_correlator $(OPT) ${HDF5_LIB} ${COMMON_INCLUDES} $(COMMON_LIBS) $(OPT) -D_UNIX
 
 delay2phase : delay2phase.cpp
-	g++ delay2phase.cpp -o delay2phase  ${HDF5_LIB}  -lfftw3 $(COMMON_LIBS) $(OPT) -D_UNIX
+	g++ delay2phase.cpp -o delay2phase  ${HDF5_LIB} $(COMMON_LIBS) $(OPT) -D_UNIX $(COMMON_INCLUDES)
 
 # test version which works : hdf5corr2others_tests.cpp
 hdf5corr2others : hdf5corr2others.cpp hdf5_commons.cpp eda1_tpm_coefficients.cpp eda2_tpm_coefficients.cpp
