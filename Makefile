@@ -12,10 +12,10 @@ COMMON_INCLUDES=-I$(HOME)/casa_software/msfitslib -I/usr/include/hdf5/serial/
 # Ubuntu16 - ASUS :
 # HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so //usr/lib/x86_64-linux-gnu/libhdf5_serial.so.10
 # LAPTOP : Ubuntu 18:
-# HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
+HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
 # aavs1 server :
 # /usr/lib/x86_64-linux-gnu/libhdf5_cpp.so
-HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so
+# HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
 
 
 all : hdf5_correlator delay2phase hdf5corr2others
@@ -27,7 +27,7 @@ all : hdf5_correlator delay2phase hdf5corr2others
 #	cp *! $(BIGHORNS)/bin/
 
 hdf5_correlator : main.cpp hdf5_commons.cpp eda2_tpm_coefficients.cpp calsolutions.cpp
-	g++ main.cpp hdf5_commons.cpp eda1_tpm_coefficients.cpp eda2_tpm_coefficients.cpp calsolutions.cpp -o hdf5_correlator $(OPT) ${HDF5_DIR} ${COMMON_INCLUDES} -lfftw3 $(COMMON_LIBS) $(OPT) -D_UNIX
+	g++ main.cpp hdf5_commons.cpp eda1_tpm_coefficients.cpp eda2_tpm_coefficients.cpp calsolutions.cpp -o hdf5_correlator $(OPT) ${HDF5_LIB} ${COMMON_INCLUDES} -lfftw3 $(COMMON_LIBS) $(OPT) -D_UNIX
 
 delay2phase : delay2phase.cpp
 	g++ delay2phase.cpp -o delay2phase  ${HDF5_LIB}  -lfftw3 $(COMMON_LIBS) $(OPT) -D_UNIX
