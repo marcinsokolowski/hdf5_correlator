@@ -1,4 +1,4 @@
-COMMON_LIBS=-lmsfits  -lcfitsio -lnova
+COMMON_LIBS=-lmsfitslib  -lcfitsio -lnova -lfftw3
 
 # LAPTOP :
 # COMMON_INCLUDES=-I/usr/include/hdf5/include/
@@ -11,7 +11,12 @@ COMMON_INCLUDES=-I$(HOME)/casa_software/msfitslib -I/usr/include/hdf5/serial/
 
 # Ubuntu16 - ASUS :
 # HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so //usr/lib/x86_64-linux-gnu/libhdf5_serial.so.10
-HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
+# LAPTOP : Ubuntu 18:
+# HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
+# aavs1 server :
+# /usr/lib/x86_64-linux-gnu/libhdf5_cpp.so
+HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so
+
 
 all : hdf5_correlator delay2phase hdf5corr2others
 	chmod +x *! *.sh scripts/*.sh
