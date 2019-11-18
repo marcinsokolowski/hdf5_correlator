@@ -3,7 +3,7 @@ COMMON_LIBS=-lmsfits  -lcfitsio -lnova
 # LAPTOP :
 # HDF5_DIR=/usr/include/hdf5/include/
 # aavs1 server :
-HDF5_DIR=/usr/include/hdf5/serial/
+COMMON_INCLUDES=-I~/casa_software/msfitslib -I/usr/include/hdf5/serial/
 
 # HDF5_LIB=/opt/caastro/ext/anaconda3/lib/libhdf5_cpp.so /opt/caastro/ext/anaconda3/lib/libhdf5.so
 # HDF5_LIB=/usr/lib/x86_64-linux-gnu/libhdf5_cpp.so 
