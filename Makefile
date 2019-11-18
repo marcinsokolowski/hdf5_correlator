@@ -1,4 +1,4 @@
-COMMON_LIBS=-L$(BIGHORNS)/lib -lfitslib $(NDIR)/slib/libbaselib.a $(NDIR)/slib/libmathlib.a  `root-config --libs`  -lcfitsio -lnova
+COMMON_LIBS=-lmsfits  -lcfitsio -lnova
 
 HDF5_DIR=/usr/include/hdf5/include/
 # HDF5_LIB=/opt/caastro/ext/anaconda3/lib/libhdf5_cpp.so /opt/caastro/ext/anaconda3/lib/libhdf5.so
@@ -10,12 +10,12 @@ HDF5_DIR=/usr/include/hdf5/include/
 HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
 
 all : hdf5_correlator delay2phase hdf5corr2others
-	chmod +x *! *.sh
-	cp hdf5_correlator $(BIGHORNS)/bin/
-	cp delay2phase $(BIGHORNS)/bin/
-	cp hdf5corr2others $(BIGHORNS)/bin/
-	cp *.sh $(BIGHORNS)/bin/
-	cp *! $(BIGHORNS)/bin/
+	chmod +x *! *.sh scripts/*.sh
+#	cp hdf5_correlator $(BIGHORNS)/bin/
+#	cp delay2phase $(BIGHORNS)/bin/
+#	cp hdf5corr2others $(BIGHORNS)/bin/
+#	cp *.sh $(BIGHORNS)/bin/
+#	cp *! $(BIGHORNS)/bin/
 
 hdf5_correlator : main.cpp hdf5_commons.cpp eda2_tpm_coefficients.cpp calsolutions.cpp
 	g++ main.cpp hdf5_commons.cpp eda1_tpm_coefficients.cpp eda2_tpm_coefficients.cpp calsolutions.cpp -o hdf5_correlator $(OPT) -I ${HDF5_DIR} -I $(SRCDIR)/cmn/baselib/ -I ../fitslib/ -I ../speclib/ ${HDF5_LIB} ../speclib/libspeclib.a -lfftw3 $(COMMON_LIBS) $(OPT) -D_UNIX
