@@ -248,7 +248,7 @@ do
     fi
     dtm_ut=`date -u -d "1970-01-01 UTC $dtm_ux seconds" +"%Y%m%d_%H%M%S"`
     # 20190724_041444_eda2_ch32_ant256_midday_avg2894.bin
-    lfile_base="${dtm_ut}_eda2_ch32_ant256_midday_avg${n_avg}"
+    lfile_base="${dtm_ut}_eda2_ch${n_chan}_ant256_midday_avg${n_avg}"
     merged_bin_file=${lfile_base}.bin
  
     radec_string=""   
