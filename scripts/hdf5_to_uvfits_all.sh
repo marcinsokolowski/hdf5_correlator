@@ -213,6 +213,7 @@ do
     echo "---------------------------------------------------- $hdf5_file_tile0 ----------------------------------------------------"    
     
     lfile_base="Lfile"
+    lfile_base_corr=$lfile_base
     if [[ $do_merge -gt 0 ]]; then
        merged_hdf5_file=`echo ${hdf5_file_tile0} | awk '{a=gsub("channel_cont_0_","channel_cont_",$1);print $1;}'`
     else
@@ -359,6 +360,8 @@ do
     else
        echo "hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}"
        hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}
+       
+       lfile_base_corr=${hdf5_file_tile0%%.hdf5}
     fi
     
     if [[ $convert2casa -gt 0 ]]; then
@@ -368,8 +371,8 @@ do
           radec_options="-r $ra_deg -d $dec_degs"
        fi
        utc=`date -u -d "1970-01-01 UTC $dtm_ux seconds" +"%Y%m%d_%H%M%S"`
-       echo "lfile2casa ${lfile_base} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan} -I ${inttime}"
-       lfile2casa ${lfile_base} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan} -I ${inttime}
+       echo "lfile2casa ${lfile_base_corr} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan} -I ${inttime}"
+       lfile2casa ${lfile_base_corr} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan} -I ${inttime}
     else
        echo "WARNING : conversion from L-files to CASA measurements set is not required (use option -S to enable it)"
     fi
