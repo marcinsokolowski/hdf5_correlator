@@ -360,10 +360,16 @@ do
           echo "WARNING : conversion from .bin -> lfiles is not required"
        fi 
     else
-       echo "hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}"
-       hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}
-       
        lfile_base_corr=${hdf5_file_tile0%%.hdf5}
+       corr_lfile=${lfile_base_corr}.LCCSPC
+       auto_lfile=${lfile_base_corr}.LACSPC
+    
+       if [[ -s $corr_lfile && -s $auto_lfile && $force -le 0 ]]; then
+          echo "WARNING : L-files $corr_lfile and $auto_lfile already exist , conversion from .hdf5 to L-files is not required (use option -F to force it)"
+       else
+          echo "hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}"
+          hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}
+       fi       
     fi
     
     if [[ $convert2casa -gt 0 ]]; then
