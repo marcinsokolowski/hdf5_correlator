@@ -63,11 +63,13 @@ function print_usage {
 while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a:" opt; do
   case $opt in
     a)
+        # HDF5 files from Alessio correlator 
         channelised_data=0
         hdf5_template="correlation_burst_*_????????_*_*.hdf5"
         do_merge=0
         inttime=1.98180864 # default value corresponding to 1835008 x 1.08 usec / 1000000 = 1.98180864 seconds 
         n_avg=$OPTARG
+        n_chan=1 # for now Alessio correlator is just 1 channel 
         ;;
     h)
         print_usage
