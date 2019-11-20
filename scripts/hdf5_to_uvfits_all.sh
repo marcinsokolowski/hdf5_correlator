@@ -66,6 +66,7 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a" opt; do
         channelised_data=0
         hdf5_template="correlation_burst_*_????????_*_*.hdf5"
         do_merge=0
+        inttime=1.98180864
         ;;
     h)
         print_usage
