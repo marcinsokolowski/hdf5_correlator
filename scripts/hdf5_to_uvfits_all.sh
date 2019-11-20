@@ -66,7 +66,7 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a" opt; do
         channelised_data=0
         hdf5_template="correlation_burst_*_????????_*_*.hdf5"
         do_merge=0
-        inttime=1.98180864
+        inttime=1.98180864 # default value corresponding to 1835008 x 1.08 usec / 1000000 = 1.98180864 seconds 
         ;;
     h)
         print_usage
@@ -367,8 +367,8 @@ do
           radec_options="-r $ra_deg -d $dec_degs"
        fi
        utc=`date -u -d "1970-01-01 UTC $dtm_ux seconds" +"%Y%m%d_%H%M%S"`
-       echo "lfile2casa ${lfile_base} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan}"
-       lfile2casa ${lfile_base} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan}
+       echo "lfile2casa ${lfile_base} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan} -I ${inttime}"
+       lfile2casa ${lfile_base} ${lfile_base}.ms -a ${antenna_locations_path} -i ${instr_path} -c ${freq_channel} -u ${utc} ${radec_options} -n ${n_chan} -I ${inttime}
     else
        echo "WARNING : conversion from L-files to CASA measurements set is not required (use option -S to enable it)"
     fi
