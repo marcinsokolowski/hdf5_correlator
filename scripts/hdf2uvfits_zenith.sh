@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # 1 channel : -b 1 
+# -a to process correlated hdf5 files
 options=""
 if [[ -n "$1" && "$1" != "-" ]]; then
    options="$1"
