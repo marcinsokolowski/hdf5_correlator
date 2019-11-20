@@ -369,6 +369,11 @@ do
        else
           echo "hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}"
           hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}
+
+          # Modifying integration time accordingly :          
+          inttime0=$inttime
+          inttime=`echo $inttime $n_avg | awk '{print $1*$2;}'`
+          echo "inttime := $inttime ( = $n_avg * $inttime0 )"
        fi       
     fi
     
