@@ -26,6 +26,8 @@ remove_single_hdf5_files=0
 antenna_locations_path="antenna_locations.txt"
 instr_path="instr_config.txt"
 dtm_ux=0
+hdf5_template="channel_cont_0_????????_*_*.hdf5"
+channelised_data=1
 
 function print_usage {
   echo "Script merges all hdf5 files from 16 tiles to a single one, converts them into bin files and depending on options runs correlation and lfiles to uvfits conversion"
@@ -50,14 +52,21 @@ function print_usage {
   echo "    -r remove single (original) hdf5 file after merging [default $remove_single_hdf5_files]"
   echo "    -b Number_of_channes [default $n_chan]"
   echo "    -S : enable conversion to CASA measurements set [default $convert2casa]"
+  echo "    -T hdf5_template : template of HDF5 file [default $hdf5_template]"
+  echo "    -a : correlated data from Alessio's correlator [default disabled - assuming channelised data]"
   exit
 }
 
 
 # parse command-line args
 # if [ $# -lt 1 ] ; then print_usage ; fi
-while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S" opt; do
+while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a" opt; do
   case $opt in
+    a)
+        channelised_data=0
+        hdf5_template="correlation_burst_*_????????_*_*.hdf5"
+        do_merge=0
+        ;;
     h)
         print_usage
         ;;
@@ -119,6 +128,9 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S" opt; do
     r)
         remove_single_hdf5_files=1
         ;;
+    T)
+        hdf5_template=$OPTARG
+        ;;
     \?)
       echo "Invalid option: -$OPTARG" 1>&2
       print_usage
@@ -132,6 +144,8 @@ echo "##################################################################"
 echo "PARAMTERES :"
 echo "##################################################################"
 echo "hdf5_file_list = $hdf5_file_list"
+echo "hdf5_template  = $hdf5_template"
+echo "channelised_data = $channelised_data (merge = $do_merge)"
 echo "freq_channel   = $freq_channel"
 echo "do_correlation = $do_correlation" 
 echo "bin2lfiles     = $bin2lfiles"
@@ -177,8 +191,8 @@ rm -f hdf5_file_list.tmp
 if [[ -s ${hdf5_file_list} ]]; then
    echo "File list $hdf5_file_list already exists"
 else
-   echo "Creating file $hdf5_file_list as : ls channel_cont_0_????????_*_*.hdf5 > $hdf5_file_list"
-   ls channel_cont_0_????????_*_*.hdf5 > $hdf5_file_list
+   echo "Creating file $hdf5_file_list as : ls $hdf5_template > $hdf5_file_list"
+   ls $hdf5_template > $hdf5_file_list
    count=`cat $hdf5_file_list | wc -l`
    if [[ $count -le 0 ]]; then
       echo "No files channel_cont_0_????????_*_*.hdf5"
@@ -195,6 +209,8 @@ fi
 for hdf5_file_tile0 in `cat $hdf5_file_list`
 do
     echo "---------------------------------------------------- $hdf5_file_tile0 ----------------------------------------------------"    
+    
+    lfile_base="Lfile"
     if [[ $do_merge -gt 0 ]]; then
        merged_hdf5_file=`echo ${hdf5_file_tile0} | awk '{a=gsub("channel_cont_0_","channel_cont_",$1);print $1;}'`
     else
@@ -256,10 +272,10 @@ do
     fi
 
 
-    echo "$hdf5_file_tile0 : merged_hdf5_file = $merged_hdf5_file , merged_bin_file = $merged_bin_file , $dtm_local, $dtm_ux, $dtm_ut -> lfile_base = $lfile_base , merged_bin_file = $merged_bin_file , radec_string = $radec_string"
-
-    if [[ ! -s ${merged_dir}/${merged_bin_file} || $force -gt 0 ]]; then
-         if [[ ! -s ${merged_dir}/${merged_hdf5_file} || $force -gt 0 ]]; then
+    if [[ $channelised_data -gt 0 ]]; then
+       echo "$hdf5_file_tile0 : merged_hdf5_file = $merged_hdf5_file , merged_bin_file = $merged_bin_file , $dtm_local, $dtm_ux, $dtm_ut -> lfile_base = $lfile_base , merged_bin_file = $merged_bin_file , radec_string = $radec_string"
+       if [[ ! -s ${merged_dir}/${merged_bin_file} || $force -gt 0 ]]; then
+            if [[ ! -s ${merged_dir}/${merged_hdf5_file} || $force -gt 0 ]]; then
 #            echo "print_sun $dtm_ux -c"
 #            print_sun $dtm_ux -c
 #             echo "Sun position : "
@@ -271,74 +287,77 @@ do
 
         #    echo "hdf5_to_bin.sh $hdf5_tile0_file"
         #    hdf5_to_bin.sh $hdf5_tile0_file       
-            echo "python $convert_path ${hdf5_file_tile0} 16 - --outdir=${merged_dir}"
-            python $convert_path ${hdf5_file_tile0} 16 - --outdir=${merged_dir}
+               echo "python $convert_path ${hdf5_file_tile0} 16 - --outdir=${merged_dir}"
+               python $convert_path ${hdf5_file_tile0} 16 - --outdir=${merged_dir}
             
-            if [[ $remove_single_hdf5_files -gt 0 ]]; then
-               single_hdf5_template=`echo ${hdf5_file_tile0} | awk '{a=gsub("channel_cont_0_","channel_cont_*_",$1);print $1;}'`
+               if [[ $remove_single_hdf5_files -gt 0 ]]; then
+                  single_hdf5_template=`echo ${hdf5_file_tile0} | awk '{a=gsub("channel_cont_0_","channel_cont_*_",$1);print $1;}'`
                
-               echo "rm -f ${single_hdf5_template}"
-               rm -f ${single_hdf5_template}
-            else
-               echo "INFO : removing of the original single hdf5 files is not required"
-            fi
-        else
-            echo "INFO : ${merged_dir}/${merged_hdf5_file} already exists -> not need to re-create (if want to use -F option to force)"
-        fi
+                  echo "rm -f ${single_hdf5_template}"
+                  rm -f ${single_hdf5_template}
+               else
+                  echo "INFO : removing of the original single hdf5 files is not required"
+               fi
+           else
+               echo "INFO : ${merged_dir}/${merged_hdf5_file} already exists -> not need to re-create (if want to use -F option to force)"
+           fi
         
 
-        if [[ $dumpbinfile -gt 0 ]]; then
-            if [[ ! -s ${merged_dir}/${merged_bin_file} || $force -gt 0 ]]; then
-                #    echo "hdf5dump.sh ${merged_hdf5_file}"
-                #    hdf5dump.sh ${merged_hdf5_file}
-                cd ${merged_dir}/
-                pwd    
-                echo "hdf5_correlator ${merged_hdf5_file} -d -o ${merged_bin_file}"
-                hdf5_correlator ${merged_hdf5_file} -d -o ${merged_bin_file}
-                cd -
-            else
-                echo "WARNING : ${merged_dir}/${merged_bin_file} already exists -> not need to convert (if want to use -F option to force)"
-            fi
-        else
-            echo "WARNING : dumpbinfile=$dumpbinfile -> conversion from HDF5 to bin is disabled"
-        fi
-    else
-        echo "WARNING : ${merged_dir}/${merged_bin_file} already exists -> not need to merged/convert (if want to use -F option to force)"
-    fi
-    
+           if [[ $dumpbinfile -gt 0 ]]; then
+               if [[ ! -s ${merged_dir}/${merged_bin_file} || $force -gt 0 ]]; then
+                   #    echo "hdf5dump.sh ${merged_hdf5_file}"
+                   #    hdf5dump.sh ${merged_hdf5_file}
+                   cd ${merged_dir}/
+                   pwd    
+                   echo "hdf5_correlator ${merged_hdf5_file} -d -o ${merged_bin_file}"
+                   hdf5_correlator ${merged_hdf5_file} -d -o ${merged_bin_file}
+                   cd -
+               else
+                   echo "WARNING : ${merged_dir}/${merged_bin_file} already exists -> not need to convert (if want to use -F option to force)"
+               fi
+           else
+               echo "WARNING : dumpbinfile=$dumpbinfile -> conversion from HDF5 to bin is disabled"
+           fi
+       else
+           echo "WARNING : ${merged_dir}/${merged_bin_file} already exists -> not need to merged/convert (if want to use -F option to force)"
+       fi
 
-    cd ${merged_dir}    
-    if [[ $do_correlation -gt 0 ]]; then
-       if [[ -s ${corr_path} ]]; then
-          echo "${corr_path} -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file} -o ${lfile_base} -w 10"
-          ${corr_path} -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file} -o ${lfile_base} -w 10
+       cd ${merged_dir}    
+       if [[ $do_correlation -gt 0 ]]; then
+          if [[ -s ${corr_path} ]]; then
+             echo "${corr_path} -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file} -o ${lfile_base} -w 10"
+             ${corr_path} -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file} -o ${lfile_base} -w 10
           
-          echo "rm -f ${merged_bin_file}"
-          rm -f ${merged_bin_file}
-       else
-          echo "ERROR : ${corr_path} does not exist -> cannot correlate files"
-       fi
-    else 
-       echo "WARNING : correlation is not required"
-    fi 
+             echo "rm -f ${merged_bin_file}"
+             rm -f ${merged_bin_file}
+          else
+             echo "ERROR : ${corr_path} does not exist -> cannot correlate files"
+          fi
+       else 
+          echo "WARNING : correlation is not required"
+       fi 
 
-    if [[ $bin2lfiles -gt 0 ]]; then
-       # echo "${lfile_converter_path}/Lfile2uvfits_eda.sh $lfile_base $radec_string"
-       # ${lfile_converter_path}/Lfile2uvfits_eda.sh $lfile_base $radec_string
-       # NEW : ~/aavs-calibration/Lfile2uvfits_eda.sh -i 0.1 -n 11 -R 8.19680715619 -D 19.9892573884 -N 512 -C ${n_chan} 20190724_041444_eda2_ch${n_chan}_ant256_midday_avg2894
+       if [[ $bin2lfiles -gt 0 ]]; then
+          # echo "${lfile_converter_path}/Lfile2uvfits_eda.sh $lfile_base $radec_string"
+          # ${lfile_converter_path}/Lfile2uvfits_eda.sh $lfile_base $radec_string
+          # NEW : ~/aavs-calibration/Lfile2uvfits_eda.sh -i 0.1 -n 11 -R 8.19680715619 -D 19.9892573884 -N 512 -C ${n_chan} 20190724_041444_eda2_ch${n_chan}_ant256_midday_avg2894
 
-       if [[ -d ${aavs_calibration_path} ]]; then       
-          # was -i 1.130112 
-          # TEMPORARY unitl Randall commits config files 
-          # aavs_calibration_path=~/aavs-calibration/
-          echo "${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} ${lfile_base}"
-          ${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} ${lfile_base}
-       else
-          echo "ERROR : ${aavs_calibration_path} does not exist -> cannot convert L-files to uvfits files"
-       fi
-    else 
-       echo "WARNING : conversion from .bin -> lfiles is not required"
-    fi 
+          if [[ -d ${aavs_calibration_path} ]]; then       
+             # was -i 1.130112 
+             # TEMPORARY unitl Randall commits config files 
+             # aavs_calibration_path=~/aavs-calibration/
+             echo "${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} ${lfile_base}"
+             ${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} ${lfile_base}
+          else
+             echo "ERROR : ${aavs_calibration_path} does not exist -> cannot convert L-files to uvfits files"
+          fi
+       else 
+          echo "WARNING : conversion from .bin -> lfiles is not required"
+       fi 
+    else
+       echo "hdf2Lfile.sh ${hdf5_file_tile0} 1"
+       hdf2Lfile.sh ${hdf5_file_tile0} 1 
+    fi
     
     if [[ $convert2casa -gt 0 ]]; then
        radec_options=""
