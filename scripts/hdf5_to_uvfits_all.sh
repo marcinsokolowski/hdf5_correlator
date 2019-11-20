@@ -53,20 +53,21 @@ function print_usage {
   echo "    -b Number_of_channes [default $n_chan]"
   echo "    -S : enable conversion to CASA measurements set [default $convert2casa]"
   echo "    -T hdf5_template : template of HDF5 file [default $hdf5_template]"
-  echo "    -a : correlated data from Alessio's correlator [default disabled - assuming channelised data]"
+  echo "    -a N_AVG : correlated data from Alessio's correlator [default disabled - assuming channelised data], parameter is number of averages [default $n_avg]"
   exit
 }
 
 
 # parse command-line args
 # if [ $# -lt 1 ] ; then print_usage ; fi
-while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a" opt; do
+while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a:" opt; do
   case $opt in
     a)
         channelised_data=0
         hdf5_template="correlation_burst_*_????????_*_*.hdf5"
         do_merge=0
         inttime=1.98180864 # default value corresponding to 1835008 x 1.08 usec / 1000000 = 1.98180864 seconds 
+        n_avg=$OPTARG
         ;;
     h)
         print_usage
@@ -356,8 +357,8 @@ do
           echo "WARNING : conversion from .bin -> lfiles is not required"
        fi 
     else
-       echo "hdf2Lfile.sh ${hdf5_file_tile0} 1"
-       hdf2Lfile.sh ${hdf5_file_tile0} 1 
+       echo "hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}"
+       hdf2Lfile.sh ${hdf5_file_tile0} ${n_avg}
     fi
     
     if [[ $convert2casa -gt 0 ]]; then
