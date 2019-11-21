@@ -41,7 +41,7 @@ function print_usage {
   echo "    -F forces overwritting of bin file"
   echo "    -i INTTIME ( calculate as number of samples collected typically 131072 x 1.08 usec  = 0.14155776 sec or when I did 1048576 samples it is 1.13246208 sec [default $inttime]"
   echo "    -n n_chunks (same as -n n_chunks in Randall's Lfile2uvfits_eda.sh) to have 1 integration per uvfits for n samples 1048576 use 32700 and for 131072 samples use 4070 (n_samples/32 fft samples) [default $n_avg]"
-  echo "    -z : turn off automating setting of phase center to zenith [default auto_sun=$auto_sun]"
+  echo "    -z : turn on automating setting of phase center to zenith [default auto_sun=$auto_sun]"
   echo "    -t : get timestamps from hdf5 sample_timestamps table [default $timestamp_from_hdf5file]"
   echo "    -d merged_directory : where to save or expect to find merged .hdf5 files and .bin files [default $merged_dir]"
   echo "    -L hdf5_file_list : file with list of hdf5 files to convert [default $hdf5_file_list]" 
