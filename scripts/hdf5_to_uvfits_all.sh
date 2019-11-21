@@ -252,7 +252,7 @@ do
     merged_bin_file=${lfile_base}.bin
  
     radec_string=""   
-    if [[ $auto_sun -gt 0 && $bin2lfiles -gt 0 ]]; then
+    if [[ $auto_sun -gt 0  ]]; then # was with : && $bin2lfiles -gt 0
         # old version using my program , new version uses Randall's program 
         # radec_values=`print_sun $dtm_ux -c  | grep "(RA,DEC)"`
         # ra_degs=`echo $radec_values | awk '{print $4;}'`
