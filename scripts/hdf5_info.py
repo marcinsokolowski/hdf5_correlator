@@ -27,7 +27,7 @@ def main() :
    n_fft_samples = options.n_fft_samples
    inttime       = options.inttime
             
-   f = h5py.File( hdf5file )
+   f = h5py.File( hdf5file , "r" )
    
    
    # is it correlated file or normal channelised file 
