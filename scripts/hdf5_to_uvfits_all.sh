@@ -51,7 +51,7 @@ function print_usage {
   echo "    -N no merge [default do_merge = $do_merge]"
   echo "    -r remove single (original) hdf5 file after merging [default $remove_single_hdf5_files]"
   echo "    -b Number_of_channes [default $n_chan]"
-  echo "    -S : enable conversion to CASA measurements set [default $convert2casa]"
+  echo "    -S ENABLE_CONVERT_TO_CASA : enable conversion to CASA measurements set [default $convert2casa]"
   echo "    -T hdf5_template : template of HDF5 file [default $hdf5_template]"
   echo "    -a N_AVG : correlated data from Alessio's correlator [default disabled - assuming channelised data], parameter is number of averages [default $n_avg]"
   exit
@@ -60,7 +60,7 @@ function print_usage {
 
 # parse command-line args
 # if [ $# -lt 1 ] ; then print_usage ; fi
-while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a:" opt; do
+while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:" opt; do
   case $opt in
     a)
         # HDF5 files from Alessio correlator 
@@ -78,7 +78,7 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:ST:a:" opt; do
         n_chan=$OPTARG
         ;;
     S)
-        convert2casa=1
+        convert2casa=$OPTARG
         ;;
     F)
         force=1
