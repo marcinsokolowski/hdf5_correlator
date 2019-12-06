@@ -192,7 +192,7 @@ void MWAConfig::ReadAntennaPositions(const std::string& filename, bool bConvertT
                         }
 			
 			antenna.stationIndex = antennaIndex;			
-			antenna.tileNumber = atol( antenna.name.str()+3 );
+			antenna.tileNumber = atol( antenna.name.c_str()+3 );
 			/*if(antenna.name.size() > 4 && antenna.name.substr(0, 4) == "Tile")
 				antenna.tileNumber = atoi(antenna.name.substr(4).c_str());
 			else
