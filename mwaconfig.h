@@ -132,7 +132,7 @@ class MWAConfig
 	public:
 		void ReadHeader(const std::string& filename, bool lockPointing);
 		void ReadInputConfig(const std::string& filename);
-		void ReadAntennaPositions(const std::string& filename);
+		void ReadAntennaPositions(const std::string& filename, bool bConvertToXYZ=false);
 		void ReadMetaFits(const std::string& filename, bool lockPointing);
 		
 		void CheckSetup();

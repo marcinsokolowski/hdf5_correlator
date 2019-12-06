@@ -160,7 +160,7 @@ MWAHeaderExt::MWAHeaderExt() :
 		year, month, day, refHour, refMinute, refSecond);
 }*/
 
-void MWAConfig::ReadAntennaPositions(const std::string& filename) {
+void MWAConfig::ReadAntennaPositions(const std::string& filename, bool bConvertToXYZ) {
 	std::ifstream file(filename.c_str());
 	if(!file.good())
 		throw std::runtime_error(std::string("Could not open ") + filename);
@@ -183,14 +183,20 @@ void MWAConfig::ReadAntennaPositions(const std::string& filename) {
 			if(lineStr.fail())
 				throw std::runtime_error("Parsing antenna file failed on line: " + line);
 			
-			Geometry::ENH2XYZ_local(east, north, height, arrayLattitudeRad, antenna.position[0], antenna.position[1], antenna.position[2]);
+			antenna.position[0] = east;
+			antenna.position[1] = north;
+			antenna.position[2] = height;
 			
-			antenna.stationIndex = antennaIndex;
+                        if( bConvertToXYZ ){
+   			    Geometry::ENH2XYZ_local(east, north, height, arrayLattitudeRad, antenna.position[0], antenna.position[1], antenna.position[2]);
+                        }
 			
-			if(antenna.name.size() > 4 && antenna.name.substr(0, 4) == "Tile")
+			antenna.stationIndex = antennaIndex;			
+			antenna.tileNumber = atol( antenna.name.str()+3 );
+			/*if(antenna.name.size() > 4 && antenna.name.substr(0, 4) == "Tile")
 				antenna.tileNumber = atoi(antenna.name.substr(4).c_str());
 			else
-				antenna.tileNumber = 0;
+				antenna.tileNumber = 0;*/
 			++antennaIndex;
 		}
   }
