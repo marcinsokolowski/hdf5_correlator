@@ -28,6 +28,8 @@
 #include "eda1_tpm_coefficients.h"
 #include "eda2_tpm_coefficients.h"
 #include "calsolutions.h"
+#include "mwaconfig.h"
+#include "defines.h"
 
 // current coefficients are for EDA2 and 48 antennas as for 20190610 :
 #define gAntennaPhaseDiff gEDA2_AntennaPhaseDiff_MSok_Norm_m180_180_20190609
@@ -42,6 +44,9 @@ enum eActionType_t { eCorrelateAntennas=1, eBeamform=2, eDumpData=3, eQuickCal=4
 
 enum ePhaseNormalisation_t { eNoPhaseNorm=0, ePhaseNorm0_360=1, ePhaseNorm_m180_180=2 };
 ePhaseNormalisation_t gPhaseNormalisation = ePhaseNorm0_360;
+
+string gAntennaLocationsFile;
+MWAConfig gConfig;
 
 int antenna1 = 0;
 int antenna2 = 1;
@@ -128,6 +133,11 @@ bool gInverseCalSolAmplitude = false;
 CCalSolFits gFittedCalSolutionsPhase; // fitted phases 
 double gFitUxTimeStart = 1568352407.00;
 double gFitUxTimeEnd   = 1568352407.00 + 33879; // fits as in 20190913_eda2_channeliseddata_ch204_24h_Lightcurve_vs_calsol_FitPhasePoly.odt and 20190913_eda2_channeliseddata_ch204_24h_Lightcurve_vs_calsol_UPDATE.odt
+
+string gPointingString;
+double gPointingAz_DEG = -1000;
+double gPointingElev_DEG = -1000;
+
 
 /* 
 Mapping of TPM-23 inputs to EDA tiles :
@@ -705,6 +715,46 @@ void beamform( std::vector< complex_t >& data, int n_ants, int n_pols, int n_sam
 }
 
 
+// _antennae
+bool calc_geometric_pointing_delays( vector<double>& geometric_delays, double freq_mhz )
+
+{
+   if( strlen(gPointingString.c_str())>0 && gPointingAz_DEG > -360 && gPointingElev_DEG > -360 && gConfig.NAntennae() > 0 ){
+      double freq_hz = freq_mhz*1e6;
+      printf("Calculating pointing delays for pointing direction (AZ,ELEV) = (%.4f,%.4f) [deg] at %.2f [Hz]\n",gPointingAz_DEG,gPointingElev_DEG,freq_hz);
+      
+      double za_deg = 90.00 - gPointingElev_DEG;
+      double za_rad = za_deg*(M_PI/180.00);
+      double az_rad = gPointingAz_DEG*(M_PI/180.00);
+      
+      double pointing_vector[3];
+      pointing_vector[0] = sin( za_rad )*sin( az_rad );
+      pointing_vector[1] = sin( za_rad )*cos( az_rad );
+      pointing_vector[2] = cos( za_rad );
+      
+      
+      geometric_delays.clear();
+      for(int ant=0;ant<gConfig.NAntennae();ant++){
+         const MWAAntenna& ant_info = gConfig.Antenna( ant );
+         
+         // ant_info.position[0];
+         // dot product of baseline_vector * antenna_position 
+         double dot_product = pointing_vector[0]*ant_info.position[0] + pointing_vector[1]*ant_info.position[1] + pointing_vector[2]*ant_info.position[2];
+         double delay_sec = dot_product / SPEED_OF_LIGHT;
+         double delay_ns  = delay_sec*1e9;
+         double phase_rad = -2*M_PI*freq_hz*delay_sec;
+         double phase_deg = phase_rad*(180.00/M_PI);
+         
+         geometric_delays.push_back( phase_deg );         
+         printf("%s : (%.3f,%.3f,%.3f) [m] -> delay = %.2f [ns] , phase = %.2f [deg]\n",ant_info.name.c_str(),ant_info.position[0],ant_info.position[1],ant_info.position[2],delay_ns,phase_deg);
+      }
+      
+      return true;
+   }
+
+   return false;
+}
+
 double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const char* szInFileName, const char* szOutFileName=NULL, int pol=0, 
                 vector< std::complex<double> > * p_beamformed_data_out=NULL, 
                 std::vector<double>* p_phase_offsets=NULL,
@@ -713,6 +763,16 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
 {  
 //   do_average_mean = 0;
    printf("beamform2 : do_average_mean = %d\n",do_average_mean);
+   
+   // check if pointing direction different than zenith is specified :
+   vector<double> geometric_delays;
+   if( strlen(gPointingString.c_str())>0 && gPointingAz_DEG > -360 && gPointingElev_DEG > -360 && gConfig.NAntennae() > 0 ){
+      // bool calc_geometric_pointing_delays( vector<double>& geometric_delays, double freq_mhz )
+      if( !calc_geometric_pointing_delays( geometric_delays, gFreqMHz ) ){
+         printf("ERROR : could not calculate geometric delays for pointing string = %s -> (az,elev) = (%.4f,%.4f) [deg]\n",gPointingString.c_str(),gPointingAz_DEG,gPointingElev_DEG);
+         exit(-1);
+      }
+   }
 
    double gain_amplitude = gGainAmplitude;
    if( gGainAmpVsUxtime.size() > 0 && gFileUxTime>0 ){
@@ -876,6 +936,16 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
 //           if( ant_data.size() ){
 //               printf("DEBUG2 : ant = %d, t = %d / %d -> vis = %d / %d\n",ant,0, ant_data.size(), ant_data[0].re , ant_data[0].im );
 //           }
+
+           if( geometric_delays.size() > 0 && ant < geometric_delays.size() ){
+              // this means that pointing direction != ZENITH is specified :
+              double pointing_direction_phase_deg = geometric_delays[ant];
+              double pointing_direction_phase_rad = pointing_direction_phase_deg * (M_PI/180.00);
+              
+              std::complex<float> phase_pointing_factor = std::complex<float>( cos(pointing_direction_phase_rad), sin(pointing_direction_phase_rad) );  // - sign is already in there see : calc_geometric_pointing_delays
+              phase_factor = phase_factor * phase_pointing_factor;
+           }
+           
 
            for(int t=0;t<ant_data.size();t++){
               std::complex<float> tmp_complex = std::complex<float>( ant_data[t].re , ant_data[t].im );
@@ -1251,11 +1321,13 @@ void usage()
    printf("\t-y : apply INVERSE of fitted calibration solutions [default %d]\n",gInverseCalSolAmplitude);
    printf("\t-j fitted cal. sol. amplitudes .vs time : read polynomial fits to phase of cal. solutions vs. time\n");
    printf("\t-U fitted cal. sol. phases .vs time     : read polynomial fits to phase of cal. solutions vs. time\n");
+   printf("\t-E antenna_locations_eda2.txt : file with antenna locations in standard format as in ~/aavs-calibration/\n");
+   printf("\t-K (AZ,ELEV) [deg] : specify poitning direction other then zenith (default), format (AZ,ELEV) in degrees, example : \"(23.45,78.943)\"\n");
    exit(0);
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:";
+   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:E:K:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -1274,146 +1346,37 @@ void parse_cmdline(int argc, char * argv[]) {
             antenna2 = atol( optarg );
             break;
 
-         case 'i':
-            gIterations = atol( optarg );
-            break;
-
-         case 'N':
-            gNSamples = atol( optarg );
-            break;
-
          case 'B':
             gActionType = eBeamform;
-            break;
-
-         case 'G':
-            gGainAmplitude = atof( optarg );
-            break;
-
-         case 'I':
-            gGainAmpVsUxtime_FileName = optarg;
-            break;
-
-         case 'J':
-            gCalSolPhase_vs_unixtime_FileName = optarg;
-            break;
-            
-         case 'j':
-            gFittedCalSolutions.filename = optarg;
-            gUseFittedCalSolutionAmplitude = true;
-            break;
-
-         case 'U':
-            gFittedCalSolutionsPhase.filename = optarg;
-            // gUseFittedCalSolutionPhase = true;
-            break;
-
-         case 'T':
-            gActionType = eBeamformTest;
-            break;
-
-         case 'd' :
-            gActionType = eDumpData;
-            break;
-
-         case 'p' :
-            printf("TEST optarg = %s\n",optarg);fflush(stdout);
-            gPol = atol( optarg );
-            break;
-
-         case 'f' :
-            gDoPhaseCorrection = 1;
             break;
 
          case 'c' :
             gDoCalibrate = atol( optarg );
             break;
 
-         case 'o' :
-            gOutFileName = optarg;
+         case 'C' :
+            gCalSign = atof( optarg );
             break;
 
-         case 't' :
-            gTestPhaseDeg = atof(optarg);
-            break;
-
-         case 'n' :
-            gPhaseNormalisation = (ePhaseNormalisation_t)atol(optarg);
-            break;
-
-         case 'x' :
-            gMaxTimeSteps = atol(optarg);
-            break;
-
-         case 'r' :
-            gUseRandomPhase = atol(optarg);
-            break;
-
-         case 's' :
-            gOptimisePhaseStep = atof(optarg);
-            break;
-
-         case 'R' :
-            gRefAnt = atol( optarg );
+         case 'd' :
+            gActionType = eDumpData;
             break;
 
          case 'D' :
             gMeanDelaysString = optarg;
             break;
 
-         case 'P' :
-            gPhaseOffsetsString = optarg;
+         case 'E':
+            gAntennaLocationsFile = optarg;
             break;
 
-         case 'z' :
-            gOptimiseRadius = atof( optarg );
-            break;
-
-         case 'X' :
-            gCalPhaseOffsetsString = optarg;
-            break;
-
-         case 'S' :
-            gSign = atof( optarg );
-            break;
-
-         case 'C' :
-            gCalSign = atof( optarg );
-            break;
-
-         case 'L' :
-            gExecuteLoop = 1;
+         case 'f' :
+            gDoPhaseCorrection = 1;
             break;
 
          case 'F' :
             gSlopeFitFile = optarg;
             printf("optarg = %s\n",optarg);
-            break;
-
-         case 'l' :
-            if ( optarg[0] != '-' ){
-                gAntennaListStr = optarg;
-                ParseCommaList( optarg, gAntennaListToProcess, "," );
-            }else{
-                gAntennaListStr = "";
-                gAntennaListToProcess.clear();
-            }
-            break;
-
-         case 'Z' :
-            ParseCommaList( optarg, gFlaggedAntennaList, "," );
-            break;
-
-         case 'O' :
-            gSteveOrderRemoveAutos = true;
-            break;
-
-         case 'y' :
-            gInverseCalSolAmplitude = true;
-            break;
-
-         case 'Y' :
-            gUseFittedCalSolutionAmplitude = true;
             break;
 
          case 'g' :
@@ -1429,7 +1392,126 @@ void parse_cmdline(int argc, char * argv[]) {
                }
             }
             break;
+
+         case 'G':
+            gGainAmplitude = atof( optarg );
+            break;
+
+
+         case 'i':
+            gIterations = atol( optarg );
+            break;
+
+         case 'I':
+            gGainAmpVsUxtime_FileName = optarg;
+            break;
+
+         case 'j':
+            gFittedCalSolutions.filename = optarg;
+            gUseFittedCalSolutionAmplitude = true;
+            break;
+
+         case 'J':
+            gCalSolPhase_vs_unixtime_FileName = optarg;
+            break;
             
+            
+         case 'K' :
+            gPointingString = optarg;
+            break;   
+
+         case 'l' :
+            if ( optarg[0] != '-' ){
+                gAntennaListStr = optarg;
+                ParseCommaList( optarg, gAntennaListToProcess, "," );
+            }else{
+                gAntennaListStr = "";
+                gAntennaListToProcess.clear();
+            }
+            break;
+
+         case 'L' :
+            gExecuteLoop = 1;
+            break;
+
+         case 'n' :
+            gPhaseNormalisation = (ePhaseNormalisation_t)atol(optarg);
+            break;
+
+         case 'N':
+            gNSamples = atol( optarg );
+            break;
+
+         case 'o' :
+            gOutFileName = optarg;
+            break;
+
+         case 'O' :
+            gSteveOrderRemoveAutos = true;
+            break;
+
+         case 'p' :
+            printf("TEST optarg = %s\n",optarg);fflush(stdout);
+            gPol = atol( optarg );
+            break;
+
+         case 'P' :
+            gPhaseOffsetsString = optarg;
+            break;
+
+         case 'r' :
+            gUseRandomPhase = atol(optarg);
+            break;
+
+         case 'R' :
+            gRefAnt = atol( optarg );
+            break;
+
+         case 's' :
+            gOptimisePhaseStep = atof(optarg);
+            break;
+
+         case 'S' :
+            gSign = atof( optarg );
+            break;
+
+         case 't' :
+            gTestPhaseDeg = atof(optarg);
+            break;
+
+         case 'T':
+            gActionType = eBeamformTest;
+            break;
+            
+         case 'U':
+            gFittedCalSolutionsPhase.filename = optarg;
+            // gUseFittedCalSolutionPhase = true;
+            break;
+
+         case 'x' :
+            gMaxTimeSteps = atol(optarg);
+            break;
+
+         case 'X' :
+            gCalPhaseOffsetsString = optarg;
+            break;
+
+         case 'y' :
+            gInverseCalSolAmplitude = true;
+            break;
+
+         case 'Y' :
+            gUseFittedCalSolutionAmplitude = true;
+            break;
+
+         case 'z' :
+            gOptimiseRadius = atof( optarg );
+            break;
+
+         case 'Z' :
+            ParseCommaList( optarg, gFlaggedAntennaList, "," );
+            break;
+
          default:   
             fprintf(stderr,"Unknown option %c\n",opt);
             usage();
@@ -1533,6 +1615,17 @@ void parse_cmdline(int argc, char * argv[]) {
       }else{
          printf("WARNING : could not read any fitted solutions from file %s -> will use default fit, which might be worse than not using -j option at all !!!\n", gFittedCalSolutionsPhase.filename.c_str());
       }
+   }
+   
+   if( strlen(gAntennaLocationsFile.c_str()) > 0 ){
+      printf("Reading antenna positions from file %s\n",gAntennaLocationsFile.c_str());
+      gConfig.ReadAntennaPositions( gAntennaLocationsFile );
+   }
+   
+   if( strlen(gPointingString.c_str()) > 0 ){
+      // gPointingAz_DEG , gPointingElev_DEG :
+      int ret = sscanf(gPointingString.c_str(),"(%lf,%lf)",&gPointingAz_DEG,&gPointingElev_DEG);
+      printf("Parsed pointing string = %s to get (Azim,Elev) = (%.4f,%.4f) [deg]\n",gPointingString.c_str(),gPointingAz_DEG,gPointingElev_DEG);
    }
 } 
 

@@ -35,7 +35,7 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
-add_executable(hdf5_correlator main.cpp hdf5_commons.cpp eda2_tpm_coefficients.cpp calsolutions.cpp)
+add_executable(hdf5_correlator main.cpp hdf5_commons.cpp eda2_tpm_coefficients.cpp calsolutions.cpp mwaconfig.cpp)
 target_link_libraries(hdf5_correlator ${CFITSIO_LIB} ${LIBNOVA_LIB} ${LIBMSFITS_LIB} ${LIBHDF5} ${HDF5_LIBRARIES} ${LIBNOVA_LIB} ${FFTW3_LIB} ${CFITSIO_LIB})
 
 install (TARGETS hdf5_correlator DESTINATION bin)
