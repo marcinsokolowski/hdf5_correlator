@@ -1655,6 +1655,7 @@ void print_parameters()
    printf("##############################################\n");
    printf("PARAMETERS:\n");
    printf("##############################################\n");
+   printf("Pointing direction = (%.4f,%.4f) [deg]\n",gPointingAz_DEG,gPointingElev_DEG);
    printf("Antenna1 = %d\n",antenna1);
    printf("Antenna2 = %d\n",antenna2);      
    printf("Gain amplitude = %.6f\n",gGainAmplitude);
