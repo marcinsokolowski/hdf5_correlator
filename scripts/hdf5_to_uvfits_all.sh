@@ -28,6 +28,7 @@ instr_path="instr_config.txt"
 dtm_ux=0
 hdf5_template="channel_cont_0_????????_*_*.hdf5"
 channelised_data=1
+station_name="eda2"
 
 function print_usage {
   echo "Script merges all hdf5 files from 16 tiles to a single one, converts them into bin files and depending on options runs correlation and lfiles to uvfits conversion"
@@ -54,13 +55,14 @@ function print_usage {
   echo "    -S ENABLE_CONVERT_TO_CASA : enable conversion to CASA measurements set [default $convert2casa]"
   echo "    -T hdf5_template : template of HDF5 file [default $hdf5_template]"
   echo "    -a N_AVG : correlated data from Alessio's correlator [default disabled - assuming channelised data], parameter is number of averages [default $n_avg]"
+  echo "    -s STATION_NAME : name of the station"
   exit
 }
 
 
 # parse command-line args
 # if [ $# -lt 1 ] ; then print_usage ; fi
-while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:" opt; do
+while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:s:" opt; do
   case $opt in
     a)
         # HDF5 files from Alessio correlator 
@@ -123,6 +125,9 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:" opt; do
     N)
         do_merge=0
         ;;
+    s)
+        station_name=$OPTARG
+        ;;
     z)
         auto_sun=0
         ;;
@@ -147,6 +152,7 @@ shift $(expr $OPTIND - 1 )
 echo "##################################################################"
 echo "PARAMTERES :"
 echo "##################################################################"
+echo "station_name   = $station_name"
 echo "hdf5_file_list = $hdf5_file_list"
 echo "hdf5_template  = $hdf5_template"
 echo "channelised_data = $channelised_data (merge = $do_merge)"
@@ -178,12 +184,17 @@ mkdir -p ${merged_dir}
 if [[ $do_correlation -gt 0 ]]; then
    cd ${merged_dir}
    # /home/rwayth/aavs-calibration/antenna_locations_eda2.txt
-   ln -s ${aavs_calibration_path}/antenna_locations_eda2.txt antenna_locations.txt
-   ln -s ${aavs_calibration_path}/instr_config_eda2.txt instr_config.txt
-#   ln -s /storage/eda2/2019_07_24_sun/merged/header_eda2_ph1.txt 
-#   ln -s /storage/eda2/2019_07_24_sun/merged/header_ph1.txt 
-   ln -s ${aavs_calibration_path}/header_eda2.txt header.txt # header_eda2_ph1.txt
-   ln -s ${aavs_calibration_path}/header_eda2.txt header_ph1.txt
+   station_name_lower=`echo ${station_name} | awk '{print tolower($1);}'`
+   
+   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/antenna_locations.txt ."
+   cp ${aavs_calibration_path}/config/${station_name_lower}/antenna_locations.txt .
+   
+   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config.txt ."
+   cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config.txt .
+
+   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/header.txt ."
+   cp ${aavs_calibration_path}/config/${station_name_lower}/header.txt .
+
    cd -
 else
    echo "Correlation is not required -> no need to create symbolic links"
