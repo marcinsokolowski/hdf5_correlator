@@ -290,6 +290,7 @@ do
 
     if [[ $channelised_data -gt 0 ]]; then
        echo "$hdf5_file_tile0 : merged_hdf5_file = $merged_hdf5_file , merged_bin_file = $merged_bin_file , $dtm_local, $dtm_ux, $dtm_ut -> lfile_base = $lfile_base , merged_bin_file = $merged_bin_file , radec_string = $radec_string"
+       lfile_base_corr=${merged_bin_file%%.bin}
        if [[ ! -s ${merged_dir}/${merged_bin_file} || $force -gt 0 ]]; then
             if [[ ! -s ${merged_dir}/${merged_hdf5_file} || $force -gt 0 ]]; then
 #            echo "print_sun $dtm_ux -c"
