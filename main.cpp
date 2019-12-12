@@ -725,11 +725,12 @@ bool calc_geometric_pointing_delays( vector<double>& geometric_delays, double fr
       
       double za_deg = 90.00 - gPointingElev_DEG;
       double za_rad = za_deg*(M_PI/180.00);
-      double az_rad = gPointingAz_DEG*(M_PI/180.00);
+//      double az_rad = gPointingAz_DEG*(M_PI/180.00);
+      double phi_rad = (90.00 - gPointingAz_DEG)*(M_PI/180.00); // phi is from X axis which is in antenna locations coordinate system East-West (azimuth is in North-East !)
       
       double pointing_vector[3];
-      pointing_vector[0] = sin( za_rad )*sin( az_rad );
-      pointing_vector[1] = sin( za_rad )*cos( az_rad );
+      pointing_vector[0] = sin( za_rad )*sin( phi_rad );
+      pointing_vector[1] = sin( za_rad )*cos( phi_rad );
       pointing_vector[2] = cos( za_rad );
       
       
