@@ -1082,7 +1082,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
        }
        
        if( out_timeseries_text_f ){
-          fprintf( out_timeseries_text_f , "%.8f %.8f\n",gFileUxTime,power);
+          fprintf( out_timeseries_text_f , "%.8f %.8f\n",double(gFileUxTime+(time_step*(1.08/1000000.0))),power);
        }
        
 // TEST        double power = std::abs( beamformed_data[time_step] );
