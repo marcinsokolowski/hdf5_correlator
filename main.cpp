@@ -139,6 +139,11 @@ double gPointingAz_DEG = -1000;
 double gPointingElev_DEG = -1000;
 
 
+// saving data for Pulsar timing :
+string gOutputTimeSeriesFileBin;
+string gOutputTimeSeriesFileText;
+string gOutputTimeSeriesFileBase;
+
 /* 
 Mapping of TPM-23 inputs to EDA tiles :
 see also : /home/msok/bighorns/software/analysis/scripts/shell/eda/eda2/pointing.py and ~/Desktop/EDA2/logbook/eda2_pointing.odt
@@ -1004,7 +1009,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
     
     vector< double > autos;
     autos.assign( time_steps, 0.00 ); // to accumulate auto-correlations see page 8 (equations 41 - 46) in Steve Ord 2019 PASA paper 
-
+    
     for(int time_step=0;time_step<time_steps;time_step++){
         if( debug_level > 0 ){
            if( (time_step % 1000) == 0 ){
@@ -1041,6 +1046,16 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
             // accumulate auto-correlations see page 8 (equations 41 - 46) in Steve Ord 2019 PASA paper             
             autos[time_step] += std::norm( tmp ); // https://en.cppreference.com/w/cpp/numeric/complex/norm = absolute square 
         }
+        
+    }
+    
+    FILE* out_timeseries_f = NULL;
+    FILE* out_timeseries_text_f = NULL;
+    if( strlen(gOutputTimeSeriesFileBin.c_str()) ){
+       out_timeseries_f = fopen( gOutputTimeSeriesFileBin.c_str() , "wb" );
+    }
+    if( strlen(gOutputTimeSeriesFileText.c_str()) ){
+       out_timeseries_text_f = fopen( gOutputTimeSeriesFileText.c_str() , "w" );
     }
 
     for(int time_step=0;time_step<beamformed_data.size();time_step++){
@@ -1066,9 +1081,23 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
           }          
        }
        
+       if( out_timeseries_text_f ){
+          fprintf( out_timeseries_text_f , "%.8f %.8f\n",gFileUxTime,power);
+       }
+       
 // TEST        double power = std::abs( beamformed_data[time_step] );
        mean_spectrum += power;
     }     
+    
+    fwrite( &(beamformed_data[0]), beamformed_data.size(), sizeof( std::complex<double> ), out_timeseries_f );
+
+    if( out_timeseries_f ){
+       fclose( out_timeseries_f );
+    }
+    if( out_timeseries_text_f ){
+       fclose( out_timeseries_text_f );
+    }
+
     
     FILE* beamformed_f = fopen( szOutFileName,"a+");
     double mag = std::norm( beamformed_data_accum ) / beamformed_data.size(); // was abs
@@ -1324,11 +1353,12 @@ void usage()
    printf("\t-U fitted cal. sol. phases .vs time     : read polynomial fits to phase of cal. solutions vs. time\n");
    printf("\t-E antenna_locations_eda2.txt : file with antenna locations in standard format as in ~/aavs-calibration/\n");
    printf("\t-K (AZ,ELEV) [deg] : specify poitning direction other then zenith (default), format (AZ,ELEV) in degrees, example : \"(23.45,78.943)\"\n");
+   printf("\t-e PULSAR_TIMING_FILE_NAME_BASE [default not set - not saving data in this format]\n");
    exit(0);
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:E:K:";   
+   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -1367,6 +1397,10 @@ void parse_cmdline(int argc, char * argv[]) {
             gMeanDelaysString = optarg;
             break;
 
+         case 'e':
+            gOutputTimeSeriesFileBase = optarg;
+            break;
+         
          case 'E':
             gAntennaLocationsFile = optarg;
             break;
@@ -1628,6 +1662,11 @@ void parse_cmdline(int argc, char * argv[]) {
       int ret = sscanf(gPointingString.c_str(),"(%lf,%lf)",&gPointingAz_DEG,&gPointingElev_DEG);
       printf("Parsed pointing string = %s to get (Azim,Elev) = (%.4f,%.4f) [deg]\n",gPointingString.c_str(),gPointingAz_DEG,gPointingElev_DEG);
    }
+   
+   if( strlen(gOutputTimeSeriesFileBase.c_str()) ){
+      gOutputTimeSeriesFileText = gOutputTimeSeriesFileBase + ".txt";
+      gOutputTimeSeriesFileBin  = gOutputTimeSeriesFileBase + ".bin";
+   }
 } 
 
 void print_parameters()
@@ -1658,7 +1697,8 @@ void print_parameters()
    printf("##############################################\n");
    printf("Pointing direction = (%.4f,%.4f) [deg]\n",gPointingAz_DEG,gPointingElev_DEG);
    printf("Antenna1 = %d\n",antenna1);
-   printf("Antenna2 = %d\n",antenna2);      
+   printf("Antenna2 = %d\n",antenna2);
+   printf("Output timeseries file for pulsar timing tests = %s ( %s , %s )\n",gOutputTimeSeriesFileBase.c_str(),gOutputTimeSeriesFileBin.c_str(),gOutputTimeSeriesFileText.c_str());      
    printf("Gain amplitude = %.6f\n",gGainAmplitude);
    printf("Gains vs. uxtime file %s read OK with %d values\n",gGainAmpVsUxtime_FileName.c_str(),gGainAmpVsUxtime.size());
    printf("Phase vs. uxtime file %s read OK with %d values\n",gCalSolPhase_vs_unixtime_FileName.c_str(),gCalSolPhase_vs_unixtime.size());
