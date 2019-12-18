@@ -25,7 +25,8 @@ fi
 lastcal=`ls ${caldir}/${dt}-??:??/chan_${ch}_selfcal_pha_${pol}.txt | tail -1`
 # lastcal_YY=`ls ${caldir}/2???_??_??-??:??/chan_${ch}_selfcal_pha_YY.txt | tail -1`
 
-awk '{for(i=3;i<=NF;i++){printf("%.2f,",$i);}}' ${lastcal}
+# use last calibration in the file :
+tail -1 {lastcal} | awk '{for(i=3;i<=NF;i++){printf("%.2f,",$i);}}' 
 
 
 
