@@ -1089,9 +1089,8 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
        mean_spectrum += power;
     }     
     
-    fwrite( &(beamformed_data[0]), beamformed_data.size(), sizeof( std::complex<double> ), out_timeseries_f );
-
     if( out_timeseries_f ){
+       fwrite( &(beamformed_data[0]), beamformed_data.size(), sizeof( std::complex<double> ), out_timeseries_f );
        fclose( out_timeseries_f );
     }
     if( out_timeseries_text_f ){
