@@ -10,7 +10,7 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    pol=$2
 fi
 
-caldir=/data/eda2/real_time_calibration/
+caldir=/data/real_time_calibration/
 if [[ -n "$3" && "$3" != "-" ]]; then
    caldir=$3
 fi
