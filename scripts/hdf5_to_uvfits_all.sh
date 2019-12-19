@@ -30,6 +30,13 @@ hdf5_template="channel_cont_0_????????_*_*.hdf5"
 channelised_data=1
 station_name="eda2"
 
+if [[ -s /opt/aavs/config/station.yml ]]; then
+   station_name=`awk -v station_section=0 '{if(index($1,":")>0 && NF==1){if(index($1,"station")>0 ){station_section=1;}else{station_section=0;}}if(station_section>0){if($1=="name:"){station_name=$2;gsub("\"","",station_name);print tolower(station_name);}}}' /opt/aavs/config/station.yml`   
+   echo "Station config file (or symbolik link) exists -> getting station_name = $station_name"
+else
+   echo "WARNING : /opt/aavs/config/station.yml file or symbolic link does not exist will use default station_name = $station_name or value passed in parameter -s"   
+fi
+
 function print_usage {
   echo "Script merges all hdf5 files from 16 tiles to a single one, converts them into bin files and depending on options runs correlation and lfiles to uvfits conversion"
   echo "Usage: "
