@@ -394,7 +394,19 @@ do
        inttime0=$inttime
        inttime=`echo $inttime $n_avg | awk '{print $1*$2;}'`
        echo "inttime := $inttime ( = $n_avg * $inttime0 )"
+       
+       if [[ -d ${aavs_calibration_path} ]]; then
+           # was -i 1.130112 
+           # TEMPORARY unitl Randall commits config files 
+           # aavs_calibration_path=~/aavs-calibration/
+           echo "${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} ${lfile_base_corr}"
+           ${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} ${lfile_base_corr}
+       else
+           echo "ERROR : ${aavs_calibration_path} does not exist -> cannot convert L-files to uvfits files"
+       fi
     fi
+    
+    
     
     if [[ $convert2casa -gt 0 ]]; then
        radec_options=""
