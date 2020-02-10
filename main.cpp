@@ -384,9 +384,14 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
    }
    
    if( strlen( gZeroStatFile.c_str() ) > 0 ){
-      std::vector<int> zeros_count;
+      std::vector<int> zeros_count , longest_zeros_in_row, current_zeros_in_row, start_of_current_zeros_in_row, start_of_longest_zeros_in_row;
       int n_inputs = n_ants*n_pols;
       zeros_count.assign( n_inputs , 0 );
+      longest_zeros_in_row.assign( n_inputs , 0 );
+      current_zeros_in_row.assign( n_inputs , 0 );
+      start_of_current_zeros_in_row.assign( n_inputs , -1 );
+      start_of_longest_zeros_in_row.assign( n_inputs , -1 );
+            
             
       int time_count = data.size() / n_inputs;            
       bool bHeader = false;
@@ -395,8 +400,12 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
       }
       MyOFile out_f( gZeroStatFile.c_str() , "a+" );
       if( bHeader ){
-         out_f.Printf(" # FILENAME MAX_ZERO_COUNT(on input)  T1X T1Y T2X T2Y T3X T3Y T4X T4Y T5X T5Y T6X T6Y T7X T7Y T8X T8Y T9X T9Y T10X T10Y T11X T11Y T12X T12Y T13X T13Y T14X T14Y T15X T15Y T16X T16Y\n");
+         out_f.Printf(" # FILENAME MAX_ZERO_COUNT(on input) T1X T1Y T2X T2Y T3X T3Y T4X T4Y T5X T5Y T6X T6Y T7X T7Y T8X T8Y T9X T9Y T10X T10Y T11X T11Y T12X T12Y T13X T13Y T14X T14Y T15X T15Y T16X T16Y\n");
       }
+      
+      char szOutFileLongestChain[1024];
+      sprintf(szOutFileLongestChain,"LongestChain_%s",gZeroStatFile.c_str());
+      MyOFile out_f2( szOutFileLongestChain, "a+" );
       
       for(int t=0;t<time_count;t++){
          int index_offset = t*n_inputs;
@@ -404,6 +413,20 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
          for(int inp=0;inp<n_inputs;inp++){
             if( data[index_offset+inp].re == 0 && data[index_offset+inp].im == 0 ){
                zeros_count[inp]++;
+               current_zeros_in_row[inp]++;
+               if( start_of_current_zeros_in_row[inp] < 0 ){
+                  start_of_current_zeros_in_row[inp] = t;
+               }
+            }else{
+               // reset current ZERO chain :
+               current_zeros_in_row[inp] = 0;
+               start_of_current_zeros_in_row[inp] = -1;
+            }
+           
+            // update longest in row and start of longest in row:
+            if( current_zeros_in_row[inp] > longest_zeros_in_row[inp] ){
+               longest_zeros_in_row[inp] = current_zeros_in_row[inp];
+               start_of_longest_zeros_in_row[inp] = start_of_current_zeros_in_row[inp];
             }
          }  
       }
@@ -417,18 +440,24 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
       }
       
       mystring outLine = gInputHdf5Filename.c_str();
+      mystring outLine2 = gInputHdf5Filename.c_str();
       char szTmp[64];
       sprintf(szTmp," %d(%d) ",max_count,max_count_inp);
       outLine += szTmp;
-      
+
       outLine += " ";
+      outLine2 += " ";
       for(int inp=0;inp<n_inputs;inp++){
-         sprintf(szTmp,"%d ",zeros_count[inp]);
-         
+         sprintf(szTmp,"%d ",zeros_count[inp]);                  
          outLine += szTmp;         
+         
+         sprintf(szTmp,"%d(%d) ",longest_zeros_in_row[inp],start_of_longest_zeros_in_row[inp]);
+         outLine2 += szTmp;
       }
       
       out_f.Printf("%s\n",outLine.c_str());
+      
+      out_f2.Printf("%s\n",outLine2.c_str());
    }
 }
 
