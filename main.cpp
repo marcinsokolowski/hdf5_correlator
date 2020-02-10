@@ -395,7 +395,7 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
       }
       MyOFile out_f( gZeroStatFile.c_str() , "a+" );
       if( bHeader ){
-         out_f.Printf(" # FILENAME    T1X T1Y T2X T2Y T3X T3Y T4X T4Y T5X T5Y T6X T6Y T7X T7Y T8X T8Y T9X T9Y T10X T10Y T11X T11Y T12X T12Y T13X T13Y T14X T14Y T15X T15Y T16X T16Y\n");
+         out_f.Printf(" # FILENAME MAX_ZERO_COUNT(on input)  T1X T1Y T2X T2Y T3X T3Y T4X T4Y T5X T5Y T6X T6Y T7X T7Y T8X T8Y T9X T9Y T10X T10Y T11X T11Y T12X T12Y T13X T13Y T14X T14Y T15X T15Y T16X T16Y\n");
       }
       
       for(int t=0;t<time_count;t++){
@@ -408,10 +408,21 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
          }  
       }
       
+      int max_count = -1, max_count_inp = -1;
+      for(int inp=0;inp<n_inputs;inp++){
+         if( zeros_count[inp] > max_count ){
+            max_count = zeros_count[inp];
+            max_count_inp = inp;
+         }
+      }
+      
       mystring outLine = gInputHdf5Filename.c_str();
+      char szTmp[64];
+      sprintf(szTmp," %d(%d) ",max_count,max_count_inp);
+      outLine += szTmp;
+      
       outLine += " ";
       for(int inp=0;inp<n_inputs;inp++){
-         char szTmp[64];
          sprintf(szTmp,"%d ",zeros_count[inp]);
          
          outLine += szTmp;         
