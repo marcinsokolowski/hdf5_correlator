@@ -19,6 +19,7 @@
 #include <calsol_values.h>
 
 // 
+#include <myfile.h>
 #include <myparser.h>
 #include <mystring.h>
 #include <mystrtable.h>
@@ -44,6 +45,10 @@ enum eActionType_t { eCorrelateAntennas=1, eBeamform=2, eDumpData=3, eQuickCal=4
 
 enum ePhaseNormalisation_t { eNoPhaseNorm=0, ePhaseNorm0_360=1, ePhaseNorm_m180_180=2 };
 ePhaseNormalisation_t gPhaseNormalisation = ePhaseNorm0_360;
+
+// global name for input hdf5 file :
+string gInputHdf5Filename;
+
 
 string gAntennaLocationsFile;
 MWAConfig gConfig;
@@ -143,6 +148,10 @@ double gPointingElev_DEG = -1000;
 string gOutputTimeSeriesFileBin;
 string gOutputTimeSeriesFileText;
 string gOutputTimeSeriesFileBase;
+
+// saving statistics of zeros for hdf5 file :
+string gZeroStatFile;
+
 
 /* 
 Mapping of TPM-23 inputs to EDA tiles :
@@ -357,18 +366,59 @@ double calsolution_amplitude( double uxtime, int antenna_index, bool bInverse=fa
 
 void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const char* szOutFileName=NULL, int pol=0 )
 {
-   FILE* out_f = fopen( szOutFileName, "wb" );
-   void* data_ptr = &(data[0]);
-   // size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-   long long written = fwrite( data_ptr, sizeof(data[0]), data.size(), out_f );
-   double written_bytes = double(written)*sizeof(data[0]);
-   double expected_write = double(data.size()) * sizeof(data[0]);
-   fclose(out_f);
-   printf("Written %.0f bytes to file %s, should write %d x %d = %d\n",written_bytes, szOutFileName, int(data.size()), int(sizeof(data[0])), expected_write );
-   printf("Test values data[0] = %d / %d\n",data[0].re,data[0].im);
-   printf("Test values data[1] = %d / %d\n",data[1].re,data[1].im);
-   printf("Test values data[2] = %d / %d\n",data[2].re,data[2].im);
-   printf("Test values data[10] = %d / %d\n",data[10].re,data[10].im);
+   if( szOutFileName && strlen( szOutFileName) > 0 ){
+      FILE* out_f = fopen( szOutFileName, "wb" );
+      void* data_ptr = &(data[0]);
+      // size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+      long long written = fwrite( data_ptr, sizeof(data[0]), data.size(), out_f );
+      double written_bytes = double(written)*sizeof(data[0]);
+      double expected_write = double(data.size()) * sizeof(data[0]);
+      fclose(out_f);
+      printf("Written %.0f bytes to file %s, should write %d x %d = %d\n",written_bytes, szOutFileName, int(data.size()), int(sizeof(data[0])), expected_write );
+      printf("Test values data[0] = %d / %d\n",data[0].re,data[0].im);
+      printf("Test values data[1] = %d / %d\n",data[1].re,data[1].im);
+      printf("Test values data[2] = %d / %d\n",data[2].re,data[2].im);
+      printf("Test values data[10] = %d / %d\n",data[10].re,data[10].im);
+   }else{
+      printf("WARNING : no data dump to binary file is required - please verify !\n");
+   }
+   
+   if( strlen( gZeroStatFile.c_str() ) > 0 ){
+      std::vector<int> zeros_count;
+      int n_inputs = n_ants*n_pols;
+      zeros_count.assign( n_inputs , 0 );
+            
+      int time_count = data.size() / n_inputs;            
+      bool bHeader = false;
+      if ( !MyFile::DoesFileExist( gZeroStatFile.c_str() ) ){
+         bHeader = true;
+      }
+      MyOFile out_f( gZeroStatFile.c_str() , "a+" );
+      if( bHeader ){
+         out_f.Printf(" # FILENAME    T1X T1Y T2X T2Y T3X T3Y T4X T4Y T5X T5Y T6X T6Y T7X T7Y T8X T8Y T9X T9Y T10X T10Y T11X T11Y T12X T12Y T13X T13Y T14X T14Y T15X T15Y T16X T16Y\n");
+      }
+      
+      for(int t=0;t<time_count;t++){
+         int index_offset = t*n_inputs;
+       
+         for(int inp=0;inp<n_inputs;inp++){
+            if( data[index_offset+inp].re == 0 && data[index_offset+inp].im == 0 ){
+               zeros_count[inp]++;
+            }
+         }  
+      }
+      
+      mystring outLine = gInputHdf5Filename.c_str();
+      outLine += " ";
+      for(int inp=0;inp<n_inputs;inp++){
+         char szTmp[64];
+         sprintf(szTmp,"%d ",zeros_count[inp]);
+         
+         outLine += szTmp;         
+      }
+      
+      out_f.Printf("%s\n",outLine.c_str());
+   }
 }
 
 int get_ant_data(std::vector< complex_t >& data, int ant_idx, int n_ants, int n_pols, int n_samples, std::vector< std::vector< complex_t > >& out_ant_data, int pol=0 )
@@ -1353,11 +1403,12 @@ void usage()
    printf("\t-E antenna_locations_eda2.txt : file with antenna locations in standard format as in ~/aavs-calibration/\n");
    printf("\t-K (AZ,ELEV) [deg] : specify poitning direction other then zenith (default), format (AZ,ELEV) in degrees, example : \"(23.45,78.943)\"\n");
    printf("\t-e PULSAR_TIMING_FILE_NAME_BASE [default not set - not saving data in this format]\n");
+   printf("\t-k ZERO_STAT_FILE - save statistics of zeros in conversion process in the original hdf5 files [default disabled]\n");
    exit(0);
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:";   
+   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -1448,8 +1499,11 @@ void parse_cmdline(int argc, char * argv[]) {
          case 'J':
             gCalSolPhase_vs_unixtime_FileName = optarg;
             break;
-            
-            
+                        
+         case 'k' :
+            gZeroStatFile = optarg;
+            break;   
+
          case 'K' :
             gPointingString = optarg;
             break;   
@@ -1737,6 +1791,7 @@ void print_parameters()
    printf("\tFlagged antennas  = %s\n",ListToStr( gFlaggedAntennaList ).c_str());   
    printf("\tRemove autos (as S. Ord) = %d\n",gSteveOrderRemoveAutos);
    printf("\tUse fits of cal. solutions vs. time = %d\n",gUseFittedCalSolutionAmplitude);
+   printf("\tSave zero start file = %s\n",gZeroStatFile.c_str());
    printf("##############################################\n");
    
    // 
@@ -1787,6 +1842,7 @@ int main(int argc,char* argv[])
    if ( argc>=2 ){
        filename = argv[1];
    }
+   gInputHdf5Filename = filename.c_str();
    parse_cmdline( argc , argv );
    print_parameters();
    
