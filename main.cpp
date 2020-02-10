@@ -424,7 +424,7 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
             }
            
             // update longest in row and start of longest in row:
-            if( current_zeros_in_row[inp] > longest_zeros_in_row[inp] ){
+            if( current_zeros_in_row[inp] >= longest_zeros_in_row[inp] ){
                longest_zeros_in_row[inp] = current_zeros_in_row[inp];
                start_of_longest_zeros_in_row[inp] = start_of_current_zeros_in_row[inp];
             }
