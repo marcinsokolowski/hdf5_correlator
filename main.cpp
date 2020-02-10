@@ -448,7 +448,7 @@ void dump_data( std::vector< complex_t >& data, int n_ants, int n_pols, const ch
       outLine += " ";
       outLine2 += " ";
       for(int inp=0;inp<n_inputs;inp++){
-         sprintf(szTmp,"%d ",zeros_count[inp]);                  
+         sprintf(szTmp,"%d(%d) ",zeros_count[inp],longest_zeros_in_row[inp]);                  
          outLine += szTmp;         
          
          sprintf(szTmp,"%d(%d) ",longest_zeros_in_row[inp],start_of_longest_zeros_in_row[inp]);
