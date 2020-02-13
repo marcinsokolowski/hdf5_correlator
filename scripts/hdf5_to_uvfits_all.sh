@@ -21,6 +21,7 @@ hdf5_file_list="hdf5_file_list.tmp"
 n_integrations_per_uvfits=1
 n_samples_per_hdf5_file=-1
 freq_channel=204
+freq_channel_param=-1
 do_merge=1
 remove_single_hdf5_files=0
 antenna_locations_path="antenna_locations.txt"
@@ -55,7 +56,7 @@ function print_usage {
   echo "    -L hdf5_file_list : file with list of hdf5 files to convert [default $hdf5_file_list]" 
   echo "    -I n_integrations_per_uvfits : number of integrations per uvfits file [default $n_integrations_per_uvfits]"
   echo "    -H disables dumping of bin files, just merges hdf5 files [default dumpbinfile = $dumpbinfile]"
-  echo "    -f frequency channel [default $freq_channel]"
+  echo "    -f frequency channel [default $freq_channel_param]"
   echo "    -N no merge [default do_merge = $do_merge]"
   echo "    -r remove single (original) hdf5 file after merging [default $remove_single_hdf5_files]"
   echo "    -b Number_of_channes [default $n_chan]"
@@ -96,7 +97,7 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:s:" opt; do
         inttime=$OPTARG
         ;;
     f)
-        freq_channel=$OPTARG
+        freq_channel_param=$OPTARG
         ;;
     c)
         do_correlation=1
@@ -163,7 +164,7 @@ echo "station_name   = $station_name"
 echo "hdf5_file_list = $hdf5_file_list"
 echo "hdf5_template  = $hdf5_template"
 echo "channelised_data = $channelised_data (merge = $do_merge)"
-echo "freq_channel   = $freq_channel"
+echo "freq_channel   = $freq_channel_param"
 echo "do_correlation = $do_correlation" 
 echo "bin2lfiles     = $bin2lfiles"
 echo "convert2casa   = $convert2casa"
@@ -230,7 +231,16 @@ fi
 
 for hdf5_file_tile0 in `cat $hdf5_file_list`
 do
-    echo "---------------------------------------------------- $hdf5_file_tile0 ----------------------------------------------------"    
+    if [[ $freq_channel_param -ge 0 ]]; then
+       # user parameter -f overwrites any other frequency requirements :
+       freq_channel = $freq_channel_param
+    else
+       channel_id = `python ~/aavs-calibration/sensitivity/daq/getch.py $hdf5_file_tile0 | grep "is channel" | awk '{print $5;}'`
+       echo "channel_id from file $hdf5_file_tile0 is $channel_id"
+       freq_channel = $channel_id
+    fi
+
+    echo "---------------------------------------------------- $hdf5_file_tile0 (freq_channel = $freq_channel) ----------------------------------------------------"    
     
     lfile_base="Lfile"
     lfile_base_corr=$lfile_base
