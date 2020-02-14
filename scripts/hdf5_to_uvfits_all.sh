@@ -233,11 +233,11 @@ for hdf5_file_tile0 in `cat $hdf5_file_list`
 do
     if [[ $freq_channel_param -ge 0 ]]; then
        # user parameter -f overwrites any other frequency requirements :
-       freq_channel = $freq_channel_param
+       freq_channel=$freq_channel_param
     else
-       channel_id = `python ~/aavs-calibration/sensitivity/daq/getch.py $hdf5_file_tile0 | grep "is channel" | awk '{print $5;}'`
+       channel_id=`python ~/aavs-calibration/sensitivity/daq/getch.py $hdf5_file_tile0 | grep "is channel" | awk '{print $5;}'`
        echo "channel_id from file $hdf5_file_tile0 is $channel_id"
-       freq_channel = $channel_id
+       freq_channel=$channel_id
     fi
 
     echo "---------------------------------------------------- $hdf5_file_tile0 (freq_channel = $freq_channel) ----------------------------------------------------"    
