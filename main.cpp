@@ -1409,7 +1409,7 @@ void usage()
 {
    printf("hdf5_correlator HDF5_FILE -a ANT1 -b ANT2 -f -o OUTFILE_NAME -l ANTENNA_LIST -p O/1 -n PHASE_NORMALISATION -g TASK -A NUMBER_OF_ANTs_TO_PROCESS\n");
    printf("\n\nDefault action = %d (%s)\n\n",gActionType,get_action_desc(gActionType));
-   printf("\t-f : enables phase correction based on coefficients in the table\n");
+   printf("\t-f ENABLE/DISABLE_FLAG: enables phase correction based on coefficients in the table [default %d]\n",gDoPhaseCorrection);
    printf("\t-l ANTENNA_LIST : coma separated antenna list (default ALL)\n");
    printf("\t-p POL : polarisation [default %d]\n",gPol);   
    printf("\t-n PHASE_NORM : phase normalisation, 0 : no norm, 1 : 0-360 deg, 2 : -180 - 180 deg [default %d]\n",gPhaseNormalisation);
@@ -1448,7 +1448,7 @@ void usage()
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:fx:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:";   
+   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -1496,7 +1496,7 @@ void parse_cmdline(int argc, char * argv[]) {
             break;
 
          case 'f' :
-            gDoPhaseCorrection = 1;
+            gDoPhaseCorrection = atol( optarg );
             break;
 
          case 'F' :

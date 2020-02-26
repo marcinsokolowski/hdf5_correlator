@@ -35,8 +35,8 @@ do
    # echo "hdf5_correlator ${hdf5file} -B -o beamformed2.txt -f -x 1000"
    # hdf5_correlator ${hdf5file} -B -o beamformed2.txt -f -x 1000  
 
-   echo "hdf5_correlator ${hdf5file} -B -o ${outfile} -f -c ${do_phase_calib} ${options}"
-   hdf5_correlator ${hdf5file} -B -o ${outfile} -f -c ${do_phase_calib} ${options}
+   echo "hdf5_correlator ${hdf5file} -B -o ${outfile} -f 1 -c ${do_phase_calib} ${options}"
+   hdf5_correlator ${hdf5file} -B -o ${outfile} -f 1 -c ${do_phase_calib} ${options}
 done
 
 
