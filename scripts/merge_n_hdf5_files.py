@@ -3,6 +3,14 @@ import numpy
 import sys
 from optparse import OptionParser,OptionGroup
 
+def mkdir_p(path):
+   try:
+      os.makedirs(path)
+   except OSError as exc: # Python >2.5
+      if exc.errno == errno.EEXIST:
+         pass
+      else: raise
+
 
 # function to return a list of paths to each dataset
 def getdatasets(key,archive):
@@ -71,18 +79,22 @@ if __name__ == "__main__":
 #   outdir="merged/"
 #   if len(sys.argv) > 4:    
 #       outdir = sys.argv[4]
-       
-   merged_file = outdir + "/" + merged_file
 
+   merged_file_base = merged_file       
+   merged_file = outdir + "/" + merged_file
+   
    print "######################################################################"
    print "PARAMETERS :"
    print "######################################################################"
    print "file 0       = %s" % (file0)
    print "N hdf5 files = %d" % (n_hdf5_files)
-   print "merged_file  = %s" % (merged_file)
+   print "merged_file  = %s (base = %s)" % (merged_file,merged_file_base)
    print "outdir       = %s" % (outdir)
    print "Out list file = %s" % (options.outlistfile)
    print "######################################################################"
+
+   # create output directory if does not exist already :
+   mkdir_p( outdir )
 
    tile_file_list = []   
    if file0 is None :
@@ -210,7 +222,7 @@ if __name__ == "__main__":
    
    if options.outlistfile is not None :
       out_list_f = open( options.outlistfile , "a+" )
-      line = "%s\n" % (merged_file)
+      line = "%s\n" % (merged_file_base)
       out_list_f.write( line )
       out_list_f.close()
       
