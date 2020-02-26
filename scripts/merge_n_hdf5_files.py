@@ -27,6 +27,7 @@ def parse_options(idx):
    usage+='\tpython merge_n_hdf5_files.py channel_cont_0_20190531_43409_0.hdf5 N_TILES[default = 3]\n'
    parser = OptionParser(usage=usage,version=1.00)
    parser.add_option('-o','--outdir','--merged_dir','--out_dir',dest="outdir",default="merged/", help="Name of output directory [default %]")
+   parser.add_option('-f','--outlistfile','--output_hdf5_list',dest="outlistfile",default="merged/merged_hdf5_list.txt", help="Name of output file with list of merged HDF5 files [default %]")
    (options, args) = parser.parse_args(sys.argv[idx:])
 
    return (options, args)
@@ -80,6 +81,7 @@ if __name__ == "__main__":
    print "N hdf5 files = %d" % (n_hdf5_files)
    print "merged_file  = %s" % (merged_file)
    print "outdir       = %s" % (outdir)
+   print "Out list file = %s" % (options.outlistfile)
    print "######################################################################"
 
    tile_file_list = []   
@@ -205,6 +207,14 @@ if __name__ == "__main__":
    
    new_data['/chan_'].create_dataset("data", (merged_shape0,merged_shape1), dtype=data_type, data=alldata )
    print "INFO : saved merged files %s with shape (%d,%d)" % (merged_file,merged_shape0,merged_shape1)
+   
+   if options.outlistfile is not None :
+      out_list_f = open( options.outlistfile , "a+" )
+      line = "%s\n" % (merged_file)
+      out_list_f.write( line )
+      out_list_f.close()
+      
+      print "Saved merged filename (%s) to output list file %s" % (merged_file,options.outlistfile)
 
 
    # out_hdf_file['/chan_']['data'] = numpy.hstack( (tile0_file['/chan_']['data'],tile1_file['/chan_']['data'],tile2_file['/chan_']['data']) )
