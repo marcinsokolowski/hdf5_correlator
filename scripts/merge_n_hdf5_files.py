@@ -1,6 +1,7 @@
 import h5py
 import numpy
 import sys
+import os
 from optparse import OptionParser,OptionGroup
 
 def mkdir_p(path):
