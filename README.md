@@ -29,3 +29,13 @@ Data converter, beamformer, correlator and possibly more for hdf5 data from SKA-
   # where path is location of hdf5_correlator clone 
 
 # WARNING : hdf5 might be a problem, but I'll try to solve it ASAP 
+
+# Example of reading HDF5 file in C++ and correlation of 2 specified
+# antennas given in :
+
+  cd examples/read_hdf5
+  mkdir build
+  cmake ..
+  make 
+
+  
