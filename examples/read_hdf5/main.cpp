@@ -36,6 +36,8 @@ int antenna1 = 0;
 int antenna2 = 0;
 int gDebugLevel = 0;
 int gPol=0;
+string gOutFileName="test.bin";
+
 
 // saving statistics of zeros for hdf5 file :
 string gZeroStatFile;
@@ -48,6 +50,11 @@ typedef struct {
     char re;  
     char im;  
 } complex_t;
+
+
+enum eActionType_t { eCorrelateAntennas=1, eBeamform=2, eDumpData=3, eQuickCal=4, eOptimiseQuickCal=5, eBeamformTest=6 };
+eActionType_t gActionType = eCorrelateAntennas;
+
 
 
 enum ePhaseNormalisation_t { eNoPhaseNorm=0, ePhaseNorm0_360=1, ePhaseNorm_m180_180=2 };
@@ -67,28 +74,45 @@ int gNSamples=64;
 
 
 
-/*// Sign to Test signs conventions :
-double gSign = 1.00;    // sign of phase factor due to geometrical delay
-double gCalSign = 1.00; // calibration sign
-
-int gMaxTimeSteps=-1;
-
-// if apply phase correction :
-int gDoPhaseCorrection=0;
-
-string gPointingString;
-double gPointingAz_DEG = -1000;
-double gPointingElev_DEG = -1000;
-
-// saving data for Pulsar timing :
-string gOutputTimeSeriesFileBin;
-string gOutputTimeSeriesFileText;
-string gOutputTimeSeriesFileBase;
-
-*/
 
 // current coefficients are for EDA2 and 48 antennas as for 20190610 :
 #define gAntennaPhaseDiff gEDA2_AntennaPhaseDiff_MSok_Norm_m180_180_20190609
+
+const char* get_action_desc( eActionType_t action )
+{
+    switch ( action )
+    {
+       case eCorrelateAntennas :
+           return "Correlate antennas";
+           break;
+      
+       case eBeamform :
+           return "Beamform";
+           break;
+
+       case eBeamformTest :
+           return "BeamformTest";
+           break;
+           
+       case  eDumpData :
+          return "Dump_Data";
+          break;
+       
+       case  eQuickCal :
+          return "QuickCal";
+          break;
+
+       case  eOptimiseQuickCal :
+          return "Optimise_QuickCal";
+          break;
+
+       default :
+           return "unknown";
+    }
+
+    return "Unknown";
+}
+
 
 
 herr_t list_obj_iterate(hid_t loc_id, const char *name, const H5O_info_t *info, void *operator_data)
@@ -540,12 +564,14 @@ void correlate_antennas( std::vector< complex_t >& data, int n_ants, int n_pols,
 
 void usage()
 {
-   printf("read_hdf5_example HDF5_FILE -a ANT1 -b ANT2\n");
+   printf("read_hdf5_example HDF5_FILE -a ANT1 -b ANT2 -o OUTFILE_NAME\n");
+   printf("\n\nDefault action = %d (%s)\n\n",gActionType,get_action_desc(gActionType));
+   printf("\t-d - dump data to bin file\n");
    exit(0);
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:b:";   
+   char optstring[] = "a:b:do:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -559,6 +585,15 @@ void parse_cmdline(int argc, char * argv[]) {
          case 'b':
             antenna2 = atol( optarg );
             break;
+
+         case 'd':
+            gActionType = eDumpData;
+            break;
+
+         case 'o' :
+            gOutFileName = optarg;
+            break;
+
 
          default:   
             fprintf(stderr,"Unknown option %c\n",opt);
@@ -575,6 +610,8 @@ void print_parameters()
    printf("##############################################\n");
    printf("Antenna1 = %d\n",antenna1);
    printf("Antenna2 = %d\n",antenna2);
+   printf("Action   = %s\n",get_action_desc(gActionType));
+   printf("Outfile  = %s\n",gOutFileName.c_str());
    printf("##############################################\n");
    
    // 
@@ -659,7 +696,12 @@ int main(int argc,char* argv[])
    int samples_per_pol = samples_all / ants_pols;
    
    printf("Action = correlate_antennas( data , %d , %d , %d, %d )\n",n_ants, n_pols, n_samples, gPol );
-   correlate_antennas( data, n_ants, n_pols, n_samples, gPol );
+   if ( gActionType == eDumpData ){
+      printf("Action = dump data\n");
+      dump_data( data, n_ants, n_pols, gOutFileName.c_str(), gPol );
+   }else{
+      correlate_antennas( data, n_ants, n_pols, n_samples, gPol );
+   }
 
 //   H5::FileAccPropList prop_list = file.getAccessPlist();
 }
