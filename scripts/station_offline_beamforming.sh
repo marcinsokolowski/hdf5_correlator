@@ -6,9 +6,14 @@ if [[ -n "$1" && "$1" != "-" ]]; then
 fi
 
 pol="XX"
+pol_index=0
 if [[ -n "$2" && "$2" != "-" ]]; then
    pol=$2
+   if [[ $pol == "YY" ]]; then
+      pol_index=1
+   fi
 fi
+
 
 # trying to use last delays as default otherwise 256 zeros 
 last_cal_path=/data/real_time_calibration/last_calibration/
@@ -60,5 +65,5 @@ fi
 # export PATH=~/msok/eda2/msok_scripts:$PATH
 # export LD_LIBRARY_PATH=~/msok/eda2/lib:$LD_LIBRARY_PATH
 
-echo "nohup beamform_all.sh \"-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant\" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &"
-nohup beamform_all.sh "-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &
+echo "nohup beamform_all.sh \"-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant -p $pol_index\" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &"
+nohup beamform_all.sh "-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant -p $pol_index" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &
