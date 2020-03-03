@@ -1009,7 +1009,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
         if( strlen(gBaseNamePowerPerAnt.c_str()) > 0 ){
            // if set save power from each antenna to file :
            char szAntFileName[256];
-           sprintf(szAntFileName,"%s_%03d.txt",gBaseNamePowerPerAnt.c_str(),ant);
+           sprintf(szAntFileName,"%s%03d.txt",gBaseNamePowerPerAnt.c_str(),ant);
            FILE* out_ant_f = fopen( szAntFileName , "a+" );
            double ant_power = avg_power( ant_data );
            fprintf(out_ant_f,"%.4f %.8f\n",gFileUxTime,ant_power);

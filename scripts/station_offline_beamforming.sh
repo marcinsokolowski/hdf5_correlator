@@ -60,5 +60,5 @@ fi
 # export PATH=~/msok/eda2/msok_scripts:$PATH
 # export LD_LIBRARY_PATH=~/msok/eda2/lib:$LD_LIBRARY_PATH
 
-echo "nohup beamform_all.sh \"-C 1 -X $delays\" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &"
-nohup beamform_all.sh "-C 1 -X $delays" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &
+echo "nohup beamform_all.sh \"-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant\" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &"
+nohup beamform_all.sh "-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &
