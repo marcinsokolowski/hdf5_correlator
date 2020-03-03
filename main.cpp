@@ -878,6 +878,11 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
 {  
 //   do_average_mean = 0;
    printf("beamform2 : do_average_mean = %d\n",do_average_mean);
+   string szPol = "XX";
+   if ( pol == 1 ){
+      szPol = "YY";
+   }
+   
    
    // check if pointing direction different than zenith is specified :
    vector<double> geometric_delays;
@@ -1009,7 +1014,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
         if( strlen(gBaseNamePowerPerAnt.c_str()) > 0 ){
            // if set save power from each antenna to file :
            char szAntFileName[256];
-           sprintf(szAntFileName,"%s%03d.txt",gBaseNamePowerPerAnt.c_str(),ant);
+           sprintf(szAntFileName,"%s%03d_%s.txt",gBaseNamePowerPerAnt.c_str(),ant,szPol.c_str());
            FILE* out_ant_f = fopen( szAntFileName , "a+" );
            double ant_power = avg_power( ant_data );
            fprintf(out_ant_f,"%d %.8f\n",(int)gFileUxTime,ant_power);
