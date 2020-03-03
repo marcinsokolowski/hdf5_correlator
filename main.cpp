@@ -1012,7 +1012,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
            sprintf(szAntFileName,"%s%03d.txt",gBaseNamePowerPerAnt.c_str(),ant);
            FILE* out_ant_f = fopen( szAntFileName , "a+" );
            double ant_power = avg_power( ant_data );
-           fprintf(out_ant_f,"%.4f %.8f\n",gFileUxTime,ant_power);
+           fprintf(out_ant_f,"%d %.8f\n",(int)gFileUxTime,ant_power);
            fclose(out_ant_f);
         }
         
