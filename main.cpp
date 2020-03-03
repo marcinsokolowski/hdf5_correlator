@@ -152,6 +152,8 @@ string gOutputTimeSeriesFileBase;
 // saving statistics of zeros for hdf5 file :
 string gZeroStatFile;
 
+// save power of each antenna vs. time :
+string gBaseNamePowerPerAnt; // empty - means don't do this 
 
 /* 
 Mapping of TPM-23 inputs to EDA tiles :
@@ -810,6 +812,23 @@ void beamform( std::vector< complex_t >& data, int n_ants, int n_pols, int n_sam
 }
 
 
+double avg_power( std::vector< complex_t >& ant_data )
+{
+   double sum = 0;
+   if( ant_data.size() <= 0 ){
+      return 0.00;
+   }
+   
+   for(int i=0;i<ant_data.size();i++){
+      double real = ant_data[i].re;
+      double imag = ant_data[i].im;
+      
+      sum += (real*real + imag*imag);
+   }
+   
+   return sum / ant_data.size();
+}
+
 // _antennae
 bool calc_geometric_pointing_delays( vector<double>& geometric_delays, double freq_mhz )
 
@@ -986,6 +1005,17 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
             exit(-1);
         }        
         std::vector< complex_t >& ant_data = antenna_data[ant];
+        
+        if( strlen(gBaseNamePowerPerAnt.c_str()) > 0 ){
+           // if set save power from each antenna to file :
+           char szAntFileName[256];
+           sprintf(szAntFileName,"%s_%03d.txt",gBaseNamePowerPerAnt.c_str(),ant);
+           FILE* out_ant_f = fopen( szAntFileName , "a+" );
+           double ant_power = avg_power( ant_data );
+           fprintf(out_ant_f,"%.4f %.8f\n",gFileUxTime,ant_power);
+           fclose(out_ant_f);
+        }
+        
 //        printf("DEBUG1 : ant = %d, t = %d / %d -> vis = %d / %d\n",ant,0, ant_data.size(), ant_data[0].re , ant_data[0].im );
         
         
@@ -1444,11 +1474,12 @@ void usage()
    printf("\t-K (AZ,ELEV) [deg] : specify poitning direction other then zenith (default), format (AZ,ELEV) in degrees, example : \"(23.45,78.943)\"\n");
    printf("\t-e PULSAR_TIMING_FILE_NAME_BASE [default not set - not saving data in this format]\n");
    printf("\t-k ZERO_STAT_FILE - save statistics of zeros in conversion process in the original hdf5 files [default disabled]\n");
+   printf("\t-q SAVE_ANT_POWER_VS_TIME - save power from individual antennas vs. time [default disable], this option sets basename for the output file\n");
    exit(0);
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:";   
+   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:q:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -1585,6 +1616,10 @@ void parse_cmdline(int argc, char * argv[]) {
 
          case 'P' :
             gPhaseOffsetsString = optarg;
+            break;
+
+         case 'q' :
+            gBaseNamePowerPerAnt = optarg;
             break;
 
          case 'r' :
@@ -1791,6 +1826,7 @@ void print_parameters()
    printf("Pointing direction = (%.4f,%.4f) [deg]\n",gPointingAz_DEG,gPointingElev_DEG);
    printf("Antenna1 = %d\n",antenna1);
    printf("Antenna2 = %d\n",antenna2);
+   printf("Power per antenna basename = %s\n",gBaseNamePowerPerAnt.c_str());
    printf("Output timeseries file for pulsar timing tests = %s ( %s , %s )\n",gOutputTimeSeriesFileBase.c_str(),gOutputTimeSeriesFileBin.c_str(),gOutputTimeSeriesFileText.c_str());      
    printf("Gain amplitude = %.6f\n",gGainAmplitude);
    printf("Gains vs. uxtime file %s read OK with %d values\n",gGainAmpVsUxtime_FileName.c_str(),gGainAmpVsUxtime.size());
