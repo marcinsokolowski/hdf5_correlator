@@ -20,14 +20,14 @@ last_cal_path=/data/real_time_calibration/last_calibration/
 last_cal_file=${last_cal_path}/chan_${chan}_selfcal_pha_${pol}.txt
 
 delays=`echo 1 | awk '{for(i=0;i<256;i++){if(i<255){printf("0,");}else{printf("0");} }}'` # by default delays are zeros 
-if [[ -s ${last_cal_file} ]]; then
-   delays=`~/aavs-calibration/station/calsol.sh ${last_cal_file}`
-   echo "Last calibration file for channel $chan found : $last_cal_file -> delays are : $delays"
-fi
-
 # delays can be overwritten by user-provided parameter
 if [[ -n "$3" && "$3" != "-" ]]; then
    delays=$3
+else
+   if [[ -s ${last_cal_file} ]]; then
+      delays=`~/aavs-calibration/station/calsol.sh ${last_cal_file}`
+      echo "Last calibration file for channel $chan found : $last_cal_file -> delays are : $delays"
+   fi
 fi
 
 station=eda2
