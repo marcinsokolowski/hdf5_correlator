@@ -73,6 +73,13 @@ def main() :
       n_integrations_per_uvfits = ( total_time_sec / inttime )
       print "n_integrations_per_uvfits (-n option of Lfile2uvfits_eda.sh ) = %d ( to get required inttime = %.4f [sec] from total_time_sec = %.4f [sec] )" % (n_integrations_per_uvfits,inttime,total_time_sec)
    
+
+   timestamps = f['sample_timestamps']['data']
+   last = timestamps.shape[0]
+   t_start = timestamps[0]
+   t_end   = timestamps[last-1]
+   t_center = (t_start + t_end)/2.00
+   print "Unixtime start = %.4f , end = %.4f -> center = %.4f" % (t_start,t_end,t_center)
    
 
 if __name__ == "__main__":
