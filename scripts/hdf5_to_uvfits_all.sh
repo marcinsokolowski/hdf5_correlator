@@ -64,6 +64,8 @@ function print_usage {
   echo "    -T hdf5_template : template of HDF5 file [default $hdf5_template]"
   echo "    -a N_AVG : correlated data from Alessio's correlator [default disabled - assuming channelised data], parameter is number of averages [default $n_avg]"
   echo "    -s STATION_NAME : name of the station"
+  echo 
+  echo "INFO : -n or -a should correspond to -i if number of samples in voltage dump is 262144 , each 1.08 usec -> 0.2831 seconds -> 262144/32 = 8192 integrations -> -n 8192 -i 0.2831"
   exit
 }
 
