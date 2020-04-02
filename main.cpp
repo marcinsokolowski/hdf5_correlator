@@ -1214,6 +1214,10 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
        mean_spectrum += power;
     }     
     
+    FILE* out_mean_power_f = fopen("meanpower_vs_time.txt","a+");
+    fprintf( out_mean_power_f , "%.8f %.8f\n",double(gFileUxTime+((double(beamformed_data.size())/2.00)*(1.08/1000000.0))),mean_spectrum);
+    fclose( out_mean_power_f );
+    
     if( out_timeseries_f ){
        fwrite( &(beamformed_data[0]), beamformed_data.size(), sizeof( std::complex<double> ), out_timeseries_f );
        fclose( out_timeseries_f );
