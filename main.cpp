@@ -1215,7 +1215,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
        mean_spectrum += power;
     }     
 
-    # mean power :    
+    // mean power :    
     mean_spectrum = mean_spectrum / beamformed_data.size();
     
     char szOutFile[1024];
