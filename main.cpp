@@ -1487,11 +1487,12 @@ void usage()
    printf("\t-e PULSAR_TIMING_FILE_NAME_BASE [default not set - not saving data in this format]\n");
    printf("\t-k ZERO_STAT_FILE - save statistics of zeros in conversion process in the original hdf5 files [default disabled]\n");
    printf("\t-q SAVE_ANT_POWER_VS_TIME - save power from individual antennas vs. time [default disable], this option sets basename for the output file\n");
+   printf("\t-H Frequency in MHz [ default %.2f MHz ]\n",gFreqMHz);
    exit(0);
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:q:";   
+   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:q:H:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
@@ -1565,6 +1566,9 @@ void parse_cmdline(int argc, char * argv[]) {
             gGainAmplitude = atof( optarg );
             break;
 
+         case 'H' :
+            gFreqMHz = atof( optarg );
+            break; 
 
          case 'i':
             gIterations = atol( optarg );
@@ -1836,6 +1840,7 @@ void print_parameters()
    printf("PARAMETERS:\n");
    printf("##############################################\n");
    printf("Pointing direction = (%.4f,%.4f) [deg]\n",gPointingAz_DEG,gPointingElev_DEG);
+   printf("Frequency = %.2f MHz\n",gFreqMHz);
    printf("Antenna1 = %d\n",antenna1);
    printf("Antenna2 = %d\n",antenna2);
    printf("Power per antenna basename = %s\n",gBaseNamePowerPerAnt.c_str());
