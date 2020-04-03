@@ -858,7 +858,7 @@ bool calc_geometric_pointing_delays( vector<double>& geometric_delays, double fr
          double dot_product = pointing_vector[0]*ant_info.position[0] + pointing_vector[1]*ant_info.position[1] + pointing_vector[2]*ant_info.position[2];
          double delay_sec = dot_product / SPEED_OF_LIGHT;
          double delay_ns  = delay_sec*1e9;
-         double phase_rad = +2*M_PI*freq_hz*delay_sec; // - vs. +
+         double phase_rad = -2*M_PI*freq_hz*delay_sec; // - vs. + : MINUS SIGN IS IN AGREEMENT WITH CALIBRATION COEFFICIENTS !!!
          double phase_deg = phase_rad*(180.00/M_PI);
          
          geometric_delays.push_back( phase_deg );         
@@ -1214,11 +1214,14 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
 // TEST        double power = std::abs( beamformed_data[time_step] );
        mean_spectrum += power;
     }     
+
+    # mean power :    
+    mean_spectrum = mean_spectrum / beamformed_data.size();
     
     char szOutFile[1024];
     sprintf(szOutFile,"meanpower_vs_time_pol%d.txt",gPol);
     FILE* out_mean_power_f = fopen(szOutFile,"a+");
-    fprintf( out_mean_power_f , "%.8f %.8f %.8f %.8f\n",gPointingAz_DEG,gPointingElev_DEG,double(gFileUxTime+((double(beamformed_data.size())/2.00)*(1.08/1000000.0))),mean_spectrum);
+    fprintf( out_mean_power_f , "%.8f %.8f %.8f %.8f %d\n",gPointingAz_DEG,gPointingElev_DEG,double(gFileUxTime+((double(beamformed_data.size())/2.00)*(1.08/1000000.0))),mean_spectrum,beamformed_data.size());
     fclose( out_mean_power_f );
     
     if( out_timeseries_f ){
