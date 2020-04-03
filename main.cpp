@@ -148,6 +148,7 @@ double gPointingElev_DEG = -1000;
 string gOutputTimeSeriesFileBin;
 string gOutputTimeSeriesFileText;
 string gOutputTimeSeriesFileBase;
+bool   gSaveTxtTimeSeries = false;
 
 // saving statistics of zeros for hdf5 file :
 string gZeroStatFile;
@@ -1179,7 +1180,7 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
     if( strlen(gOutputTimeSeriesFileBin.c_str()) ){
        out_timeseries_f = fopen( gOutputTimeSeriesFileBin.c_str() , "wb" );
     }
-    if( strlen(gOutputTimeSeriesFileText.c_str()) ){
+    if( strlen(gOutputTimeSeriesFileText.c_str()) && gSaveTxtTimeSeries ){
        out_timeseries_text_f = fopen( gOutputTimeSeriesFileText.c_str() , "w" );
     }
 
