@@ -858,7 +858,8 @@ bool calc_geometric_pointing_delays( vector<double>& geometric_delays, double fr
          double dot_product = pointing_vector[0]*ant_info.position[0] + pointing_vector[1]*ant_info.position[1] + pointing_vector[2]*ant_info.position[2];
          double delay_sec = dot_product / SPEED_OF_LIGHT;
          double delay_ns  = delay_sec*1e9;
-         double phase_rad = -2*M_PI*freq_hz*delay_sec; // - vs. + : MINUS SIGN IS IN AGREEMENT WITH CALIBRATION COEFFICIENTS !!!
+         double phase_rad = 2*M_PI*freq_hz*delay_sec; // + SIGN FOR SURE !!! WARNING : - will make it work with azimuth from South towards West, but
+                                                      //   + makes it proper azimuth from North towards East !!!
          double phase_deg = phase_rad*(180.00/M_PI);
          
          geometric_delays.push_back( phase_deg );         
