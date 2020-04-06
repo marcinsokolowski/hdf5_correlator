@@ -3,10 +3,10 @@
 
 
 <HEAD>
-<title>EDA2 Station beam power</title>
+<title>STATION_NAME Station beam power</title>
 </HEAD>
 
-<CENTER><H1>EDA2 station beam power at frequency = FREQ_VALUE_MHZ MHz ( Channel = FREQ_CHANNEL )</H1></CENTER>
+<CENTER><H1>STATION_NAME station beam power at frequency = FREQ_VALUE_MHZ MHz ( Channel = FREQ_CHANNEL )</H1></CENTER>
 
 <head>
 
@@ -20,7 +20,7 @@
 <script language="JavaScript"><!--
 function refreshIt() {
    if (!document.images) return;
-   document.images['edapower'].src = 'last_power_vs_time.png?' + Math.random();
+   document.images['edaimage'].src = 'last_power_vs_time.png?' + Math.random();
    setTimeout('refreshIt()',5000); // refresh every 5 secs
 }
 //--></script>
@@ -28,7 +28,7 @@ function refreshIt() {
 
 <body onLoad=" setTimeout('refreshIt()',5000)">
 
-<img src="last_power_vs_time.png" name="edapower">
+<img src="last_power_vs_time.png" name="edaimage">
 
 
 </body>

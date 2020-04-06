@@ -66,8 +66,8 @@ python $beam_scripts_path/plot_power_vs_time.py ${first_file}
 
 png_file=${first_file%%txt}png
 
-echo "cp images/${png_file} last_power_vs_time.png"
-cp images/${png_file} last_power_vs_time.png
+echo "cp images/${png_file} images/last_power_vs_time.png"
+cp images/${png_file} images/last_power_vs_time.png
 
 if [[ -n ${www_dir} && ${www_dir} != "-" ]]; then
    echo "INFO : Copying image to ${www_dir}/"
