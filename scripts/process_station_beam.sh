@@ -65,8 +65,10 @@ else
    echo "WARNING : ROOT cern software not installed, skipping plot in ROOT (no worries !)"
 fi
 
-echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --y_min=0 --y_max=5000"
-python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --y_min=0 --y_max=5000
+# When no --y_min and --y_max specified -> AUTO-SCALE 
+# was --y_min=0 --y_max=5000 or --y_min=0 --y_max=1000
+echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}"
+python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}
 
 
 png_file=${tag}_power_vs_time_ch${freq_channel}.png
