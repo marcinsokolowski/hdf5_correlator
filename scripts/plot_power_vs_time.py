@@ -108,7 +108,7 @@ def plotfile( filename_base,
    
    alldata_x = np.loadtxt(filename_x,usecols=[0,1])
    alldata_y = None
-   if not os.path.exists( filename_y ) :
+   if os.path.exists( filename_y ) :
       alldata_y = np.loadtxt(filename_y,usecols=[0,1])
 
 
