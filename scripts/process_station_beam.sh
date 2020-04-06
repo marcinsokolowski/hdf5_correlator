@@ -41,11 +41,11 @@ fi
 
 
 
-echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} > x.out 2>&1"
-python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} > x.out 2>&1
+echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > x.out 2>&1"
+python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > x.out 2>&1
 
-echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} > y.out 2>&1"
-python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} > y.out 2>&1
+echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1"
+python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1
 
 # temporary - TODO : add --freq_channel parameter to hdf5fits_station_beam.py
 echo "cp ${tag}_power_vs_time_ch4_X.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt"
