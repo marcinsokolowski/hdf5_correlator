@@ -22,7 +22,7 @@ if [[ -n "$4" && "$4" != "-" ]]; then
 fi
 
 # AAVS_HOME = ~/Software on eda2-server
-beam_scripts_path=$AAVS_HOME/station_beam/processing/ # or on laptop ~/github/station_beam/processing/ or ~/Software on eda2 server 
+beam_scripts_path=$AAVS_HOME/hdf5_correlator/scripts/ # or on laptop ~/github/station_beam/processing/ or ~/Software on eda2 server 
 if [[ -n "$5" && "$5" != "-" ]]; then
    beam_scripts_path=$5
 fi
