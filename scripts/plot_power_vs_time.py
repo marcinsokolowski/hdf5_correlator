@@ -180,12 +180,12 @@ def plotfile( filename_base,
       
       title = filename_base
       if comment is not None :
-         title = title + " , "
-         title = title + comment 
+         # title = title + " , "
+         title = comment 
          
-      if publication :
+#      if publication :
          # Just antenna :
-         title = comment   
+#         title = comment   
          
       ax.set_title( title )
    
