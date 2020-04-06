@@ -130,8 +130,8 @@ def plotfile( filename_base,
       y_min=min(power_x)-2
       y_max=max(power_x)+2
 
-      x_min=min(uttime)
-      x_max=max(uttime)
+      x_min=min(uttime_x)
+      x_max=max(uttime_x)
 
       uxtime_y = None
       uttime_y = None
