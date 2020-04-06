@@ -190,7 +190,7 @@ def plotfile( filename_base,
       ax.set_title( title )
    
  
-      print "Plotted power in unixtime range %.2f - %.2f" % (uttime_x[0],uttime_x[n_timesteps-1])
+      print("Plotted power in unixtime range %.2f - %.2f" % (uxtime_x[0],uxtime_x[n_timesteps-1]))
 
 #      (B_x) = fit_hor_line(gpstime,x_delay_m,save_png=False,do_plot=False,limit_in_sigma=5,n_iter=10)
 #      print("Fitted delay X pol = %.2f" % (B_x))
