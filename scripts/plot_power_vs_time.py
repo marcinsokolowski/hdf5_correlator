@@ -80,7 +80,7 @@ def parse_options(idx):
    return (options, args)
 
 
-def plotfile( filename,
+def plotfile( filename_base,
               outdir      = "images/",
               do_gui      = True,
               mean_last_n = 4,
@@ -92,56 +92,92 @@ def plotfile( filename,
               y_min_ext    = None,
               y_max_ext    = None,
               multiplier   = None,
-              comment      = None,
+              comment      = "EDA2 power vs. time",
               y_auto_median = False,
               y_auto_median_range = 1.00,
               publication = False,
-              db          = False
+              db          = False,
             ) :
               
    if y_axis_title is None :
        y_axis_title = ( "Power %s" % power_unit ) 
-                     
-   pngfile=filename.replace('.txt', '.png' )
-   tile_id=filename.replace('.txt','')
-   alldata = np.loadtxt(filename,usecols=[0,1])
+            
+   filename_x = filename_base + "_X.txt"            
+   filename_y = filename_base + "_Y.txt"                                 
+   pngfile=filename_base + ".png"
+   
+   alldata_x = np.loadtxt(filename_x,usecols=[0,1])
+   alldata_y = None
+   if not os.path.exists( filename_y ) :
+      alldata_y = np.loadtxt(filename_y,usecols=[0,1])
 
-   if len(alldata)>0 :
-      uxtime=alldata[:,0]   
+
+   if len(alldata_x)>0 :
+      uxtime_x=alldata_x[:,0]   
 #      GPSfromUTC = (datetime(1980,1,6) - datetime(1970,1,1)).total_seconds()
 #      uxtime=gpstime+GPSfromUTC
-      uttime=[datetime(1980,1,6)]*uxtime.size
+      uttime_x=[datetime(1980,1,6)]*uxtime_x.size
 #      if unixtime :
 #         uxtime=gpstime
 
-      for i in range(0,len(uxtime)) :
-         uttime[i]=datetime.utcfromtimestamp(uxtime[i])
+      for i in range(0,len(uxtime_x)) :
+         uttime_x[i]=datetime.utcfromtimestamp(uxtime_x[i])
     
-      power=alldata[:,1]
+      power_x=alldata_x[:,1]
       if db :
-         power = 10.00*numpy.log10(power)
-      
-      y_min=min(power)-2
-      y_max=max(power)+2
+         power_x = 10.00*numpy.log10(power_x)
+
+      y_min=min(power_x)-2
+      y_max=max(power_x)+2
 
       x_min=min(uttime)
       x_max=max(uttime)
 
+      uxtime_y = None
+      uttime_y = None
+      power_y  = None         
+      if len(alldata_y)>0 :   
+         uxtime_y=alldata_y[:,0]   
+         uttime_y=[datetime(1980,1,6)]*uxtime_y.size
+
+         for i in range(0,len(uxtime_y)) :
+            uttime_y[i]=datetime.utcfromtimestamp(uxtime_y[i])
+
+         power_y=alldata_y[:,1]
+         if db :
+            power_y = 10.00*numpy.log10(power_y)
+            
+         y_min=min(min(power_x),min(power_y))-2
+         y_max=max(max(power_x),max(power_y))+2
+   
+         x_min=min(min(uttime),min(uttime))
+         x_max=max(max(uttime),max(uttime))
+
+      if y_min_ext is not None and y_max_ext is not None :
+          y_min = y_min_ext 
+          y_max = y_max_ext
+         
+      
       fig=plt.figure()
       ax = fig.add_subplot(1,1,1) # create axes within the figure : we have 1 plot in X direction, 1 plot in Y direction and we select plot 1
       plt.ylim([y_min,y_max])
 #      line_x, = plt.plot(uttime,x_delay_m, linestyle='None', marker='x', color='blue', markersize=10, label='X pol.')
 #      line_y, = plt.plot(uttime,y_delay_m, linestyle='None', marker='x', color='red', markersize=10, label='Y pol.')
       if publication :
-         line_x, = plt.plot(uttime,power, linestyle='None', marker='x', color='black', markersize=5, label='Power')
+         line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='Power')
+         line_y, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Power')
+         plt.legend(bbox_to_anchor=(0.68, 0.82),loc=3,handles=[line_x, line_y])
       else :
-         line_x, = plt.plot(uttime,power, linestyle='None', marker='x', color='black', markersize=5, label='Power')
+         line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='Power')
+         line_x, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Power')
+         plt.legend(bbox_to_anchor=(0.85, 0.95),loc=3,handles=[line_x, line_y])
+         
       plt.gcf().autofmt_xdate()
    
       ax.set_xlabel( x_axis_title )
       ax.set_ylabel( y_axis_title ) # r to treat it as raw string 
       
-      title = filename
+      title = "
       if comment is not None :
          title = title + " , "
          title = title + comment 
@@ -332,12 +368,13 @@ def plot_mean_stddev( filename,
 
 def main() :
    # PARSE COMMAND LINE :
-   filename="EDA2_power_vs_time.txt"
+   filename_base="EDA2_power_vs_time"
    if len(sys.argv) > 1:
-      filename = sys.argv[1]
+      filename_base = sys.argv[1]
+
    (options, args) = parse_options(1)      
 
-   plotfile( filename,
+   plotfile( filename_base,
                 do_gui=options.do_plot,
                 mean_last_n=options.mean_last_n,
                 metafits=options.metafits,

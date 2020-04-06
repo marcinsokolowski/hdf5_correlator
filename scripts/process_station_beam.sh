@@ -83,7 +83,7 @@ if [[ -n ${www_dir} && ${www_dir} != "-" ]]; then
    
    station_name_uppper=`echo $station_name | awk '{print toupper($1);}'`     
    
-   echo "sed -i 's/FREQ_CHANNEL/${ch}/g' power.html" > sed!
+   echo "sed -i 's/FREQ_CHANNEL/${freq_channel}/g' power.html" > sed!
    echo "sed -i 's/FREQ_VALUE_MHZ/${freq_mhz}/g' power.html" >> sed!
    echo "sed -i 's/STATION_NAME/${station_name_uppper}/g' power.html" >> sed!
    chmod +x sed!
