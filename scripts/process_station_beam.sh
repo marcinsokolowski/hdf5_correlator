@@ -60,8 +60,8 @@ else
    echo "WARNING : ROOT cern software not installed, skipping plot in ROOT (no worries !)"
 fi
 
-echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}"
-python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}
+echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch4 # ${freq_channel}"
+python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch4 # ${freq_channel}
 
 
 png_file=${first_file%%txt}png
