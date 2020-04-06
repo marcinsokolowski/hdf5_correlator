@@ -7,6 +7,7 @@ fi
 channel=4
 
 # temporary solution - as it's not possible to share HDF5 file ???
+# create temporary copy of station HDF5 file :
 echo "cp ${station_file} station_beam_temporary.hdf5"
 cp ${station_file} station_beam_temporary.hdf5
 station_file=station_beam_temporary.hdf5
@@ -100,6 +101,9 @@ else
    echo "WARNING : www_dir not specified, image not copied anywhere"
 fi   
 
+# remove temporary copy 
+echo "rm -f station_beam_temporary.hdf5"
+rm -f station_beam_temporary.hdf5
 
 # root -l "plot_vs_time.C(\"power_vs_time_ch${channel}.txt\",-1e6,1e6,NULL,0,1000)"
 
