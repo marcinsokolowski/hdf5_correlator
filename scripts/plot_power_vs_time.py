@@ -169,7 +169,7 @@ def plotfile( filename_base,
          plt.legend(bbox_to_anchor=(0.68, 0.82),loc=3,handles=[line_x, line_y])
       else :
          line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='Power')
-         line_x, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Power')
+         line_y, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Power')
          plt.legend(bbox_to_anchor=(0.85, 0.95),loc=3,handles=[line_x, line_y])
          
       plt.gcf().autofmt_xdate()
