@@ -150,8 +150,8 @@ def plotfile( filename_base,
          y_min=min(min(power_x),min(power_y))-2
          y_max=max(max(power_x),max(power_y))+2
    
-         x_min=min(min(uttime),min(uttime))
-         x_max=max(max(uttime),max(uttime))
+         x_min=min(min(uttime_x),min(uttime_y))
+         x_max=max(max(uttime_x),max(uttime_y))
 
       if y_min_ext is not None and y_max_ext is not None :
           y_min = y_min_ext 
