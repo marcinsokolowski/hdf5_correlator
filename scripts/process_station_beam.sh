@@ -70,7 +70,7 @@ echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${f
 python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}
 
 
-png_file=${first_file%%txt}png
+png_file=${tag}_power_vs_time_ch${freq_channel}.png
 
 echo "cp images/${png_file} images/last_power_vs_time.png"
 cp images/${png_file} images/last_power_vs_time.png
