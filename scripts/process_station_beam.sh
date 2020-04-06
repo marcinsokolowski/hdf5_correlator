@@ -21,7 +21,8 @@ if [[ -n "$4" && "$4" != "-" ]]; then
     www_dir=$4
 fi
 
-beam_scripts_path=~/github/station_beam/processing/
+# AAVS_HOME = ~/Software on eda2-server
+beam_scripts_path=$AAVS_HOME/station_beam/processing/ # or on laptop ~/github/station_beam/processing/ or ~/Software on eda2 server 
 if [[ -n "$5" && "$5" != "-" ]]; then
    beam_scripts_path=$5
 fi
