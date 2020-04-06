@@ -17,7 +17,7 @@ if [[ -n "$3" && "$3" != "-" ]]; then
 fi
 
 www_dir=aavs1-server:/exports/eda/eda2/station_beam/
-if [[ -n "$4" && "$4" != "-" ]]; then
+if [[ -n "$4" ]]; then
     www_dir=$4
 fi
 
@@ -52,8 +52,15 @@ python $beam_scripts_path/plot_power_vs_time.py ${first_file}
 
 
 png_file=${first_file%%txt}png
-# echo "rsync -avP images/${png_file} ${www_dir}/"
-# rsync -avP images/${png_file} ${www_dir}/
+
+if [[ -n ${www_dir} && ${www_dir} != "-" ]]; then
+   echo "INFO : Copying image to ${www_dir}/"
+
+   echo "rsync -avP images/${png_file} ${www_dir}/"
+   rsync -avP images/${png_file} ${www_dir}/
+else
+   echo "WARNING : www_dir not specified, image not copied anywhere"
+fi   
 
 
 # root -l "plot_vs_time.C(\"power_vs_time_ch${channel}.txt\",-1e6,1e6,NULL,0,1000)"
