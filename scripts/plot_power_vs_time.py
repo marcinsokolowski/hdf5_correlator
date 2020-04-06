@@ -212,7 +212,7 @@ def plotfile( filename_base,
       plt.xlim([x_min,x_max])
       ax.set_xlabel( x_axis_title )
       ax.set_ylabel( y_axis_title ) # r to treat it as raw string 
-      ax.set_title(filename)
+      ax.set_title( filename_base )
       plt.text(x_center, 0, "ERROR - no data from file: \n      " + filename, fontsize=30, color='red')
    
    
