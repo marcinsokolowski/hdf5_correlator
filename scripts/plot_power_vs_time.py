@@ -59,7 +59,7 @@ def parse_options(idx):
       
    parser.add_option('-u','--uxtime','--unixtime','--unix_time',action="store_true",dest="unixtime",default=False, help="Interprete time column as unix time [default %s]")
 
-   parser.add_option('--x_axis_title',dest="x_axis_title",default="Local time", help="X-axis title [default %default]")
+   parser.add_option('--x_axis_title',dest="x_axis_title",default="UTC time", help="X-axis title [default %default]")
    parser.add_option('--y_axis_title',dest="y_axis_title",default=None, help="Y-axis title [default %default]")
    parser.add_option('--power_unit',dest="power_unit",default="[?]", help="Delay units [default %default]")
 
