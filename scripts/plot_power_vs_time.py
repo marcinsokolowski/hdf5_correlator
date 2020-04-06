@@ -164,12 +164,12 @@ def plotfile( filename_base,
 #      line_x, = plt.plot(uttime,x_delay_m, linestyle='None', marker='x', color='blue', markersize=10, label='X pol.')
 #      line_y, = plt.plot(uttime,y_delay_m, linestyle='None', marker='x', color='red', markersize=10, label='Y pol.')
       if publication :
-         line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='Power')
-         line_y, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Power')
+         line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='X polarisation')
+         line_y, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Y polarisation')
          plt.legend(bbox_to_anchor=(0.68, 0.82),loc=3,handles=[line_x, line_y])
       else :
-         line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='Power')
-         line_y, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Power')
+         line_x, = plt.plot(uttime_x,power_x, linestyle='None', marker='x', color='blue', markersize=5, label='X polarisation')
+         line_y, = plt.plot(uttime_y,power_y, linestyle='None', marker='x', color='red', markersize=5, label='Y polarisation')
          plt.legend(bbox_to_anchor=(0.85, 0.95),loc=3,handles=[line_x, line_y])
          
       plt.gcf().autofmt_xdate()
