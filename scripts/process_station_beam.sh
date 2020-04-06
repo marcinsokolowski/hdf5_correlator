@@ -21,11 +21,24 @@ if [[ -n "$4" ]]; then
     www_dir=$4
 fi
 
+freq_channel=204
+if [[ -n "$5" && "$5" != "-" ]]; then
+   freq_channel=$5
+fi
+freq_mhz=`echo $freq_channel | awk '{printf("%.4f",$1*(400.00/512.00));}'`
+
+station_name=eda2
+if [[ -n "$6" && "$6" != "-" ]]; then
+   station_name=$6
+fi
+
+
 # AAVS_HOME = ~/Software on eda2-server
 beam_scripts_path=$AAVS_HOME/hdf5_correlator/scripts/ # or on laptop ~/github/station_beam/processing/ or ~/Software on eda2 server 
-if [[ -n "$5" && "$5" != "-" ]]; then
-   beam_scripts_path=$5
+if [[ -n "$7" && "$7" != "-" ]]; then
+   beam_scripts_path=$7
 fi
+
 
 
 echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} > x.out 2>&1"
@@ -53,11 +66,31 @@ python $beam_scripts_path/plot_power_vs_time.py ${first_file}
 
 png_file=${first_file%%txt}png
 
+echo "cp images/${png_file} last_power_vs_time.png"
+cp images/${png_file} last_power_vs_time.png
+
 if [[ -n ${www_dir} && ${www_dir} != "-" ]]; then
    echo "INFO : Copying image to ${www_dir}/"
 
    echo "rsync -avP images/${png_file} ${www_dir}/"
    rsync -avP images/${png_file} ${www_dir}/
+
+   echo "rsync -avP images/last_power_vs_time.png ${www_dir}/"
+   rsync -avP images/last_power_vs_time.png ${www_dir}/   
+   
+   echo "cp $beam_scripts_path/html/power.template power.html"
+   cp $beam_scripts_path/html/power.template power.html
+   
+   station_name_uppper=`echo $station_name | awk '{print toupper($1);}'`     
+   
+   echo "sed -i 's/FREQ_CHANNEL/${ch}/g' power.html" > sed!
+   echo "sed -i 's/FREQ_VALUE_MHZ/${freq_mhz}/g' power.html" >> sed!
+   echo "sed -i 's/STATION_NAME/${station_name_uppper}/g' power.html" >> sed!
+   chmod +x sed!
+   ./sed!
+
+   echo "rsync -avP power.html ${www_dir}/"
+   rsync -avP power.html ${www_dir}/
 else
    echo "WARNING : www_dir not specified, image not copied anywhere"
 fi   
