@@ -6,6 +6,11 @@ if [[ -n "$1" && "$1" != "-" ]]; then
 fi
 channel=4
 
+# temporary solution - as it's not possible to share HDF5 file ???
+echo "cp ${station_file} station_beam_temporary.hdf5"
+cp ${station_file} station_beam_temporary.hdf5
+station_file=station_beam_temporary.hdf5
+
 tag=`date +%Y%m%d`
 if [[ -n "$2" && "$2" != "-" ]]; then
    tag="$2"
