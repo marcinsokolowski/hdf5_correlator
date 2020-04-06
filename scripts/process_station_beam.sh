@@ -52,6 +52,16 @@ python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out
 echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1"
 python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1
 
+# Polarisation swap :
+echo "mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp"
+mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp
+
+echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt"
+mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt
+
+echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt"
+mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt
+
 ls ${tag}_power_vs_time_ch*.txt > list
 first_file=`head --lines=1 list`
 
@@ -67,8 +77,8 @@ fi
 
 # When no --y_min and --y_max specified -> AUTO-SCALE 
 # was --y_min=0 --y_max=5000 or --y_min=0 --y_max=1000
-echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}"
-python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel}
+echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment=\"${tag}_power_vs_time_ch${freq_channel} (pol. swapped)\""
+python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment="${tag}_power_vs_time_ch${freq_channel} (pol. swapped)"
 
 
 png_file=${tag}_power_vs_time_ch${freq_channel}.png
