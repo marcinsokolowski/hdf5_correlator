@@ -12,32 +12,31 @@ echo "cp ${station_file} station_beam_temporary.hdf5"
 cp ${station_file} station_beam_temporary.hdf5
 station_file=station_beam_temporary.hdf5
 
-tag=`date +%Y%m%d`
-if [[ -n "$2" && "$2" != "-" ]]; then
-   tag="$2"
-fi
-
-last_n_seconds=630720000
-if [[ -n "$3" && "$3" != "-" ]]; then
-   last_n_seconds=$3
-fi
-
-www_dir=aavs1-server:/exports/eda/eda2/station_beam/
-if [[ -n "$4" ]]; then
-    www_dir=$4
-fi
-
 freq_channel=204
-if [[ -n "$5" && "$5" != "-" ]]; then
-   freq_channel=$5
+if [[ -n "$2" && "$2" != "-" ]]; then
+   freq_channel=$2
 fi
 freq_mhz=`echo $freq_channel | awk '{printf("%.4f",$1*(400.00/512.00));}'`
 
 station_name=eda2
-if [[ -n "$6" && "$6" != "-" ]]; then
-   station_name=$6
+if [[ -n "$3" && "$3" != "-" ]]; then
+   station_name=$3
 fi
 
+tag=`date +%Y%m%d`
+if [[ -n "$4" && "$4" != "-" ]]; then
+   tag="$4"
+fi
+
+last_n_seconds=630720000
+if [[ -n "$5" && "$5" != "-" ]]; then
+   last_n_seconds=$5
+fi
+
+www_dir=aavs1-server:/exports/eda/eda2/station_beam/
+if [[ -n "$6" ]]; then
+    www_dir=$6
+fi
 
 # AAVS_HOME = ~/Software on eda2-server
 beam_scripts_path=$AAVS_HOME/hdf5_correlator/scripts/ # or on laptop ~/github/station_beam/processing/ or ~/Software on eda2 server 
