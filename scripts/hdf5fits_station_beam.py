@@ -49,7 +49,8 @@ print "Plotting power after uxtime = %d" % (current_uxtime - options.last_n_seco
 outfile_name = options.out_file_basename % (channel,pol_name)
 if options.freq_channel >= 0 :
    outfile_name = options.out_file_basename % (options.freq_channel,pol_name)
-   
+
+n_saved=0   
 out_f = open( outfile_name , "w" )
 for t in range(0,n_timesteps) :
    # mean = ( data[t][0] + data[t][1] + data[t][2]  + data[t][3]  + data[t][4]  + data[t][5]  + data[t][6]  + data[t][7] ) / 8
@@ -66,9 +67,12 @@ for t in range(0,n_timesteps) :
        if times[t][0] > ( current_uxtime - options.last_n_seconds) :
            line = "%.4f %.4f\n" % (times[t][0],mean)
            out_f.write( line )
+           n_saved += 1
    else :
        print "mean = %.4f <= 0 -> skipped" % (mean)
    
 
 out_f.close()
 f.close()
+
+print "Saved %d output values" % (n_timesteps)

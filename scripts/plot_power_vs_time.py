@@ -112,8 +112,9 @@ def plotfile( filename_base,
       alldata_y = np.loadtxt(filename_y,usecols=[0,1])
 
 
-   if len(alldata_x)>0 :
+   if len(alldata_x)>0 :     
       uxtime_x=alldata_x[:,0]   
+      n_timesteps = len(alldata_x)
 #      GPSfromUTC = (datetime(1980,1,6) - datetime(1970,1,1)).total_seconds()
 #      uxtime=gpstime+GPSfromUTC
       uttime_x=[datetime(1980,1,6)]*uxtime_x.size
@@ -188,7 +189,8 @@ def plotfile( filename_base,
          
       ax.set_title( title )
    
-
+ 
+      print "Plotted power in unixtime range %.2f - %.2f" % (uttime_x[0],uttime_x[n_timesteps-1])
 
 #      (B_x) = fit_hor_line(gpstime,x_delay_m,save_png=False,do_plot=False,limit_in_sigma=5,n_iter=10)
 #      print("Fitted delay X pol = %.2f" % (B_x))
