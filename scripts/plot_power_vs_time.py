@@ -177,7 +177,7 @@ def plotfile( filename_base,
       ax.set_xlabel( x_axis_title )
       ax.set_ylabel( y_axis_title ) # r to treat it as raw string 
       
-      title = "
+      title = filename_base
       if comment is not None :
          title = title + " , "
          title = title + comment 
