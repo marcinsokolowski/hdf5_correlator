@@ -60,10 +60,13 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    dt="$7"
 fi
 
-
+options=""
+if [[ -n "$8" && "$8" != "-" ]]; then
+   options=$8
+fi
 
 # export PATH=~/msok/eda2/msok_scripts:$PATH
 # export LD_LIBRARY_PATH=~/msok/eda2/lib:$LD_LIBRARY_PATH
 
-echo "nohup beamform_all.sh \"-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant -p $pol_index\" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &"
-nohup beamform_all.sh "-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant -p $pol_index" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &
+echo "nohup beamform_all.sh \"-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant -p $pol_index\ ${options}" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &"
+nohup beamform_all.sh "-C 1 -X $delays -q ${dt}_${station}_power_vs_time_ant -p $pol_index ${options}" ${dt}_${station}_256ant_${tag}.txt  > ${tag}.out 2>&1 &
