@@ -1,3 +1,4 @@
+from __future__ import print_function
 import h5py
 import numpy
 import sys
@@ -38,6 +39,8 @@ def parse_options(idx):
    parser = OptionParser(usage=usage,version=1.00)
    parser.add_option('-o','--outdir','--merged_dir','--out_dir',dest="outdir",default="merged/", help="Name of output directory [default %]")
    parser.add_option('-f','--outlistfile','--output_hdf5_list',dest="outlistfile",default="merged/merged_hdf5_list.txt", help="Name of output file with list of merged HDF5 files [default %]")
+   parser.add_option("-F", "--force", '--overwrite',action="store_true", dest="force", default=False, help="Force to overwrite otherwise already merged files are skipped [default %default]")
+
    (options, args) = parser.parse_args(sys.argv[idx:])
 
    return (options, args)
@@ -45,8 +48,8 @@ def parse_options(idx):
 
 
 def print_usage() :
-   print "merge_n_hdf5_files.py channel_cont_0_20190531_43409_0.hdf5 N_TILES[default = 3]"
-   print "N_TILES specifies data from how many tiles is to be merged" 
+   print("merge_n_hdf5_files.py channel_cont_0_20190531_43409_0.hdf5 N_TILES[default = 3]")
+   print("N_TILES specifies data from how many tiles is to be merged") 
 
 # Script entry point
 if __name__ == "__main__":
@@ -85,22 +88,22 @@ if __name__ == "__main__":
    merged_file_base = merged_file       
    merged_file = outdir + "/" + merged_file
    
-   print "######################################################################"
-   print "PARAMETERS :"
-   print "######################################################################"
-   print "file 0       = %s" % (file0)
-   print "N hdf5 files = %d" % (n_hdf5_files)
-   print "merged_file  = %s (base = %s)" % (merged_file,merged_file_base)
-   print "outdir       = %s" % (outdir)
-   print "Out list file = %s" % (options.outlistfile)
-   print "######################################################################"
+   print("######################################################################")
+   print("PARAMETERS :")
+   print("######################################################################")
+   print("file 0       = %s" % (file0))
+   print("N hdf5 files = %d" % (n_hdf5_files))
+   print("merged_file  = %s (base = %s)" % (merged_file,merged_file_base))
+   print("outdir       = %s" % (outdir))
+   print("Out list file = %s" % (options.outlistfile))
+   print("######################################################################")
 
    # create output directory if does not exist already :
    mkdir_p( outdir )
 
    tile_file_list = []   
    if file0 is None :
-      print "ERROR : name of the first file must be specified"
+      print("ERROR : name of the first file must be specified")
       print_usage()
       sys.exit(0)      
    else :
@@ -110,19 +113,19 @@ if __name__ == "__main__":
           file += ".hdf5"
           file_list.append( file )
           
-          print "Opening file %s" % (file)         
+          print("Opening file %s" % (file))         
           tile_file = h5py.File( file , mode="r" )
           tile_file_list.append( tile_file )
 #          print "\tFile %s added to list : tile%d_file.shape = %d x %d" % (tile_file,f,tile_file['/chan_']['data'].shape[0],tile_file['/chan_']['data'].shape[1])
-          print "File %s added to a list (%s)" % (file,tile_file)
+          print("File %s added to a list (%s)" % (file,tile_file))
 
    tile0_file = tile_file_list[0]
-   print "tile0_file = %s" % (tile0_file)
-   print "Merging %d hdf5 files : %s -> into one (%s)" % (len(tile_file_list),file_list,merged_file)   
+   print("tile0_file = %s" % (tile0_file))
+   print("Merging %d hdf5 files : %s -> into one (%s)" % (len(tile_file_list),file_list,merged_file))   
    for f in range(0,len(tile_file_list)) :
       tile_file = tile_file_list[f]
 #      print "\tfile = %s" % (tile_file)
-      print "\t%s : tile%d_file.shape = %d x %d" % (tile_file,f,tile_file['/chan_']['data'].shape[0],tile_file['/chan_']['data'].shape[1])
+      print("\t%s : tile%d_file.shape = %d x %d" % (tile_file,f,tile_file['/chan_']['data'].shape[0],tile_file['/chan_']['data'].shape[1]))
    
    # initialise merged file 
    datasets = getdatasets('/',tile0_file)
@@ -144,7 +147,7 @@ if __name__ == "__main__":
 
       # - get group name
       group = path[::-1].split('/',1)[1][::-1]
-      print "Copying group = %s" % (group)
+      print("Copying group = %s" % (group))
 
       # - minimum group name
       if len(group) == 0: group = '/'
@@ -180,7 +183,7 @@ if __name__ == "__main__":
        tile15_file = tile_file_list[15]
               
        alldata = numpy.hstack( (tile0_file['/chan_']['data'] , tile1_file['/chan_']['data'] , tile2_file['/chan_']['data'] , tile3_file['/chan_']['data'] , tile4_file['/chan_']['data'] , tile5_file['/chan_']['data'] , tile6_file['/chan_']['data'] , tile7_file['/chan_']['data'] , tile8_file['/chan_']['data'] , tile9_file['/chan_']['data'] , tile10_file['/chan_']['data'] , tile11_file['/chan_']['data'] , tile12_file['/chan_']['data'] , tile13_file['/chan_']['data'] , tile14_file['/chan_']['data'] , tile15_file['/chan_']['data']   ) )
-       print "INFO : 16 tiles is supported OK !"
+       print("INFO : 16 tiles is supported OK !")
 
    elif len(tile_file_list) == 8 :
        tile0_file = tile_file_list[0]
@@ -193,14 +196,14 @@ if __name__ == "__main__":
        tile7_file = tile_file_list[7]
        
        alldata = numpy.hstack( (tile0_file['/chan_']['data'] , tile1_file['/chan_']['data'] , tile2_file['/chan_']['data'] , tile3_file['/chan_']['data'] , tile4_file['/chan_']['data'] , tile5_file['/chan_']['data'] , tile6_file['/chan_']['data'] , tile7_file['/chan_']['data']) )
-       print "INFO : 8 tiles is supported OK !"
+       print("INFO : 8 tiles is supported OK !")
    elif len(tile_file_list) == 3 :
        tile0_file = tile_file_list[0]
        tile1_file = tile_file_list[1]
        tile2_file = tile_file_list[2]
 
        alldata = numpy.hstack( (tile0_file['/chan_']['data'] , tile1_file['/chan_']['data'] , tile2_file['/chan_']['data']) )
-       print "INFO : 3 tiles is supported OK !"
+       print("INFO : 3 tiles is supported OK !")
    elif len(tile_file_list) == 4 :
        tile0_file = tile_file_list[0]
        tile1_file = tile_file_list[1]
@@ -208,9 +211,9 @@ if __name__ == "__main__":
        tile3_file = tile_file_list[3]
 
        alldata = numpy.hstack( (tile0_file['/chan_']['data'] , tile1_file['/chan_']['data'] , tile2_file['/chan_']['data'], tile3_file['/chan_']['data']) )
-       print "INFO : 4 tiles is supported OK !"
+       print("INFO : 4 tiles is supported OK !")
    else :
-       print "ERROR : only option to merge 3, 4 or 8 tiles is implemented"
+       print("ERROR : only option to merge 3, 4 or 8 tiles is implemented")
    
    shape0 = tile0_file['/chan_']['data'].shape[0]
    shape1 = tile0_file['/chan_']['data'].shape[1]
@@ -220,7 +223,7 @@ if __name__ == "__main__":
    merged_shape1 = shape1 * len(tile_file_list)
    
    new_data['/chan_'].create_dataset("data", (merged_shape0,merged_shape1), dtype=data_type, data=alldata )
-   print "INFO : saved merged files %s with shape (%d,%d)" % (merged_file,merged_shape0,merged_shape1)
+   print("INFO : saved merged files %s with shape (%d,%d)" % (merged_file,merged_shape0,merged_shape1))
    
    if options.outlistfile is not None :
       out_list_f = open( options.outlistfile , "a+" )
@@ -228,7 +231,7 @@ if __name__ == "__main__":
       out_list_f.write( line )
       out_list_f.close()
       
-      print "Saved merged filename (%s) to output list file %s" % (merged_file,options.outlistfile)
+      print("Saved merged filename (%s) to output list file %s" % (merged_file,options.outlistfile))
 
 
    # out_hdf_file['/chan_']['data'] = numpy.hstack( (tile0_file['/chan_']['data'],tile1_file['/chan_']['data'],tile2_file['/chan_']['data']) )
