@@ -86,6 +86,10 @@ png_file=${tag}_power_vs_time_ch${freq_channel}.png
 echo "cp images/${png_file} images/last_power_vs_time.png"
 cp images/${png_file} images/last_power_vs_time.png
 
+dtm=`date +%Y%m%d%M%S`
+echo "cp images/${png_file} images/${dtm}.png"
+cp images/${png_file} images/${dtm}.png
+
 if [[ -n ${www_dir} && ${www_dir} != "-" ]]; then
    echo "INFO : Copying image to ${www_dir}/"
 
