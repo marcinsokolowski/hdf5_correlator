@@ -1,3 +1,4 @@
+from __future__ import print_function
 import h5py 
 import sys
 from optparse import OptionParser,OptionGroup
@@ -32,18 +33,18 @@ def main() :
    
    # is it correlated file or normal channelised file 
    is_corr_file = ( "correlation_matrix" in f.keys())
-   print "Information about HDF5 file %s" % (hdf5file)
-   print "keys              = %s" % (f.keys())
-   print "Correlation file ? = %d" % (is_corr_file)
+   print("Information about HDF5 file %s" % (hdf5file))
+   print("keys              = %s" % (f.keys()))
+   print("Correlation file ? = %d" % (is_corr_file))
    
    data_keyword="chan_"
    if is_corr_file :
       data_keyword = "correlation_matrix"
 
-   print "f[data_keyword].keys() = %s" % (f[data_keyword].keys())
+   print("f[data_keyword].keys() = %s" % (f[data_keyword].keys()))
    
    l = len( f[data_keyword]['data'].shape )
-   print "len( f[%s]['data'].shape ) = %d" % (data_keyword,l)
+   print("len( f[%s]['data'].shape ) = %d" % (data_keyword,l))
    
    shape_str=""
    for a in range(0,l) :
@@ -52,26 +53,26 @@ def main() :
       else :
          shape_str += ("%d" % f[data_keyword]['data'].shape[a])
     
-   print "f['%s']['data'].shape = %s" % (data_keyword,shape_str)
+   print("f['%s']['data'].shape = %s" % (data_keyword,shape_str))
 
    t0 = float( f['sample_timestamps']['data'][0] )
-   print "%s : first timestamp = %.2f (unix time)" % (hdf5file,t0)      
+   print("%s : first timestamp = %.2f (unix time)" % (hdf5file,t0))      
    
    if l >= 2 :
       n_samples = int( f[data_keyword]['data'].shape[0] )
       n_inputs  = int( f[data_keyword]['data'].shape[1] )
-      print "N_samples                 = %d" % (n_samples)
-      print "N_inputs                  = %d" % (n_inputs)
+      print("N_samples                 = %d" % (n_samples))
+      print("N_inputs                  = %d" % (n_inputs))
       
       total_time_usec = n_samples * sample_time
       total_time_sec  = (total_time_usec/1000000.0)      
-      print "Total time = %d [usec] = %.2f seconds" % (total_time_usec,total_time_sec)
+      print("Total time = %d [usec] = %.2f seconds" % (total_time_usec,total_time_sec))
       
       n_integrations = (n_samples / n_fft_samples)
-      print "Number of  %d samples/channels spectra  = %d" % (n_fft_samples,n_integrations)
+      print("Number of  %d samples/channels spectra  = %d" % (n_fft_samples,n_integrations))
       
       n_integrations_per_uvfits = ( total_time_sec / inttime )
-      print "n_integrations_per_uvfits (-n option of Lfile2uvfits_eda.sh ) = %d ( to get required inttime = %.4f [sec] from total_time_sec = %.4f [sec] )" % (n_integrations_per_uvfits,inttime,total_time_sec)
+      print("n_integrations_per_uvfits (-n option of Lfile2uvfits_eda.sh ) = %d ( to get required inttime = %.4f [sec] from total_time_sec = %.4f [sec] )" % (n_integrations_per_uvfits,inttime,total_time_sec))
    
 
    timestamps = f['sample_timestamps']['data']
@@ -79,7 +80,7 @@ def main() :
    t_start = timestamps[0]
    t_end   = timestamps[last-1]
    t_center = (t_start + t_end)/2.00
-   print "Unixtime start = %.4f , end = %.4f -> center = %.4f" % (t_start,t_end,t_center)
+   print("Unixtime start = %.4f , end = %.4f -> center = %.4f" % (t_start,t_end,t_center))
    
 
 if __name__ == "__main__":

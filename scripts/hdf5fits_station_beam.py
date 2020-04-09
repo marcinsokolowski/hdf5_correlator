@@ -1,3 +1,4 @@
+from __future__ import print_function
 import h5py
 import sys
 import time
@@ -31,20 +32,20 @@ if options.polarisation == 1 :
 
 f = h5py.File( hdf5file )
 
-print "keys = %s" % (f.name)
-print "keys = %s" % f.keys()
+print("keys = %s" % (f.name))
+print("keys = %s" % f.keys())
 
 
 pol_string=( "/polarization_%d" % (options.polarisation) )
 data=f[pol_string]['data']
 times=f['/sample_timestamps']['data']
 
-print "Data.shape = %d x %d" % (data.shape[0],data.shape[1])
+print("Data.shape = %d x %d" % (data.shape[0],data.shape[1]))
 
 n_timesteps=times.shape[0]
 
 current_uxtime = time.time()
-print "Plotting power after uxtime = %d" % (current_uxtime - options.last_n_seconds)
+print("Plotting power after uxtime = %d" % (current_uxtime - options.last_n_seconds))
 
 outfile_name = options.out_file_basename % (channel,pol_name)
 if options.freq_channel >= 0 :
@@ -69,7 +70,7 @@ for t in range(0,n_timesteps) :
            out_f.write( line )
            n_saved += 1
    else :
-       print "mean = %.4f <= 0 -> skipped" % (mean)
+       print("mean = %.4f <= 0 -> skipped" % (mean))
    
 
 out_f.close()
