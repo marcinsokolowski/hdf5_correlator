@@ -37,11 +37,16 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    sleep_time=$7
 fi
 
+polarisation_swap=1 # in EDA2 (not in AAVS2) 
+if [[ -n "$8" && "$8" != "-" ]]; then
+   polarisation_swap=$8
+fi
+
 
 while [ 1 ];
 do
-   echo "~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path}"
-   ~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path}
+   echo "~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path} ${polarisation_swap}"
+   ~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path} ${polarisation_swap}
    
    sleep $sleep_time
    echo "sleep $sleep_time"

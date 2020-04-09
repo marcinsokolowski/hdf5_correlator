@@ -44,6 +44,10 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    beam_scripts_path=$7
 fi
 
+polarisation_swap=1 # in EDA2 (not in AAVS2) 
+if [[ -n "$8" && "$8" != "-" ]]; then
+   polarisation_swap=$8
+fi
 
 
 echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > x.out 2>&1"
@@ -53,14 +57,18 @@ echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1
 python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1
 
 # Polarisation swap :
-echo "mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp"
-mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp
+if [[ $polarisation_swap -gt 0 ]]; then
+   echo "mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp"
+   mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp
 
-echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt"
-mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt
+   echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt"
+   mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt
 
-echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt"
-mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt
+   echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt"
+   mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt
+else
+   echo "INFO : no polarisation swap required"
+fi
 
 ls ${tag}_power_vs_time_ch*.txt > list
 first_file=`head --lines=1 list`
