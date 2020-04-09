@@ -28,7 +28,7 @@ function refreshIt() {
 
 <body onLoad=" setTimeout('refreshIt()',5000)">
 
-<img src="last_power_vs_time.png" name="edaimage">
+<img src="last_power_vs_time.png" name="edaimage" width="2500" height="1800">
 
 
 </body>
