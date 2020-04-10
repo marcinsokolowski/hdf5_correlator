@@ -148,8 +148,13 @@ def plotfile( filename_base,
          if db :
             power_y = 10.00*numpy.log10(power_y)
             
-         y_min=min(min(power_x),min(power_y))-2
-         y_max=max(max(power_x),max(power_y))+2
+         y_min=min(min(power_x),min(power_y))
+         y_max=max(max(power_x),max(power_y))
+
+         
+         delta = (y_max - y_min)   
+         y_min = y_min - (delta*0.05)
+         y_max = y_max + (delta*0.05)
    
          x_min=min(min(uttime_x),min(uttime_y))
          x_max=max(max(uttime_x),max(uttime_y))
