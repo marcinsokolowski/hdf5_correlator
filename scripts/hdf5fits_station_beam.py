@@ -30,7 +30,7 @@ pol_name="X"
 if options.polarisation == 1 :
    pol_name="Y"
 
-f = h5py.File( hdf5file )
+f = h5py.File( hdf5file , "r" )
 
 print("keys = %s" % (f.name))
 print("keys = %s" % f.keys())

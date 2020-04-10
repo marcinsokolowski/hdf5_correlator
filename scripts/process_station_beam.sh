@@ -56,6 +56,9 @@ python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out
 echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1"
 python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1
 
+echo "ls -al ${tag}_power_vs_time_ch*"
+ls -al ${tag}_power_vs_time_ch*
+
 # Polarisation swap :
 if [[ $polarisation_swap -gt 0 ]]; then
    echo "mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp"
