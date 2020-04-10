@@ -1,6 +1,6 @@
 #!/bin/bash
 
-station_file=`ls *.hdf5  |tail -1`
+station_file=`ls stationbeam_*.hdf5  |tail -1`
 if [[ -n "$1" && "$1" != "-" ]]; then
    station_file=$1
 fi
