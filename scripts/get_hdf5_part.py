@@ -93,32 +93,10 @@ if __name__ == "__main__":
    idx    = numpy.argsort(numpy.array([len(i.split('/')) for i in groups]))
    groups = [groups[i] for i in idx]
 
-   # create all groups that contain dataset that will be copied
-   for group in groups:
-     new_data.create_group(group)
-
-   # copy datasets
-   for path in datasets:
-
-      # - get group name
-      group = path[::-1].split('/',1)[1][::-1]
-      print("Copying group = %s" % (group))
-
-      # - minimum group name
-      if len(group) == 0: group = '/'
-
-      # - copy data      
-      try :
-         print("Copying path = %s" % (path))
-         if path.index("correlation_matrix") < 0 :
-            tile0_file.copy(path, new_data[group])
-      except :
-         print("WARNING : exception caught when tile0_file.copy(path, new_data[group] -> trying to continue")
-
-
-   # new_data['/chan_']['data'] = numpy.zeros( (10,10) )
-   # new_data['/chan_']['data'].resize( (7408000,96) )
-   # new_data['/chan_']['data'].clear()
+   new_data.create_group('/correlation_matrix')
+   new_data.create_group('/sample_timestamps')      
+   tile0_file.copy('observation_info',new_data)
+   tile0_file.copy('root',new_data)      
    new_data['correlation_matrix'].clear()
    new_data['sample_timestamps'].clear()
    n_integrations = tile0_file['correlation_matrix']['data'].shape[0]
