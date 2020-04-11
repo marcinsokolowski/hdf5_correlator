@@ -1,4 +1,6 @@
 from __future__ import print_function
+
+import pdb
 import h5py
 import numpy
 import sys
@@ -106,7 +108,10 @@ if __name__ == "__main__":
       if len(group) == 0: group = '/'
 
       # - copy data
-      tile0_file.copy(path, new_data[group])
+#      try :
+#         tile0_file.copy(path, new_data[group])
+#      except :
+#         print("WARNING : exception caught when tile0_file.copy(path, new_data[group] -> trying to continue")
 
 
    # new_data['/chan_']['data'] = numpy.zeros( (10,10) )
