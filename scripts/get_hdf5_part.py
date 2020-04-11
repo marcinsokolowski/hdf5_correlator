@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
       # - copy data      
       try :
-         print "Copying path = %s" % (path)
+         print("Copying path = %s" % (path))
          if path.index("correlation_matrix") < 0 :
             tile0_file.copy(path, new_data[group])
       except :
