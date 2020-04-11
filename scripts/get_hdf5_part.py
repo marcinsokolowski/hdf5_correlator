@@ -101,8 +101,8 @@ if __name__ == "__main__":
    new_data['sample_timestamps'].clear()
    n_integrations = tile0_file['correlation_matrix']['data'].shape[0]
    n_blocks = new_data['root'].attrs['n_blocks']
-   new_data['root'].attrs['n_blocks'] = option.out_n_int
-   print("Changing number of blocks in the %s file from %d -> %d" % (outfile,n_blocks,option.out_n_int))
+   new_data['root'].attrs['n_blocks'] = options.out_n_int
+   print("Changing number of blocks in the %s file from %d -> %d" % (outfile,n_blocks,options.out_n_int))
 
 #   f['correlation_matrix']['data'][378:478,:,:,:,]
    alldata = tile0_file['correlation_matrix']['data'][(n_integrations-options.out_n_int):(n_integrations),:,:,:,]
