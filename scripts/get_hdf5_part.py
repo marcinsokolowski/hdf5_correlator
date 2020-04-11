@@ -78,6 +78,7 @@ if __name__ == "__main__":
    # create output directory if does not exist already :
    mkdir_p( outdir )
 
+   print("Reading HDF5 file %s" % (infile))
    tile0_file = h5py.File( infile , mode="r" )
    datasets = getdatasets('/',tile0_file)
    
