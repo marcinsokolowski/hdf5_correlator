@@ -102,7 +102,7 @@ if __name__ == "__main__":
    n_integrations = tile0_file['correlation_matrix']['data'].shape[0]
    n_blocks = new_data['root'].attrs['n_blocks']
    new_data['root'].attrs['n_blocks'] = n_integrations
-   print("Changing number of blocks in the %s file from %d -> %d" % (n_blocks,n_integrations))
+   print("Changing number of blocks in the %s file from %d -> %d" % (outfile,n_blocks,n_integrations))
 
 #   f['correlation_matrix']['data'][378:478,:,:,:,]
    alldata = tile0_file['correlation_matrix']['data'][(n_integrations-options.out_n_int):(n_integrations),:,:,:,]
