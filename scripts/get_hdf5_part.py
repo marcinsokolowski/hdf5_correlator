@@ -100,6 +100,7 @@ if __name__ == "__main__":
    new_data['correlation_matrix'].clear()
    new_data['sample_timestamps'].clear()
    n_integrations = tile0_file['correlation_matrix']['data'].shape[0]
+   new_data['root'].attrs['n_blocks'] = n_integrations
 
 #   f['correlation_matrix']['data'][378:478,:,:,:,]
    alldata = tile0_file['correlation_matrix']['data'][(n_integrations-options.out_n_int):(n_integrations),:,:,:,]
