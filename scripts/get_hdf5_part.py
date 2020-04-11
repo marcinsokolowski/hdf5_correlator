@@ -107,11 +107,13 @@ if __name__ == "__main__":
       # - minimum group name
       if len(group) == 0: group = '/'
 
-      # - copy data
-#      try :
-#         tile0_file.copy(path, new_data[group])
-#      except :
-#         print("WARNING : exception caught when tile0_file.copy(path, new_data[group] -> trying to continue")
+      # - copy data      
+      try :
+         print "Copying path = %s" % (path)
+         if path.index("correlation_matrix") < 0 :
+            tile0_file.copy(path, new_data[group])
+      except :
+         print("WARNING : exception caught when tile0_file.copy(path, new_data[group] -> trying to continue")
 
 
    # new_data['/chan_']['data'] = numpy.zeros( (10,10) )
