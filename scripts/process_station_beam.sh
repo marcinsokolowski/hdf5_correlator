@@ -90,8 +90,14 @@ fi
 
 # When no --y_min and --y_max specified -> AUTO-SCALE 
 # was --y_min=0 --y_max=5000 or --y_min=0 --y_max=1000
-echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment=\"${tag}_power_vs_time_ch${freq_channel} (pol. swapped)\""
-python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment="${tag}_power_vs_time_ch${freq_channel} (pol. swapped)"
+
+comment="${tag}_power_vs_time_ch${freq_channel}"
+if [[ $polarisation_swap -gt ]]; then
+   comment="${comment} (pol. swapped)"
+fi
+
+echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment=\"${comment}\""
+python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment="${comment}"
 
 
 png_file=${tag}_power_vs_time_ch${freq_channel}.png
