@@ -4,6 +4,7 @@ station_file=`ls stationbeam_*.hdf5  |tail -1`
 if [[ -n "$1" && "$1" != "-" ]]; then
    station_file=$1
 fi
+station_name_lower=`echo $station_name | awk '{print tolower($1);}'`
 channel=4
 
 # temporary solution - as it's not possible to share HDF5 file ???
@@ -33,7 +34,7 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    last_n_seconds=$5
 fi
 
-www_dir=aavs1-server:/exports/eda/eda2/station_beam/
+www_dir=aavs1-server:/exports/eda/${station_name_lower}/station_beam/
 if [[ -n "$6" && "$6" != "-" ]]; then
     www_dir=$6
 fi
