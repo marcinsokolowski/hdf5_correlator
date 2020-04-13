@@ -92,7 +92,7 @@ fi
 # was --y_min=0 --y_max=5000 or --y_min=0 --y_max=1000
 
 comment="${tag}_power_vs_time_ch${freq_channel}"
-if [[ $polarisation_swap -gt ]]; then
+if [[ $polarisation_swap -gt 0 ]]; then
    comment="${comment} (pol. swapped)"
 fi
 
