@@ -34,7 +34,7 @@ if [[ -n "$5" && "$5" != "-" ]]; then
 fi
 
 www_dir=aavs1-server:/exports/eda/eda2/station_beam/
-if [[ -n "$6" ]]; then
+if [[ -n "$6" && "$6" != "-" ]]; then
     www_dir=$6
 fi
 
