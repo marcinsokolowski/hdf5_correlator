@@ -10,6 +10,7 @@ station_name=eda2
 if [[ -n "$2" && "$2" != "-" ]]; then
    station_name=$2
 fi
+station_name_lower=`echo $station_name | awk '{print tolower($1);}'`
 
 tag=`date +%Y%m%d`
 if [[ -n "$3" && "$3" != "-" ]]; then
@@ -21,7 +22,7 @@ if [[ -n "$4" && "$4" != "-" ]]; then
    last_n_seconds=$4
 fi
 
-www_dir=aavs1-server:/exports/eda/eda2/station_beam/
+www_dir=aavs1-server:/exports/eda/${station_name_lower}/station_beam/
 if [[ -n "$5" ]]; then
     www_dir=$5
 fi
