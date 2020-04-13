@@ -4,7 +4,6 @@ station_file=`ls stationbeam_*.hdf5  |tail -1`
 if [[ -n "$1" && "$1" != "-" ]]; then
    station_file=$1
 fi
-station_name_lower=`echo $station_name | awk '{print tolower($1);}'`
 channel=4
 
 # temporary solution - as it's not possible to share HDF5 file ???
@@ -23,6 +22,7 @@ station_name=eda2
 if [[ -n "$3" && "$3" != "-" ]]; then
    station_name=$3
 fi
+station_name_lower=`echo $station_name | awk '{print tolower($1);}'`
 
 tag=`date +%Y%m%d`
 if [[ -n "$4" && "$4" != "-" ]]; then
