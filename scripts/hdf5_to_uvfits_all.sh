@@ -100,6 +100,8 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:s:" opt; do
         ;;
     f)
         freq_channel_param=$OPTARG
+        tmp=`echo $freq_channel_param | awk '{printf("%d",$1);}'`
+        freq_channel_param=$tmp
         ;;
     c)
         do_correlation=1
@@ -199,8 +201,8 @@ if [[ $do_correlation -gt 0 ]]; then
    echo "cp ${aavs_calibration_path}/config/${station_name_lower}/antenna_locations.txt ."
    cp ${aavs_calibration_path}/config/${station_name_lower}/antenna_locations.txt .
    
-   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config.txt ."
-   cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config.txt .
+   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config_${station_name_lower}.txt ."
+   cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config_${station_name_lower}.txt .
 
    echo "cp ${aavs_calibration_path}/config/${station_name_lower}/header.txt ."
    cp ${aavs_calibration_path}/config/${station_name_lower}/header.txt .
