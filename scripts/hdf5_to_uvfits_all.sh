@@ -201,11 +201,15 @@ if [[ $do_correlation -gt 0 ]]; then
    echo "cp ${aavs_calibration_path}/config/${station_name_lower}/antenna_locations.txt ."
    cp ${aavs_calibration_path}/config/${station_name_lower}/antenna_locations.txt .
    
-   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config_${station_name_lower}.txt ."
-   cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config_${station_name_lower}.txt .
    
-   echo "ln -s instr_config_${station_name_lower}.txt instr_config.txt"
-   ln -s instr_config_${station_name_lower}.txt instr_config.txt
+   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config.txt ."
+   cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config.txt .
+   
+#   echo "cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config_${station_name_lower}.txt ."
+#   cp ${aavs_calibration_path}/config/${station_name_lower}/instr_config_${station_name_lower}.txt .
+   
+#   echo "ln -s instr_config_${station_name_lower}.txt instr_config.txt"
+#   ln -s instr_config_${station_name_lower}.txt instr_config.txt
 
    echo "cp ${aavs_calibration_path}/config/${station_name_lower}/header.txt ."
    cp ${aavs_calibration_path}/config/${station_name_lower}/header.txt .
