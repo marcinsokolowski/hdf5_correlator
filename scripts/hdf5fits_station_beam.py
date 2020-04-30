@@ -59,10 +59,18 @@ for t in range(0,n_timesteps) :
    # use 4th channel 204 :
    mean = 0.00
    if channel >=0 :
-       mean = data[t][channel] 
+       if channel < data[t].shape[0] :
+          mean = data[t][channel]
+       else :
+          mean = data[t][0]
    else :
        # if channel not specified ( < 0 ) -> use mean of 8 channels :
-       mean = ( data[t][0] + data[t][1] + data[t][2]  + data[t][3]  + data[t][4]  + data[t][5]  + data[t][6]  + data[t][7] ) / 8
+       if data[t].shape[0] == 8 :
+          mean = ( data[t][0] + data[t][1] + data[t][2]  + data[t][3]  + data[t][4]  + data[t][5]  + data[t][6]  + data[t][7] ) / 8
+       else : 
+          mean = 0
+          for beam in range(0,data[t].shape[0]) :
+             mean += data[t][beam]
        
    if mean > 0 :    
        if times[t][0] > ( current_uxtime - options.last_n_seconds) :
