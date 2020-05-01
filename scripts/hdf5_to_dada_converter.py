@@ -355,6 +355,7 @@ def parse_options(idx=0):
    parser = OptionParser(usage=usage,version=1.00)
    parser.add_option('-d','--debug','--debug_level',dest="debug_level",default=0, help="Debug level [default %]",type="int")
    parser.add_option('-a','--nants','--n_antennas','--n_ants',dest="n_antennas",default=256, help="Number of antennas [default %]",type="int")
+   parser.add_option('-p','--pol','--polarisation',dest="polarisation",default=0, help="Polarisation 0 is X and 1 is Y [default %]",type="int")
    parser.add_option('--skip_n_samples','--skip','--skip_n',dest="skip_n_samples",default=0,help="Skip N samples [default %]",type="int")
    parser.add_option('-c','--hdf52dada',action="store_true",dest="hdf52dada",default=True, help="Convert hdf5 file to .dada file [default %]")
    parser.add_option('-s','--station_beam',action="store_true",dest="station_beam",default=False, help="Treat HDF5 file as station beam file [default %]")
@@ -378,7 +379,8 @@ if __name__ == '__main__':
 
         if options.station_beam :
            convert_stationbeam_hdf5_to_dada( hdf5file, dadafile, skip_n_samples=options.skip_n_samples, 
-                                             debug_level=options.debug_level, timestamp=options.start_unix_time )
+                                             debug_level=options.debug_level, timestamp=options.start_unix_time,
+                                             polarisation=options.polarisation )
         else :    
            convert_hdf5_to_dada( hdf5file, dadafile,
                                  n_antennas = options.n_antennas,
