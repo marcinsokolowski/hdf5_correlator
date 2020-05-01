@@ -358,6 +358,7 @@ def parse_options(idx=0):
    parser.add_option('--skip_n_samples','--skip','--skip_n',dest="skip_n_samples",default=0,help="Skip N samples [default %]",type="int")
    parser.add_option('-c','--hdf52dada',action="store_true",dest="hdf52dada",default=True, help="Convert hdf5 file to .dada file [default %]")
    parser.add_option('-s','--station_beam',action="store_true",dest="station_beam",default=False, help="Treat HDF5 file as station beam file [default %]")
+   parser.add_option('-u','--uxtime','--unix_time','--start_uxtime','--start_unix_time',dest="start_unix_time",default=0, help="Unixtime of the first sample [default %]",type="float")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
 
@@ -377,7 +378,7 @@ if __name__ == '__main__':
 
         if options.station_beam :
            convert_stationbeam_hdf5_to_dada( hdf5file, dadafile, skip_n_samples=options.skip_n_samples, 
-                                             debug_level=options.debug_level )
+                                             debug_level=options.debug_level, timestamp=options.start_unix_time )
         else :    
            convert_hdf5_to_dada( hdf5file, dadafile,
                                  n_antennas = options.n_antennas,
