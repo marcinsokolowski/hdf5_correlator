@@ -355,11 +355,15 @@ def parse_options(idx=0):
    parser = OptionParser(usage=usage,version=1.00)
    parser.add_option('-d','--debug','--debug_level',dest="debug_level",default=0, help="Debug level [default %]",type="int")
    parser.add_option('-a','--nants','--n_antennas','--n_ants',dest="n_antennas",default=256, help="Number of antennas [default %]",type="int")
+   parser.add_option('-P','--npol','--n_pol',dest="npol",default=2, help="Number of polarisations [default %]",type="int")
    parser.add_option('-p','--pol','--polarisation',dest="polarisation",default=0, help="Polarisation 0 is X and 1 is Y [default %]",type="int")
    parser.add_option('--skip_n_samples','--skip','--skip_n',dest="skip_n_samples",default=0,help="Skip N samples [default %]",type="int")
-   parser.add_option('-c','--hdf52dada',action="store_true",dest="hdf52dada",default=True, help="Convert hdf5 file to .dada file [default %]")
+   parser.add_option('-c','--hdf52dada',action="store_true",dest="hdf52dada",default=False, help="Convert hdf5 file to .dada file [default %]")
    parser.add_option('-s','--station_beam',action="store_true",dest="station_beam",default=False, help="Treat HDF5 file as station beam file [default %]")
    parser.add_option('-u','--uxtime','--unix_time','--start_uxtime','--start_unix_time',dest="start_unix_time",default=0, help="Unixtime of the first sample [default %]",type="float")
+   parser.add_option('--hdr','--dadahdr','--psrdadahdr',dest="generete_dada_header",action="store_true",default=False, help="Generate PSRDADA header [default %]")
+   parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default="dada.hdr", help="Output file name to save DADA header [default %]")
+   parser.add_option('--dat2dada',action="store_true",dest="dat2dada",default=False, help="Convert dat file to .dada file [default %]")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
 
@@ -385,4 +389,28 @@ if __name__ == '__main__':
            convert_hdf5_to_dada( hdf5file, dadafile,
                                  n_antennas = options.n_antennas,
                                  debug_level=options.debug_level )
+    elif options.dat2dada :
+        dadafile=hdf5file.replace('.dat', '.dada')
+        if options.output_file is not None :
+           dadafile = options.output_file
+           
+        print("Converting file %s to %s" % (hdf5file,dadafile))
+        
+        # Custom numpy type for creating complex signed 8-bit data
+        complex_8t = numpy.dtype([('real', numpy.int8), ('imag', numpy.int8)])
+
+        # Convert to complex
+        data = numpy.fromfile(hdf5file, dtype=complex_8t) # count=all ?
+        data_complex = data['real'].astype(numpy.float32) + 1j * data['imag'].astype(numpy.float32)
+        n_timestamps = data_complex.shape[0] / options.npol
+        inttime_msec = 1.08 / 1000.00 # 1.08 usec -> miliseconds
+                            
+#        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
+        data_file = save_psrdada_file( dadafile, data=data_complex, start_uxtime=options.start_unix_time, obsid=0, nbit=32, npol=2, 	
+                                       ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=(1.08 / 1000.00) , proj_id = "EDA2", 
+                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.) 
+                                      )
+#        out_f = open( options.output_file , "w" )
+#        out_f.write( header )
+#        out_f.close()    
         
