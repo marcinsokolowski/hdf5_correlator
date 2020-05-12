@@ -30,6 +30,7 @@ def generate_dada_header( start_uxtime=0,
                           obsid = 0, 
                           nbit=32, 
                           npol=2, 
+                          ndim=2, # 1-real, 2-complex
                           ntimesamples=10240000, 
                           ninputs=256,
                           ninputs_xgpu=256,
@@ -39,7 +40,10 @@ def generate_dada_header( start_uxtime=0,
                           file_size  = 5269094400,
                           file_number=0,
                           n_fine_channels=40,
-                          bandwidth_hz=1280000
+                          bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
+                          frequency_mhz=(204*(400.00/512.00)),
+                          telescope="EDA2",
+                          source="B0950+08"
                         ) :
    # 
    if start_uxtime <= 0 :
@@ -49,19 +53,35 @@ def generate_dada_header( start_uxtime=0,
    header_size = 4096
    obs_offset  = 0     
 
-   out_header = ("HDR_SIZE %d\n") % (header_size)
+   # see  : http://dspsr.sourceforge.net/manuals/dspsr/dada.shtml
+   out_header = ("HDR_VERSION 1.0\n")
+   out_header += ("HDR_SIZE %d\n") % (header_size)
+   out_header += ("BW %.4f\n") % (bandwidth_hz/1e6)
+   out_header += ("FREQ %.4f\n") % (frequency_mhz)
+   out_header += ("TELESCOPE %s\n") % (telescope)
+   out_header += ("RECEIVER TPM\n")
+   out_header += ("INSTRUMENT TPM\n")
+   out_header += ("SOURCE %s\n") % (source)
+   out_header += ("MODE PSR\n")
+   out_header += ("NBIT %d\n") % (nbit)
+   out_header += ("NPOL %d\n") % (npol)
+   out_header += ("NCHAN %d\n") % (n_fine_channels)
+   out_header += ("NDIM %d\n") % (1)
+   out_header += ("OBS_OFFSET %d\n") % (obs_offset)
+   out_header += ("TSAMP %.4f\n") % (inttime_msec)
+   # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
+   utc_string = datetime.datetime.utcfromtimestamp( start_uxtime ).strftime( "%Y-%m-%d-%H:%M:%S" )
+   out_header += ("UTC_START %s\n" % (utc_string))
+
+      
+
+   # non-crucial :         
    out_header += "POPULATED 1\n"
    out_header += ("OBS_ID %d\n") % (obsid)
    out_header += ("SUBOBS_ID %d\n") % (obsid)
    out_header += "COMMAND CAPTURE\n"
    
-   # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
-   utc_string = datetime.datetime.utcfromtimestamp( start_uxtime ).strftime( "%Y-%m-%d-%H:%M:%S" )
-   out_header += ("UTC_START %s\n" % (utc_string))
    # UTC_START 2018-10-11-05:26:14
-   out_header += ("OBS_OFFSET %d\n") % (obs_offset)
-   out_header += ("NBIT %d\n") % (nbit)
-   out_header += ("NPOL %d\n") % (npol)
    out_header += ("NTIMESAMPLES %d\n") % (ntimesamples)
    out_header += ("NINPUTS %d\n") % (ninputs)
    out_header += ("NINPUTS_XGPU %d\n") % (ninputs_xgpu)
@@ -113,7 +133,7 @@ def save_psrdada_file( data_filename, data=None,
                        file_size  = 5269094400,
                        file_number=0,
                        n_fine_channels=40,
-                       bandwidth_hz=1280000
+                       bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
                      ) :
     header = generate_dada_header( start_uxtime=start_uxtime, obsid=obsid, nbit=nbit, npol=npol, ntimesamples=ntimesamples, ninputs=ninputs, ninputs_xgpu=ninputs_xgpu, 
                                    inttime_msec=inttime_msec, proj_id=proj_id, exptime_sec=exptime_sec, file_size=file_size, file_number=file_number , n_fine_channels=n_fine_channels, bandwidth_hz=bandwidth_hz
@@ -408,7 +428,7 @@ if __name__ == '__main__':
 #        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
         data_file = save_psrdada_file( dadafile, data=data_complex, start_uxtime=options.start_unix_time, obsid=0, nbit=32, npol=2, 	
                                        ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=(1.08 / 1000.00) , proj_id = "EDA2", 
-                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.) 
+                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6
                                       )
 #        out_f = open( options.output_file , "w" )
 #        out_f.write( header )
