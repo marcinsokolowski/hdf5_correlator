@@ -362,7 +362,7 @@ def parse_options(idx=0):
    parser.add_option('-s','--station_beam',action="store_true",dest="station_beam",default=False, help="Treat HDF5 file as station beam file [default %]")
    parser.add_option('-u','--uxtime','--unix_time','--start_uxtime','--start_unix_time',dest="start_unix_time",default=0, help="Unixtime of the first sample [default %]",type="float")
    parser.add_option('--hdr','--dadahdr','--psrdadahdr',dest="generete_dada_header",action="store_true",default=False, help="Generate PSRDADA header [default %]")
-   parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default="dada.hdr", help="Output file name to save DADA header [default %]")
+   parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default=None, help="Output file name to save DADA header [default %]")
    parser.add_option('--dat2dada',action="store_true",dest="dat2dada",default=False, help="Convert dat file to .dada file [default %]")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
