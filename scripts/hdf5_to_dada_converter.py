@@ -42,7 +42,7 @@ def generate_dada_header( start_uxtime=0,
                           n_fine_channels=40,
                           bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
                           frequency_mhz=(204*(400.00/512.00)),
-                          telescope="EDA2",
+                          telescope="LFAASP",
                           source="B0950+08"
                         ) :
    # 
@@ -52,6 +52,8 @@ def generate_dada_header( start_uxtime=0,
    # default values from Ian's example file ( /home/msok/askap/craft/data/J0953/incoherent_beam_1kHz_1ms.dada )
    header_size = 4096
    obs_offset  = 0     
+   inttime_usec = inttime_msec*1000.00 
+   
 
    # see  : http://dspsr.sourceforge.net/manuals/dspsr/dada.shtml
    out_header = ("HDR_VERSION 1.0\n")
@@ -59,8 +61,8 @@ def generate_dada_header( start_uxtime=0,
    out_header += ("BW %.4f\n") % (bandwidth_hz/1e6)
    out_header += ("FREQ %.4f\n") % (frequency_mhz)
    out_header += ("TELESCOPE %s\n") % (telescope)
-   out_header += ("RECEIVER TPM\n")
-   out_header += ("INSTRUMENT TPM\n")
+   out_header += ("RECEIVER %s\n") % (telescope)
+   out_header += ("INSTRUMENT %s\n") % (telescope)
    out_header += ("SOURCE %s\n") % (source)
    out_header += ("MODE PSR\n")
    out_header += ("NBIT %d\n") % (nbit)
@@ -68,7 +70,7 @@ def generate_dada_header( start_uxtime=0,
    out_header += ("NCHAN %d\n") % (n_fine_channels)
    out_header += ("NDIM %d\n") % (ndim)
    out_header += ("OBS_OFFSET %d\n") % (obs_offset)
-   out_header += ("TSAMP %.4f\n") % (inttime_msec)
+   out_header += ("TSAMP %.4f\n") % (inttime_usec)
    # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
    utc_string = datetime.datetime.utcfromtimestamp( start_uxtime ).strftime( "%Y-%m-%d-%H:%M:%S" )
    out_header += ("UTC_START %s\n" % (utc_string))
@@ -429,7 +431,7 @@ if __name__ == '__main__':
                             
 #        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
         data_file = save_psrdada_file( dadafile, data=data_complex, start_uxtime=options.start_unix_time, obsid=0, nbit=32, npol=2, 	
-                                       ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=(1.08 / 1000.00) , proj_id = "EDA2", 
+                                       ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=(1.08 / 1000.00) , proj_id = "LFAASP", 
                                        exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6
                                      )
     elif options.generete_dada_header : 
@@ -441,7 +443,7 @@ if __name__ == '__main__':
         inttime_msec=(1.08 / 1000.00)
         header = generate_dada_header( start_uxtime=options.start_unix_time, obsid = 0, nbit=8, npol=2, ndim=2, ntimesamples=ntimesamples, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, 
                                        proj_id = "SKA1", exptime_sec = (ntimesamples*inttime_msec/1000.00), file_size=1073741824, n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6,
-                                       frequency_mhz=(204*(400.00/512.00)), telescope="SKA1", source="B0950+08" )
+                                       frequency_mhz=(204*(400.00/512.00)), telescope="LFAASP", source="B0950+08" )
         out_f = open(  hdrfile , "w" )
         out_f.write( header )
         out_f.close()    
