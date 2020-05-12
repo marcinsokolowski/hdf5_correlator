@@ -66,7 +66,7 @@ def generate_dada_header( start_uxtime=0,
    out_header += ("NBIT %d\n") % (nbit)
    out_header += ("NPOL %d\n") % (npol)
    out_header += ("NCHAN %d\n") % (n_fine_channels)
-   out_header += ("NDIM %d\n") % (1)
+   out_header += ("NDIM %d\n") % (ndim)
    out_header += ("OBS_OFFSET %d\n") % (obs_offset)
    out_header += ("TSAMP %.4f\n") % (inttime_msec)
    # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
@@ -384,6 +384,7 @@ def parse_options(idx=0):
    parser.add_option('--hdr','--dadahdr','--psrdadahdr',dest="generete_dada_header",action="store_true",default=False, help="Generate PSRDADA header [default %]")
    parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default=None, help="Output file name to save DADA header [default %]")
    parser.add_option('--dat2dada',action="store_true",dest="dat2dada",default=False, help="Convert dat file to .dada file [default %]")
+   parser.add_option('--byte2float',action="store_true",dest="byte2float",default=False, help="Byte to float [default %]")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
 
@@ -421,16 +422,27 @@ if __name__ == '__main__':
 
         # Convert to complex
         data = numpy.fromfile(hdf5file, dtype=complex_8t) # count=all ?
+        inttime_msec = 1.08 / 1000.00 # 1.08 usec -> miliseconds
+        
         data_complex = data['real'].astype(numpy.float32) + 1j * data['imag'].astype(numpy.float32)
         n_timestamps = data_complex.shape[0] / options.npol
-        inttime_msec = 1.08 / 1000.00 # 1.08 usec -> miliseconds
                             
 #        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
         data_file = save_psrdada_file( dadafile, data=data_complex, start_uxtime=options.start_unix_time, obsid=0, nbit=32, npol=2, 	
                                        ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=(1.08 / 1000.00) , proj_id = "EDA2", 
                                        exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6
-                                      )
-#        out_f = open( options.output_file , "w" )
-#        out_f.write( header )
-#        out_f.close()    
+                                     )
+    elif options.generete_dada_header : 
+        hdrfile=hdf5file.replace('.dat', '.hdr')                        
+        if options.output_file is not None : 
+           hdrfile = options.output_file
+
+        ntimesamples=268435456
+        inttime_msec=(1.08 / 1000.00)
+        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid = 0, nbit=8, npol=2, ndim=2, ntimesamples=ntimesamples, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, 
+                                       proj_id = "SKA1", exptime_sec = (ntimesamples*inttime_msec/1000.00), file_size=1073741824, n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6,
+                                       frequency_mhz=(204*(400.00/512.00)), telescope="SKA1", source="B0950+08" )
+        out_f = open(  hdrfile , "w" )
+        out_f.write( header )
+        out_f.close()    
         
