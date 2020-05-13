@@ -4,6 +4,7 @@
 # import pdb
 
 import sys
+import os
 import math
 import numpy
 import time, datetime
@@ -12,6 +13,11 @@ import h5py
 import logging
 
 g_file_number = 0
+
+SKA_low_channel_separation = (400.00/512.00)
+SKA_low_oversampling_ratio = (32.00/27.00)
+SKA_sampling_time_usec     = 1.08 # micro-seconds
+
 
 def get_dada_filename( uxtime = 0, tile_id=0, station_id=0 ) :
     utc_string = datetime.datetime.utcfromtimestamp( uxtime ).strftime( "%Y%m%d_%H%M%S" )
@@ -43,7 +49,9 @@ def generate_dada_header( start_uxtime=0,
                           bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
                           frequency_mhz=(204*(400.00/512.00)),
                           telescope="LFAASP",
-                          source="B0950+08"
+                          source="B0950+08",
+                          ra=0.00,
+                          dec=0.00
                         ) :
    # 
    if start_uxtime <= 0 :
@@ -74,7 +82,8 @@ def generate_dada_header( start_uxtime=0,
    # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
    utc_string = datetime.datetime.utcfromtimestamp( start_uxtime ).strftime( "%Y-%m-%d-%H:%M:%S" )
    out_header += ("UTC_START %s\n" % (utc_string))
-
+   out_header += ("RA  %.8f\n" % (ra))
+   out_header += ("DEC %.8f\n" % (dec))
       
 
    # non-crucial :         
@@ -387,6 +396,10 @@ def parse_options(idx=0):
    parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default=None, help="Output file name to save DADA header [default %]")
    parser.add_option('--dat2dada',action="store_true",dest="dat2dada",default=False, help="Convert dat file to .dada file [default %]")
    parser.add_option('--byte2float',action="store_true",dest="byte2float",default=False, help="Byte to float [default %]")
+   parser.add_option('--ra','--right_ascension','--ra_deg',dest="ra_deg",default=0.00, help="RA [deg] [default %]",type="float")
+   parser.add_option('--dec','--declination','--dec_deg',dest="dec_deg",default=0.00, help="DEC [deg] [default %]",type="float")
+   parser.add_option('--ch','--freq_ch',dest="freq_ch",default=204, help="Frequency channel [default %]",type="int")
+   parser.add_option('--source','--object',dest="source",default="B0950+08", help="Observed source [default %]")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
 
@@ -424,26 +437,38 @@ if __name__ == '__main__':
 
         # Convert to complex
         data = numpy.fromfile(hdf5file, dtype=complex_8t) # count=all ?
-        inttime_msec = 1.08 / 1000.00 # 1.08 usec -> miliseconds
+        inttime_msec = SKA_sampling_time_usec / 1000.00 # 1.08 usec -> miliseconds
         
+        npol = 2 # X and Y 
+        ndim = 2 # re/im
+        file_size = os.stat( hdf5file ).st_size # was 1073741824
         data_complex = data['real'].astype(numpy.float32) + 1j * data['imag'].astype(numpy.float32)
         n_timestamps = data_complex.shape[0] / options.npol
+        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6,
+        inttime_msec = (SKA_sampling_time_usec / 1000.00)
                             
 #        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
-        data_file = save_psrdada_file( dadafile, data=data_complex, start_uxtime=options.start_unix_time, obsid=0, nbit=32, npol=2, 	
-                                       ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=(1.08 / 1000.00) , proj_id = "LFAASP", 
-                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6
+        data_file = save_psrdada_file( dadafile, data=data_complex, start_uxtime=options.start_unix_time, obsid=0, nbit=8, npol=npol, ndim=ndim,	
+                                       ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, proj_id = "LFAASP", 
+                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=bandwidth_hz
                                      )
     elif options.generete_dada_header : 
         hdrfile=hdf5file.replace('.dat', '.hdr')                        
         if options.output_file is not None : 
            hdrfile = options.output_file
 
-        ntimesamples=268435456
-        inttime_msec=(1.08 / 1000.00)
-        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid = 0, nbit=8, npol=2, ndim=2, ntimesamples=ntimesamples, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, 
-                                       proj_id = "SKA1", exptime_sec = (ntimesamples*inttime_msec/1000.00), file_size=1073741824, n_fine_channels=1, bandwidth_hz=(400.00/512.00)*(32.0/27.0)*1e6,
-                                       frequency_mhz=(204*(400.00/512.00)), telescope="LFAASP", source="B0950+08" )
+        npol = 2 # X and Y 
+        ndim = 2 # re/im
+        file_size = os.stat( hdf5file ).st_size # was 1073741824
+        ntimesamples = file_size / (npol*ndim) # was 268435456
+        inttime_msec=(SKA_sampling_time_usec / 1000.00)
+        frequency_mhz = (options.freq_ch*SKA_low_channel_separation)
+        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6,
+        exptime_sec = (ntimesamples*inttime_msec/1000.00)
+        
+        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid = 0, nbit=8, npol=npol, ndim=ndim, ntimesamples=ntimesamples, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, 
+                                       proj_id = "SKA1", exptime_sec = exptime_sec, file_size=file_size, n_fine_channels=1, bandwidth_hz=bandwidth_hz,
+                                       frequency_mhz=frequency_mhz, telescope="LFAASP", source=options.source, ra=options.ra_deg, dec=options.dec_deg )
         out_f = open(  hdrfile , "w" )
         out_f.write( header )
         out_f.close()    
