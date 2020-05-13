@@ -463,7 +463,7 @@ if __name__ == '__main__':
         ntimesamples = file_size / (npol*ndim) # was 268435456
         inttime_msec=(SKA_sampling_time_usec / 1000.00)
         frequency_mhz = (options.freq_ch*SKA_low_channel_separation)
-        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6,
+        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6
         exptime_sec = (ntimesamples*inttime_msec/1000.00)
         
         header = generate_dada_header( start_uxtime=options.start_unix_time, obsid = 0, nbit=8, npol=npol, ndim=ndim, ntimesamples=ntimesamples, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, 
