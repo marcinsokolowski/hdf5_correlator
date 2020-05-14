@@ -400,6 +400,7 @@ do
           echo "WARNING : conversion from .bin -> lfiles is not required"
        fi 
     else
+       # CORRELATED DATA - using single coarse channel xGPU correlator :
        lfile_base_corr=${hdf5_file_tile0%%.hdf5}
        corr_lfile=${lfile_base_corr}.LCCSPC
        auto_lfile=${lfile_base_corr}.LACSPC

@@ -5,6 +5,11 @@ if [[ -n "$1" && "$1" != "-" ]]; then
    object=$1
 fi
 
+freq_ch=204
+if [[ -n "$2" && "$2" != "-" ]]; then
+   freq_ch=$2
+fi
+
 path=`which hdf5_to_dada_converter.py`
 
 for datfile in `ls *.dat`
@@ -19,8 +24,8 @@ do
 #   echo "python $path ${datfile} --dat2dada --outfile=${outfile}"
 #   python $path ${datfile} --dat2dada --outfile=${outfile}
 
-   echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime}"
-   python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime}
+   echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
+   python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
    
    
    echo "cat ${hdrfile} ${datfile} > ${outfile}"
