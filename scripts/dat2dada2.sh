@@ -19,8 +19,8 @@ do
 #   echo "python $path ${datfile} --dat2dada --outfile=${outfile}"
 #   python $path ${datfile} --dat2dada --outfile=${outfile}
 
-   echo "python $path ${datfile} --psrdadahdrs --outfile=${hdrfile} --unixtime=${unixtime}"
-   python $path ${datfile} --psrdadahdrs --outfile=${hdrfile} --unixtime=${unixtime}
+   echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime}"
+   python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime}
    
    
    echo "cat ${hdrfile} ${datfile} > ${outfile}"
