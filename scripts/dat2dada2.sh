@@ -10,9 +10,14 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    freq_ch=$2
 fi
 
+prefix="*"
+if [[ -n "$3" && "$3" != "-" ]]; then
+   prefix="$3"
+fi
+
 path=`which hdf5_to_dada_converter.py`
 
-for datfile in `ls *.dat`
+for datfile in `ls ${prefix}.dat`
 do
    unixtime=`echo $datfile | cut -b 11-25`
    echo "$datfile -> $unixtime - ok ?"
