@@ -82,8 +82,8 @@ def generate_dada_header( start_uxtime=0,
    # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
    utc_string = datetime.datetime.utcfromtimestamp( start_uxtime ).strftime( "%Y-%m-%d-%H:%M:%S" )
    out_header += ("UTC_START %s\n" % (utc_string))
-   out_header += ("RA  %.8f\n" % (ra))
-   out_header += ("DEC %.8f\n" % (dec))
+   out_header += ("RA  %s\n" % ("08:35:20.61149"))
+   out_header += ("DEC %s\n" % ("-45:10:34.8751"))
       
 
    # non-crucial :         
@@ -391,7 +391,7 @@ def parse_options(idx=0):
    parser.add_option('--skip_n_samples','--skip','--skip_n',dest="skip_n_samples",default=0,help="Skip N samples [default %]",type="int")
    parser.add_option('-c','--hdf52dada',action="store_true",dest="hdf52dada",default=False, help="Convert hdf5 file to .dada file [default %]")
    parser.add_option('-s','--station_beam',action="store_true",dest="station_beam",default=False, help="Treat HDF5 file as station beam file [default %]")
-   parser.add_option('-u','--uxtime','--unix_time','--start_uxtime','--start_unix_time',dest="start_unix_time",default=0, help="Unixtime of the first sample [default %]",type="float")
+   parser.add_option('-u','--uxtime','--unix_time','--unixtime','--start_uxtime','--start_unix_time',dest="start_unix_time",default=0, help="Unixtime of the first sample [default %]",type="float")
    parser.add_option('--hdr','--dadahdr','--psrdadahdr',dest="generete_dada_header",action="store_true",default=False, help="Generate PSRDADA header [default %]")
    parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default=None, help="Output file name to save DADA header [default %]")
    parser.add_option('--dat2dada',action="store_true",dest="dat2dada",default=False, help="Convert dat file to .dada file [default %]")
