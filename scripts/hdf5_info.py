@@ -39,7 +39,7 @@ def main() :
    print("Information about HDF5 file %s" % (hdf5file))
    print("keys              = %s" % (f.keys()))
    print("Correlation file ? = %d" % (is_corr_file))
-   print("Integration time   = %.8f [seconds]" % (inttime_hdf5)
+   print("Integration time   = %.8f [seconds]" % (inttime_hdf5))
    
    data_keyword="chan_"
    if is_corr_file :
