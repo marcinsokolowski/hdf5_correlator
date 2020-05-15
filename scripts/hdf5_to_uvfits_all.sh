@@ -276,8 +276,9 @@ do
        dtm_ux=`grep "first timestamp" $hdf5_info_file | awk '{print $6;}'`
        dtm_local=`date -d "1970-01-01 UTC $dtm_ux seconds" +"%Y-%m-%d %T"`
        n_samples_per_hdf5_file=`grep n_integrations_per_uvfits $hdf5_info_file | awk '{print int($8);}'`
+       inttime_hdf5=`grep "Integration time" $hdf5_info_file | awk '{print $4;}'`
 
-       echo "INFO FROM hdf5_info.py output : dtm_ux = $dtm_ux (taken from $hdf5_info_file) -> dtm_local = $dtm_local , n_samples_per_hdf5_file = $n_samples_per_hdf5_file"
+       echo "INFO FROM hdf5_info.py output : dtm_ux = $dtm_ux (taken from $hdf5_info_file) -> dtm_local = $dtm_local , n_samples_per_hdf5_file = $n_samples_per_hdf5_file , inttime_hdf5 = $inttime_hdf5"
     else
        dtm_local=`echo $hdf5_file_tile0 | awk '{l=length($1);end=substr($1,l-20);dt=substr(end,1,8);daysec=substr(end,10,5);h=int(daysec/3600.00);m_dec=(((daysec/3600.00)-h)*60.00);m=int(m_dec);s=int((m_dec-int(m))*60.00);printf("%s %02d:%02d:%02d\n",dt,h,m,s);}'`
        # WORKS OK : date -u -d 'TZ="Australia/Perth" 20190724 10:25:07' +%s
