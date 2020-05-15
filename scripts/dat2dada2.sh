@@ -15,6 +15,8 @@ if [[ -n "$3" && "$3" != "-" ]]; then
    prefix="$3"
 fi
 
+do_dspsr=1
+
 path=`which hdf5_to_dada_converter.py`
 
 for datfile in `ls ${prefix}.dat`
@@ -35,4 +37,16 @@ do
    
    echo "cat ${hdrfile} ${datfile} > ${outfile}"
    cat ${hdrfile} ${datfile} > ${outfile}
+   
+   if [[ $do_dspsr -gt 0 ]]; then
+      echo "dspsr -E 1752.eph -b 64 -U 600 ${outfile}"
+      dspsr -E 1752.eph -b 64 -U 600 ${outfile}
+   
+      last_ar=`ls -tr *.ar | tail -1`
+   
+      echo "psrplot -p flux -D /xs $last_ar"
+      psrplot -p flux -D /xs $last_ar
+   else
+      echo "WARNING : dspsr is not required"
+   fi
 done
