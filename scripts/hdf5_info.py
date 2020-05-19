@@ -35,11 +35,13 @@ def main() :
    is_corr_file = ( "correlation_matrix" in f.keys())
    inttime_hdf5 = f['root'].attrs['tsamp']
    inttime      = inttime_hdf5
+   channel_id   = f['root'].attrs['channel_id']
    
    print("Information about HDF5 file %s" % (hdf5file))
    print("keys              = %s" % (f.keys()))
    print("Correlation file ? = %d" % (is_corr_file))
    print("Integration time   = %.8f [seconds]" % (inttime_hdf5))
+   print("Frequency channel  = %d" % (channel_id))
    
    data_keyword="chan_"
    if is_corr_file :
