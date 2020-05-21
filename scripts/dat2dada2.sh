@@ -44,6 +44,8 @@ do
    echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
    python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
    
+   size_mb=`du -sm ${datfile} | awk '{print $1;}'`
+   echo "size_mb = $size_mb"
    
    echo "cat ${hdrfile} ${datfile} > ${outfile}"
    cat ${hdrfile} ${datfile} > ${outfile}
@@ -55,8 +57,8 @@ do
       fi
    
       if [[ -s ${object}.eph ]]; then
-         echo "dspsr -E ${object}.eph -b 64 -U 1200 ${dspsr_options} ${outfile}"
-         dspsr -E ${object}.eph -b 64 -U 1200 ${dspsr_options} ${outfile}
+         echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
+         dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
    
          last_ar=`ls -tr *.ar | tail -1`
    
