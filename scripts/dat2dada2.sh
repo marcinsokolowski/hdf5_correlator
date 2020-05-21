@@ -55,8 +55,8 @@ do
       fi
    
       if [[ -s ${object}.eph ]]; then
-         echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
-         dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}
+         echo "dspsr -E ${object}.eph -b 64 -U 1200 ${dspsr_options} ${outfile}"
+         dspsr -E ${object}.eph -b 64 -U 1200 ${dspsr_options} ${outfile}
    
          last_ar=`ls -tr *.ar | tail -1`
    
