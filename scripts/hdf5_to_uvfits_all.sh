@@ -30,6 +30,7 @@ dtm_ux=0
 hdf5_template="channel_cont_0_????????_*_*.hdf5"
 channelised_data=1
 station_name="eda2"
+keep_lfiles=0
 
 if [[ -s /opt/aavs/config/station.yml ]]; then
    station_name=`awk -v station_section=0 '{if(index($1,":")>0 && NF==1){if(index($1,"station")>0 ){station_section=1;}else{station_section=0;}}if(station_section>0){if($1=="name:"){station_name=$2;gsub("\"","",station_name);print tolower(station_name);}}}' /opt/aavs/config/station.yml`   
@@ -400,6 +401,14 @@ do
        else 
           echo "WARNING : conversion from .bin -> lfiles is not required"
        fi 
+       
+       if [[ $keep_lfiles -le 0 ]]; then
+          echo "WARNING : removing Lfiles "
+          echo "rm -f ${lfile_base}*.L????C"
+          rm -f ${lfile_base}*.L????C
+       else 
+          echo "WARNING : keeping L-files ${lfile_base}*.L????C -> might use a lot of space"
+       fi
     else
        # CORRELATED DATA - using single coarse channel xGPU correlator :
        lfile_base_corr=${hdf5_file_tile0%%.hdf5}
@@ -426,6 +435,14 @@ do
            ${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} -s ${station_name} ${lfile_base_corr}
        else
            echo "ERROR : ${aavs_calibration_path} does not exist -> cannot convert L-files to uvfits files"
+       fi
+       
+       if [[ $keep_lfiles -le 0 ]]; then
+          echo "WARNING : removing Lfiles "
+          echo "rm -f ${lfile_base_corr}*.L????C"
+          rm -f ${lfile_base_corr}*.L????C
+       else 
+          echo "WARNING : keeping L-files ${lfile_base_corr}*.L????C -> might use a lot of space"
        fi
     fi
     
