@@ -392,8 +392,8 @@ do
              # was -i 1.130112 
              # TEMPORARY unitl Randall commits config files 
              # aavs_calibration_path=~/aavs-calibration/
-             echo "${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} -F ${lfile_base} -s ${station_name}"
-             ${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} -F ${lfile_base} -s ${station_name}
+             echo "${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} -F -s ${station_name} ${lfile_base}"
+             ${aavs_calibration_path}/Lfile2uvfits_eda.sh -i ${inttime} -n ${n_integrations_per_uvfits} ${radec_string} -N 512 -C ${n_chan} -f ${freq_channel} -F -s ${station_name} ${lfile_base}
           else
              echo "ERROR : ${aavs_calibration_path} does not exist -> cannot convert L-files to uvfits files"
           fi
