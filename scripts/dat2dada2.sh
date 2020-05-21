@@ -16,6 +16,16 @@ if [[ -n "$3" && "$3" != "-" ]]; then
 fi
 
 do_dspsr=1
+if [[ -n "$4" && "$4" != "-" ]]; then
+   do_dspsr=$4
+fi
+
+dspsr_options=""
+if [[ -n "$5" && "$5" != "-" ]]; then
+   dspsr_options=$5
+fi
+
+eph_dir=~/github/hdf5_correlator/scripts/config/dspsr/
 
 path=`which hdf5_to_dada_converter.py`
 
@@ -39,13 +49,24 @@ do
    cat ${hdrfile} ${datfile} > ${outfile}
    
    if [[ $do_dspsr -gt 0 ]]; then
-      echo "dspsr -E 1752.eph -b 64 -U 600 ${outfile}"
-      dspsr -E 1752.eph -b 64 -U 600 ${outfile}
+      if [[ ! -s ${object}.eph ]]; then
+         echo "cp ${eph_dir}/${object}.eph ."
+         cp ${eph_dir}/${object}.eph .
+      fi
    
-      last_ar=`ls -tr *.ar | tail -1`
+      if [[ -s ${object}.eph ]]; then
+         echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
+         dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}
    
-      echo "psrplot -p flux -D /xs $last_ar"
-      psrplot -p flux -D /xs $last_ar
+         last_ar=`ls -tr *.ar | tail -1`
+   
+         echo "psrplot -p flux -D /xs $last_ar"
+         psrplot -p flux -D /xs $last_ar
+      else
+         echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
+         echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
+         echo "and : psrplot -p flux -D /xs $last_ar"
+      fi
    else
       echo "WARNING : dspsr is not required"
    fi
