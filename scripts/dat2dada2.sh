@@ -25,6 +25,8 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    dspsr_options=$5
 fi
 
+force=0
+
 eph_dir=~/github/hdf5_correlator/scripts/config/dspsr/
 
 path=`which hdf5_to_dada_converter.py`
@@ -41,35 +43,43 @@ do
 #   echo "python $path ${datfile} --dat2dada --outfile=${outfile}"
 #   python $path ${datfile} --dat2dada --outfile=${outfile}
 
-   echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
-   python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
+   if [[ ! -s ${outfile} || $force -gt 0 ]]; then
+      echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
+      python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
    
-   size_mb=`du -sm ${datfile} | awk '{print $1;}'`
-   echo "size_mb = $size_mb"
+      size_mb=`du -sm ${datfile} | awk '{print $1;}'`
+      echo "size_mb = $size_mb"
    
-   echo "cat ${hdrfile} ${datfile} > ${outfile}"
-   cat ${hdrfile} ${datfile} > ${outfile}
+      echo "cat ${hdrfile} ${datfile} > ${outfile}"
+      cat ${hdrfile} ${datfile} > ${outfile}
    
-   if [[ $do_dspsr -gt 0 ]]; then
-      if [[ ! -s ${object}.eph ]]; then
-         echo "cp ${eph_dir}/${object}.eph ."
-         cp ${eph_dir}/${object}.eph .
-      fi
+      if [[ $do_dspsr -gt 0 ]]; then
+         if [[ ! -s ${object}.eph ]]; then
+            echo "cp ${eph_dir}/${object}.eph ."
+            cp ${eph_dir}/${object}.eph .
+         fi
    
-      if [[ -s ${object}.eph ]]; then
-         echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
-         dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
+         if [[ -s ${object}.eph ]]; then
+            echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
+            dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
    
-         last_ar=`ls -tr *.ar | tail -1`
+            last_ar=`ls -tr *.ar | tail -1`
    
-         echo "psrplot -p flux -D /xs $last_ar"
-         psrplot -p flux -D /xs $last_ar
+            echo "psrplot -p flux -D /xs $last_ar"
+            psrplot -p flux -D /xs $last_ar
+            
+            echo "pav -G -DTp -N1,1 2 $last_ar"
+            pav -G -DTp -N1,1 2 $last_ar
+         else
+            echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
+            echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
+            echo "and : psrplot -p flux -D /xs $last_ar"
+         fi
       else
-         echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
-         echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
-         echo "and : psrplot -p flux -D /xs $last_ar"
+         echo "WARNING : dspsr is not required"
       fi
    else
-      echo "WARNING : dspsr is not required"
+      echo "WARNING : dada file ${outfile} already exists -> skipped (enable force=1 in order to re-process)"
    fi
 done
+
