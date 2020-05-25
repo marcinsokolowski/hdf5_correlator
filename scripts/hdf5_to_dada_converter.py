@@ -82,8 +82,8 @@ def generate_dada_header( start_uxtime=0,
    # utc_string = time.strftime("%Y-%m-%d-%H:%M:%S", str(start_uxtime))
    utc_string = datetime.datetime.utcfromtimestamp( start_uxtime ).strftime( "%Y-%m-%d-%H:%M:%S" )
    out_header += ("UTC_START %s\n" % (utc_string))
-   out_header += ("RA  %s\n" % ("08:35:20.61149"))
-   out_header += ("DEC %s\n" % ("-45:10:34.8751"))
+#   out_header += ("RA  %s\n" % ("08:35:20.61149"))
+#   out_header += ("DEC %s\n" % ("-45:10:34.8751"))
       
 
    # non-crucial :         
@@ -135,6 +135,7 @@ def save_psrdada_file( data_filename, data=None,
                        obsid = 0, 
                        nbit=32, 
                        npol=2, 
+                       ndim=2,
                        ntimesamples=10240000, 
                        ninputs=256,
                        ninputs_xgpu=256,
@@ -146,7 +147,7 @@ def save_psrdada_file( data_filename, data=None,
                        n_fine_channels=40,
                        bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
                      ) :
-    header = generate_dada_header( start_uxtime=start_uxtime, obsid=obsid, nbit=nbit, npol=npol, ntimesamples=ntimesamples, ninputs=ninputs, ninputs_xgpu=ninputs_xgpu, 
+    header = generate_dada_header( start_uxtime=start_uxtime, obsid=obsid, nbit=nbit, npol=npol, ndim=ndim, ntimesamples=ntimesamples, ninputs=ninputs, ninputs_xgpu=ninputs_xgpu, 
                                    inttime_msec=inttime_msec, proj_id=proj_id, exptime_sec=exptime_sec, file_size=file_size, file_number=file_number , n_fine_channels=n_fine_channels, bandwidth_hz=bandwidth_hz
                                  )
     
@@ -400,6 +401,7 @@ def parse_options(idx=0):
    parser.add_option('--dec','--declination','--dec_deg',dest="dec_deg",default=0.00, help="DEC [deg] [default %]",type="float")
    parser.add_option('--ch','--freq_ch',dest="freq_ch",default=204, help="Frequency channel [default %]",type="int")
    parser.add_option('--source','--object',dest="source",default="B0950+08", help="Observed source [default %]")
+   parser.add_option('--multiplier','--complex_multiplier','--mult_complex',dest="complex_multiplier",default=None, help="Complex multiplier [default %]")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
 
@@ -444,7 +446,7 @@ if __name__ == '__main__':
         file_size = os.stat( hdf5file ).st_size # was 1073741824
         data_complex = data['real'].astype(numpy.float32) + 1j * data['imag'].astype(numpy.float32)
         n_timestamps = data_complex.shape[0] / options.npol
-        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6,
+        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6
         inttime_msec = (SKA_sampling_time_usec / 1000.00)
                             
 #        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
