@@ -1,3 +1,4 @@
+from __future__ import print_function
 # see my notes in /home/msok/Desktop/AAVS1/logbook/20190520_feeding_newmwacorr_with_tpm_data_stream.odt
 
 # debug :
@@ -171,6 +172,76 @@ def save_psrdada_file( data_filename, data=None,
 
     return True
 
+
+def read_and_convert_dat2psrdada_file( data_filename, dada_filename, 
+                       start_uxtime=0, 
+                       obsid = 0, 
+                       nbit=32, 
+                       npol=2, 
+                       ndim=2,
+                       ntimesamples=10240000, 
+                       ninputs=256,
+                       ninputs_xgpu=256,
+                       inttime_msec=1000,
+                       proj_id="G0008",
+                       exptime_sec=8,
+                       file_size  = 5269094400,
+                       file_number=0,
+                       n_fine_channels=40,
+                       bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
+                       buffer_size=1000000,
+                       complex_mult=None
+                     ) :
+    header = generate_dada_header( start_uxtime=start_uxtime, obsid=obsid, nbit=nbit, npol=npol, ndim=ndim, ntimesamples=ntimesamples, ninputs=ninputs, ninputs_xgpu=ninputs_xgpu, 
+                                   inttime_msec=inttime_msec, proj_id=proj_id, exptime_sec=exptime_sec, file_size=file_size, file_number=file_number , n_fine_channels=n_fine_channels, bandwidth_hz=bandwidth_hz
+                                 )
+    
+    dada_file = open(  dada_filename, "wb" )
+    # write header :
+    dada_file.write( header )
+
+    complex_8t = numpy.dtype([('real', numpy.int8), ('imag', numpy.int8)])
+
+    file_pos = 0
+    f = open( data_filename, 'rb')
+    
+    read_ok = True
+    while read_ok :
+       f.seek( file_pos )
+       data = numpy.fromfile(f, dtype=numpy.int8, count=buffer_size)
+       
+       if len(data) > 0 :
+          file_pos += len(data)
+          if mult is not None :
+             data = data * complex_mult
+          data.astype(numpy.int8).tofile( dada_file )
+          read_ok = True
+          print("DEBUG : saved %d bytes in total" % (file_pos))
+       else :
+          print("DEBUG : no data after reading %d bytes" % (file_pos))
+          read_ok = False
+    
+
+#    read_ok = True
+#    while read_ok :
+#       data = f.read( buffer_size )
+#       
+#       if len(data) > 0 :
+#          file_pos += len(data)
+##          data.astype(numpy.int8).tofile( dada_file )
+#          read_ok = True
+#          print("DEBUG : saved %d bytes in total" % (file_pos))
+#       else :
+#          print("DEBUG : no data after reading %d bytes" % (file_pos))
+#          read_ok = False
+       
+    
+    f.close()
+    dada_file.close()
+
+    return True
+
+
 def create_test_dada_file() :
    test_dada_file = "test.dada"      
    
@@ -202,8 +273,8 @@ def create_test_dada_file() :
        template_spectrum[idx]   = value # fill only RE part with ch value
        template_spectrum[idx+1] = value + 1
        
-       print "%d %.4f" % (idx,value)
-       print "%d %.4f" % (idx+1,value+1)
+       print("%d %.4f" % (idx,value))
+       print("%d %.4f" % (idx+1,value+1))
 
    # sizes in bytes :
    one_spectrum_size = n_channels*n_reim
@@ -211,7 +282,7 @@ def create_test_dada_file() :
    one_second_size   = one_block_size*n_blocks
       
    data = numpy.zeros( one_second_size*n_seconds, dtype=numpy.float32 )   
-   print "Allocated array of %d bytes" % (one_second_size*n_seconds*4)
+   print("Allocated array of %d bytes" % (one_second_size*n_seconds*4))
 
    for s in range(0,n_seconds) :
        skip_seconds_size = s*(one_second_size)
@@ -226,14 +297,14 @@ def create_test_dada_file() :
                   data[idx+1] = template_spectrum[n_reim*ch + 1]
                   
                   if t==0 and b==0 and s==0 and True :
-                      print "DEBUG1 : %d %.4f" % (2*ch,data[idx])
-                      print "DEBUG1 : %d %.4f" % (2*ch+1,data[idx+1])
+                      print("DEBUG1 : %d %.4f" % (2*ch,data[idx]))
+                      print("DEBUG1 : %d %.4f" % (2*ch+1,data[idx+1]))
 
-   print "Filled data array"
+   print("Filled data array")
    for ch in range(0,n_channels) :
       idx = ch*n_reim 
-      print "DEBUG2 : %d %.4f" % (idx,data[idx])
-      print "DEBUG2 : %d %.4f" % (idx+1,data[idx+1])
+      print("DEBUG2 : %d %.4f" % (idx,data[idx]))
+      print("DEBUG2 : %d %.4f" % (idx+1,data[idx+1]))
              
    save_psrdada_file( test_dada_file, data=data )
 
@@ -259,7 +330,7 @@ def convert_hdf5data_to_dada( data_ptr, timestamp=0, dada_filename=None, debug_l
        for i in range(0,len(data_ptr.shape)) :
            n_total_samples = n_total_samples * data_ptr.shape[i]
 
-   print "convert_hdf5data_to_dada : n_total_samples = %d , n_blocks = %d, n_fine_channels = %d, bandwidth_hz = %d, n_antennas = %d" % (n_total_samples,n_blocks,n_fine_channels,bandwidth_hz,n_antennas)
+   print("convert_hdf5data_to_dada : n_total_samples = %d , n_blocks = %d, n_fine_channels = %d, bandwidth_hz = %d, n_antennas = %d" % (n_total_samples,n_blocks,n_fine_channels,bandwidth_hz,n_antennas))
    
    # n_samp     = 11575
    n_inputs = (n_antennas*n_pols)
@@ -283,7 +354,7 @@ def convert_hdf5data_to_dada( data_ptr, timestamp=0, dada_filename=None, debug_l
            # b+1 - do leave the 0-block empty (ZEROS/METADATA) :
            data_buffer[b+1,inp*n_samples_per_block:(inp+1)*n_samples_per_block] = data_ptr[b*n_samples_per_block:(b+1)*n_samples_per_block,inp].copy()
            if debug_level > 0 :
-               print "DEBUG : first sample in block %d / input %d = %s vs. %s" % ( b, inp, data_buffer[b+1,inp*n_samples_per_block], data_ptr[b*n_samples_per_block,inp] )
+               print("DEBUG : first sample in block %d / input %d = %s vs. %s" % ( b, inp, data_buffer[b+1,inp*n_samples_per_block], data_ptr[b*n_samples_per_block,inp] ))
 
    gpstime = timestamp - 315964783
    save_psrdada_file( dada_filename, 
@@ -330,7 +401,7 @@ def convert_stationbeam_hdf5data_to_dada( data_ptr, timestamp=0, dada_filename=N
        for i in range(0,len(data_ptr.shape)) :
            n_total_samples = n_total_samples * data_ptr.shape[i]
 
-   print "convert_stationbeam_hdf5data_to_dada : n_total_samples = %d , n_blocks = %d, n_fine_channels = %d, bandwidth_hz = %d, n_antennas = %d" % (n_total_samples,n_blocks,n_fine_channels,bandwidth_hz,n_antennas)
+   print("convert_stationbeam_hdf5data_to_dada : n_total_samples = %d , n_blocks = %d, n_fine_channels = %d, bandwidth_hz = %d, n_antennas = %d" % (n_total_samples,n_blocks,n_fine_channels,bandwidth_hz,n_antennas))
    
    gpstime = timestamp - 315964783
    save_psrdada_file( dada_filename, 
@@ -358,15 +429,15 @@ def convert_stationbeam_hdf5data_to_dada( data_ptr, timestamp=0, dada_filename=N
    
 
 def convert_hdf5_to_dada( hdf5file, dadafile, timestamp=0, debug_level=0, n_antennas=16 ) :
-   print "Converting HDF5 file %s to dada file %s" % (hdf5file,dadafile)
+   print("Converting HDF5 file %s to dada file %s" % (hdf5file,dadafile))
    f = h5py.File( hdf5file )
    data_ptr = f['/chan_']['data']
-   print "Data shape = %d x %d" % (data_ptr.shape[0],data_ptr.shape[1])
+   print("Data shape = %d x %d" % (data_ptr.shape[0],data_ptr.shape[1]))
 
    convert_hdf5data_to_dada( data_ptr, timestamp=timestamp, dada_filename=dadafile, n_antennas=n_antennas )
 
 def convert_stationbeam_hdf5_to_dada( hdf5file, dadafile, timestamp=0, debug_level=0, skip_n_samples=0, polarisation=0 ) :
-   print "Converting HDF5 file %s to dada file %s" % (hdf5file,dadafile)
+   print("Converting HDF5 file %s to dada file %s" % (hdf5file,dadafile))
    f = h5py.File( hdf5file )
    
    data_keyword=( 'polarization_%d' % (polarisation) )
@@ -377,7 +448,7 @@ def convert_stationbeam_hdf5_to_dada( hdf5file, dadafile, timestamp=0, debug_lev
    else :
       data_ptr = f[data_keyword]['data'][:,0]
       
-   print "Data shape = %d , first and last values = %.4f , %.4f" % (data_ptr.shape[0],data_ptr[0],data_ptr[data_ptr.shape[0]-1])
+   print("Data shape = %d , first and last values = %.4f , %.4f" % (data_ptr.shape[0],data_ptr[0],data_ptr[data_ptr.shape[0]-1]))
    convert_stationbeam_hdf5data_to_dada( data_ptr, timestamp=timestamp, dada_filename=dadafile, n_antennas=1 )
 
 
@@ -396,6 +467,7 @@ def parse_options(idx=0):
    parser.add_option('--hdr','--dadahdr','--psrdadahdr',dest="generete_dada_header",action="store_true",default=False, help="Generate PSRDADA header [default %]")
    parser.add_option('-o','--outfile','--out_file','--output_file',dest="output_file",default=None, help="Output file name to save DADA header [default %]")
    parser.add_option('--dat2dada',action="store_true",dest="dat2dada",default=False, help="Convert dat file to .dada file [default %]")
+   parser.add_option('--dat2dada_old',action="store_true",dest="dat2dada_old",default=False, help="OBSOLATE VERSION : Convert dat file to .dada file [default %]")
    parser.add_option('--byte2float',action="store_true",dest="byte2float",default=False, help="Byte to float [default %]")
    parser.add_option('--ra','--right_ascension','--ra_deg',dest="ra_deg",default=0.00, help="RA [deg] [default %]",type="float")
    parser.add_option('--dec','--declination','--dec_deg',dest="dec_deg",default=0.00, help="DEC [deg] [default %]",type="float")
@@ -427,7 +499,7 @@ if __name__ == '__main__':
            convert_hdf5_to_dada( hdf5file, dadafile,
                                  n_antennas = options.n_antennas,
                                  debug_level=options.debug_level )
-    elif options.dat2dada :
+    elif options.dat2dada_old :
         dadafile=hdf5file.replace('.dat', '.dada')
         if options.output_file is not None :
            dadafile = options.output_file
@@ -454,6 +526,30 @@ if __name__ == '__main__':
                                        ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, proj_id = "LFAASP", 
                                        exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=data.shape[0], n_fine_channels=1, bandwidth_hz=bandwidth_hz
                                      )
+
+    elif options.dat2dada :
+        dadafile=hdf5file.replace('.dat', '.dada')
+        if options.output_file is not None :
+           dadafile = options.output_file
+           
+        print("Converting file %s to %s" % (hdf5file,dadafile))
+        
+        inttime_msec = SKA_sampling_time_usec / 1000.00 # 1.08 usec -> miliseconds
+        
+        npol = 2 # X and Y 
+        ndim = 2 # re/im
+        file_size = os.stat( hdf5file ).st_size # was 1073741824
+        n_timestamps = file_size / options.npol
+        bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6
+        inttime_msec = (SKA_sampling_time_usec / 1000.00)
+                            
+#        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
+        data_file = read_and_convert_dat2psrdada_file( hdf5file , dadafile, start_uxtime=options.start_unix_time, obsid=0, nbit=8, npol=npol, ndim=ndim,	
+                                       ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, proj_id = "LFAASP", 
+                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=file_size, n_fine_channels=1, bandwidth_hz=bandwidth_hz
+                                     )
+
+
     elif options.generete_dada_header : 
         hdrfile=hdf5file.replace('.dat', '.hdr')                        
         if options.output_file is not None : 
