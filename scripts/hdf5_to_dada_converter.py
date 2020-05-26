@@ -190,10 +190,12 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
                        n_fine_channels=40,
                        bandwidth_hz=((400.00/512.00)*(32.00/27.00))*1e6, # MWA : 1280000,
                        buffer_size=1000000,
-                       complex_mult=None
+                       complex_mult=None,
+                       frequency_mhz=(204*(400.00/512.00)),
                      ) :
     header = generate_dada_header( start_uxtime=start_uxtime, obsid=obsid, nbit=nbit, npol=npol, ndim=ndim, ntimesamples=ntimesamples, ninputs=ninputs, ninputs_xgpu=ninputs_xgpu, 
-                                   inttime_msec=inttime_msec, proj_id=proj_id, exptime_sec=exptime_sec, file_size=file_size, file_number=file_number , n_fine_channels=n_fine_channels, bandwidth_hz=bandwidth_hz
+                                   inttime_msec=inttime_msec, proj_id=proj_id, exptime_sec=exptime_sec, file_size=file_size, file_number=file_number , n_fine_channels=n_fine_channels, bandwidth_hz=bandwidth_hz,
+                                   frequency_mhz=frequency_mhz
                                  )
     
     dada_file = open(  dada_filename, "wb" )
@@ -212,8 +214,19 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
        
        if len(data) > 0 :
           file_pos += len(data)
-          if mult is not None :
-             data = data * complex_mult
+#          if mult is not None :
+#             data = data * complex_mult
+          # conjugate 
+#          for i in range(1,len(data),2) :
+#             data[i] = -data[i]
+
+          # swap RE/IM
+#          for i in range(1,len(data)) :
+#             if ( i % 2 ) == 1 : 
+#                tmp = data[i-1]
+#                data[i-1] = data[i]
+#                data[i] = tmp
+                
           data.astype(numpy.int8).tofile( dada_file )
           read_ok = True
           print("DEBUG : saved %d bytes in total" % (file_pos))
@@ -542,11 +555,13 @@ if __name__ == '__main__':
         n_timestamps = file_size / options.npol
         bandwidth_hz  = SKA_low_channel_separation*SKA_low_oversampling_ratio*1e6
         inttime_msec = (SKA_sampling_time_usec / 1000.00)
+        frequency_mhz = (options.freq_ch*SKA_low_channel_separation)
                             
 #        header = generate_dada_header( start_uxtime=options.start_unix_time, obsid=0, nbit=16, npol=2, ntimesamples=	
         data_file = read_and_convert_dat2psrdada_file( hdf5file , dadafile, start_uxtime=options.start_unix_time, obsid=0, nbit=8, npol=npol, ndim=ndim,	
                                        ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, proj_id = "LFAASP", 
-                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=file_size, n_fine_channels=1, bandwidth_hz=bandwidth_hz
+                                       exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=file_size, n_fine_channels=1, bandwidth_hz=bandwidth_hz,
+                                       frequency_mhz=frequency_mhz
                                      )
 
 
