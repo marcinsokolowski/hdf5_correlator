@@ -47,7 +47,7 @@ do
       echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
       python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
    
-      size_mb=`du -sm ${datfile} | awk '{print $1;}'`
+      size_mb=`du -smL ${datfile} | awk '{print $1;}'`
       echo "size_mb = $size_mb"
    
       echo "cat ${hdrfile} ${datfile} > ${outfile}"
