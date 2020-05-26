@@ -68,8 +68,8 @@ do
             echo "psrplot -p flux -D /xs $last_ar"
             psrplot -p flux -D /xs $last_ar
             
-            echo "psrplot -p flux -D png $last_ar"
-            psrplot -p flux -D png $last_ar
+            echo "psrplot -p flux -D /png $last_ar"
+            psrplot -p flux -D /png $last_ar
             
             pngfile=${last_ar%%ar}png
             echo "mv pgplot.png $pngfile"
