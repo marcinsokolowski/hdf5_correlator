@@ -25,7 +25,26 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    dspsr_options=$5
 fi
 
+conjugate=0
+if [[ -n "$6" && "$6" != "-" ]]; then
+   conjugate=$6
+fi
+
 force=0
+
+echo "###########################################################"
+echo "PARAMETERS:"
+echo "###########################################################"
+echo "object   = $object"
+echo "freq_ch  = $freq_ch"
+echo "prefix   = $prefix"
+echo "do_dspsr = $do_dspsr"
+echo "dspsr_options = $dspsr_options"
+echo "conjugate = $conjugate"
+echo "force    = $force"
+echo "###########################################################"
+
+
 
 eph_dir=~/github/hdf5_correlator/scripts/config/dspsr/
 
@@ -44,14 +63,20 @@ do
 #   python $path ${datfile} --dat2dada --outfile=${outfile}
 
    if [[ ! -s ${outfile} || $force -gt 0 ]]; then
-      echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
-      python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
    
-      size_mb=`du -smL ${datfile} | awk '{print $1;}'`
-      echo "size_mb = $size_mb"
+      if [[ $conjugate -gt 0 ]]; then       
+         echo "python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object} --conjugate"
+         python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object} --conjugate
+      else
+         echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
+         python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
    
-      echo "cat ${hdrfile} ${datfile} > ${outfile}"
-      cat ${hdrfile} ${datfile} > ${outfile}
+         size_mb=`du -smL ${datfile} | awk '{print $1;}'`
+         echo "size_mb = $size_mb"
+   
+         echo "cat ${hdrfile} ${datfile} > ${outfile}"
+         cat ${hdrfile} ${datfile} > ${outfile}
+      fi
    
       if [[ $do_dspsr -gt 0 ]]; then
          if [[ ! -s ${object}.eph ]]; then

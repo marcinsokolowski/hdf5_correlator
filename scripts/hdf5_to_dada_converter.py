@@ -192,6 +192,7 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
                        buffer_size=1000000,
                        complex_mult=None,
                        frequency_mhz=(204*(400.00/512.00)),
+                       conjugate=False
                      ) :
     header = generate_dada_header( start_uxtime=start_uxtime, obsid=obsid, nbit=nbit, npol=npol, ndim=ndim, ntimesamples=ntimesamples, ninputs=ninputs, ninputs_xgpu=ninputs_xgpu, 
                                    inttime_msec=inttime_msec, proj_id=proj_id, exptime_sec=exptime_sec, file_size=file_size, file_number=file_number , n_fine_channels=n_fine_channels, bandwidth_hz=bandwidth_hz,
@@ -216,9 +217,10 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
           file_pos += len(data)
 #          if mult is not None :
 #             data = data * complex_mult
-          # conjugate 
-#          for i in range(1,len(data),2) :
-#             data[i] = -data[i]
+
+          if conjugate :          
+             for i in range(1,len(data),2) :
+                data[i] = -data[i]
 
           # swap RE/IM
 #          for i in range(1,len(data)) :
@@ -487,6 +489,8 @@ def parse_options(idx=0):
    parser.add_option('--ch','--freq_ch',dest="freq_ch",default=204, help="Frequency channel [default %]",type="int")
    parser.add_option('--source','--object',dest="source",default="B0950+08", help="Observed source [default %]")
    parser.add_option('--multiplier','--complex_multiplier','--mult_complex',dest="complex_multiplier",default=None, help="Complex multiplier [default %]")
+   
+   parser.add_option('--conjugate',dest="conjugate",action="store_true",default=False, help="Conjugate [default %default]")
 
    (options, args) = parser.parse_args(sys.argv[idx:])
 
@@ -561,7 +565,7 @@ if __name__ == '__main__':
         data_file = read_and_convert_dat2psrdada_file( hdf5file , dadafile, start_uxtime=options.start_unix_time, obsid=0, nbit=8, npol=npol, ndim=ndim,	
                                        ntimesamples=n_timestamps, ninputs=2, ninputs_xgpu=2, inttime_msec=inttime_msec, proj_id = "LFAASP", 
                                        exptime_sec = (n_timestamps*inttime_msec/1000.00), file_size=file_size, n_fine_channels=1, bandwidth_hz=bandwidth_hz,
-                                       frequency_mhz=frequency_mhz
+                                       frequency_mhz=frequency_mhz, conjugate=options.conjugate
                                      )
 
 
