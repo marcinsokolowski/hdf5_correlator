@@ -65,6 +65,16 @@ if [[ -n "$8" && "$8" != "-" ]]; then
    options=$8
 fi
 
+if [[ -n "$9" && "$9" != "-" ]]; then
+   # passing specific path to calibration solutions to be used :
+   last_cal_path=$9
+   last_cal_file=${last_cal_path}/chan_${chan}_selfcal_pha_${pol}.txt
+   
+   echo "Using calibration solutions from file $last_cal_file"
+   delays=`~/aavs-calibration/station/calsol.sh ${last_cal_file}`
+   echo "Last calibration file for channel $chan found : $last_cal_file -> delays are : $delays"
+fi
+
 # export PATH=~/msok/eda2/msok_scripts:$PATH
 # export LD_LIBRARY_PATH=~/msok/eda2/lib:$LD_LIBRARY_PATH
 
