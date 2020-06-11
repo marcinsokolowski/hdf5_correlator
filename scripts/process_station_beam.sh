@@ -50,6 +50,14 @@ if [[ -n "$8" && "$8" != "-" ]]; then
    polarisation_swap=$8
 fi
 
+echo "######################################################################################"
+echo "PARAMETERS:"
+echo "######################################################################################"
+echo "station_file      = $station_file"
+echo "polarisation_swap = $polarisation_swap"
+echo "######################################################################################"
+
+
 echo "ls -al station*.hdf5"
 ls -al station*.hdf5
 
@@ -110,7 +118,7 @@ dtm=`date +%Y%m%d%M%S`
 echo "cp images/${png_file} images/${dtm}.png"
 cp images/${png_file} images/${dtm}.png
 
-if [[ -n ${www_dir} && ${www_dir} != "-" ]]; then
+if [[ -n ${www_dir} && ${www_dir} != "-" && ${www_dir} != "NO_WWW" ]]; then
    echo "INFO : Copying image to ${www_dir}/"
 
    echo "rsync -avP images/${png_file} ${www_dir}/"
