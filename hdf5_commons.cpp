@@ -39,7 +39,7 @@ static time_t get_unixtime_from_local_string_localfunc( const char* szDTM )
 }
 
 
-static time_t get_gmtime_from_string_localfunc( const char* szGmTime )
+static time_t get_gmtime_from_ut_string_localfunc( const char* szGmTime )
 {
    struct tm gmtime_tm;
    // sscanf( szGmTime, "%.4u%.2u%.2u_%.2u%.2u%.2u", &gmtime_tm.tm_year,&gmtime_tm.tm_mon,
@@ -73,16 +73,15 @@ double hdf5filename2uxtime( const char* filename, const char* format /*="channel
    
    char szMidnight[128];
    sprintf(szMidnight,"%d_000000", dtm );
-   time_t uxtime = 0;
+   time_t uxtime = get_unixtime_from_local_string_localfunc( szMidnight );
    
    if( uxtime >= 1586102400 ){ // from 2020-04-06 Alessio changed file names to have seconds from UTC midnight !!! 
        // Midnight UTC = 8 am AWST :
        // this is a temporary fix as it should rather be a new function ....
-       uxtime = get_gmtime_from_string_localfunc( szMidnight );
-       printf("Using (get_gmtime_from_string) uxtime = %d, ut_seconds = %d\n",(int)uxtime,local_seconds);
+       uxtime = get_gmtime_from_ut_string_localfunc( szMidnight );
+       printf("Using (get_gmtime_from_ut_string_localfunc) uxtime = %d, ut_seconds = %d\n",(int)uxtime,local_seconds);
    }else{
-       uxtime = get_unixtime_from_local_string_localfunc( szMidnight );
-       printf("Using (get_gmtime_from_string) uxtime = %d, local_seconds = %d\n",(int)uxtime,local_seconds);
+       printf("Using (get_unixtime_from_local_string_localfunc) uxtime = %d, local_seconds = %d\n",(int)uxtime,local_seconds);
    }
    
    return (uxtime + local_seconds);
