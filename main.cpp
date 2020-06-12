@@ -1217,12 +1217,13 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
     }     
 
     // mean power :    
-    mean_spectrum = mean_spectrum / beamformed_data.size();
+// 2020-06-12 - this line was responsible for very low numbers in the resulting power - this is not acceptable plots looked like Quantised ...    
+//    mean_spectrum = mean_spectrum / beamformed_data.size();
     
     char szOutFile[1024];
     sprintf(szOutFile,"meanpower_vs_time_pol%d.txt",gPol);
     FILE* out_mean_power_f = fopen(szOutFile,"a+");
-    fprintf( out_mean_power_f , "%.8f %.8f %.8f %.8f %d\n",gPointingAz_DEG,gPointingElev_DEG,double(gFileUxTime+((double(beamformed_data.size())/2.00)*(1.08/1000000.0))),mean_spectrum,beamformed_data.size());
+    fprintf( out_mean_power_f , "%.8f %.8f %.8f %.8f %d\n",gPointingAz_DEG,gPointingElev_DEG,double(gFileUxTime+((double(beamformed_data.size())/2.00)*(1.08/1000000.0))),(mean_spectrum/beamformed_data.size()),beamformed_data.size());
     fclose( out_mean_power_f );
     
     if( out_timeseries_f ){
