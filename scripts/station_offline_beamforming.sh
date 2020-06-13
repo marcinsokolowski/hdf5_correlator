@@ -2,10 +2,9 @@
 
 # WARNING : should be later in the script, but this value is required earlier :
 pol_swap=1
-if [[ -n "$7" && "$7" != "-" ]]; then
-   pol_swap=$7
+if [[ -n "${10}" && "${10}" != "-" ]]; then
+   pol_swap=${10}
 fi
-
 
 chan=204
 if [[ -n "$1" && "$1" != "-" ]]; then
@@ -70,19 +69,6 @@ if [[ -n "$6" && "$6" != "-" ]]; then
     cd $6/
 fi
 
-# pol_swap=1
-# if [[ -n "$7" && "$7" != "-" ]]; then
-#   pol_swap=$7
-# fi
-
-
-echo "###################################################################"
-echo "PARAMETERS:"
-echo "###################################################################"
-echo "station  = $station"
-echo "pol_swap = $pol_swap"
-echo "###################################################################"
-
 
 b=`basename $merged_dir`
 if [[ $b != "merged" ]]; then
@@ -111,6 +97,19 @@ if [[ -n "$9" && "$9" != "-" ]]; then
    delays=`~/aavs-calibration/station/calsol.sh ${last_cal_file}`
    echo "Last calibration file for channel $chan found : $last_cal_file -> delays are : $delays"
 fi
+
+# pol_swap=1
+# if [[ -n "${10}" && "${10}" != "-" ]]; then
+#   pol_swap=${10}
+# fi
+
+
+echo "###################################################################"
+echo "PARAMETERS:"
+echo "###################################################################"
+echo "station  = $station"
+echo "pol_swap = $pol_swap"
+echo "###################################################################"
 
 # export PATH=~/msok/eda2/msok_scripts:$PATH
 # export LD_LIBRARY_PATH=~/msok/eda2/lib:$LD_LIBRARY_PATH
