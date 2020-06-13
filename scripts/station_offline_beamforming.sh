@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# WARNING : should be later in the script, but this value is required earlier :
+pol_swap=1
+if [[ -n "$7" && "$7" != "-" ]]; then
+   pol_swap=$7
+fi
+
+
 chan=204
 if [[ -n "$1" && "$1" != "-" ]]; then
    chan=$1
@@ -14,6 +21,16 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    fi
 fi
 
+if [[ $pol_swap -gt 0 ]]; then
+   echo "WARNING : swapping polarisations !!!"
+   if [[ $pol_index -le 0 ]]; then
+      # pol_index = 0 -> change to 1 
+      pol_index=1
+   else  
+      # pol_index=1 -> change to 0 
+      pol_index=0
+   fi
+fi
 
 # trying to use last delays as default otherwise 256 zeros 
 last_cal_path=/data/real_time_calibration/last_calibration/
@@ -53,10 +70,17 @@ if [[ -n "$6" && "$6" != "-" ]]; then
     cd $6/
 fi
 
+# pol_swap=1
+# if [[ -n "$7" && "$7" != "-" ]]; then
+#   pol_swap=$7
+# fi
+
+
 echo "###################################################################"
 echo "PARAMETERS:"
 echo "###################################################################"
-echo "station = $station"
+echo "station  = $station"
+echo "pol_swap = $pol_swap"
 echo "###################################################################"
 
 
