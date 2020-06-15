@@ -1,7 +1,20 @@
 #!/bin/bash
 
+station=eda2
+if [[ -s /opt/aavs/config/station.yml ]]; then
+   station=`awk -v station_section=0 '{if(index($1,":")>0 && NF==1){if(index($1,"station")>0 ){station_section=1;}else{station_section=0;}}if(station_section>0){if($1=="name:"){station_name=$2;gsub("\"","",station_name);gsub("\r","",station_name);print tolower(station_name);}}}' /opt/aavs/config/station.yml`
+   echo "Station config file (or symbolik link) exists -> getting station_name = $station"
+else
+   echo "ERROR : /opt/aavs/config/station.yml file or symbolic link does not exist will use default station_name = $station or value passed in parameter -s"   
+   exit;
+fi
+
+
 # WARNING : should be later in the script, but this value is required earlier :
-pol_swap=1
+pol_swap=0
+if [[ $station == "eda2" ]]; then
+   pol_swap=1
+fi
 if [[ -n "${10}" && "${10}" != "-" ]]; then
    pol_swap=${10}
 fi
@@ -46,14 +59,6 @@ else
    fi
 fi
 
-station=eda2
-if [[ -s /opt/aavs/config/station.yml ]]; then
-   station=`awk -v station_section=0 '{if(index($1,":")>0 && NF==1){if(index($1,"station")>0 ){station_section=1;}else{station_section=0;}}if(station_section>0){if($1=="name:"){station_name=$2;gsub("\"","",station_name);gsub("\r","",station_name);print tolower(station_name);}}}' /opt/aavs/config/station.yml`
-   echo "Station config file (or symbolik link) exists -> getting station_name = $station_name"
-else
-   echo "ERROR : /opt/aavs/config/station.yml file or symbolic link does not exist will use default station_name = $station_name or value passed in parameter -s"   
-   exit;
-fi
 if [[ -n "$4" && "$4" != "-" ]]; then
    station="$4"
 fi
