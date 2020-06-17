@@ -49,9 +49,16 @@ pol_swap_options=""
 polarisation_swap=0 # in EDA2 (not in AAVS2) 
 start_ux=0
 
+hdf5_info_file=${station_file%%hdf5}hdf5_info
 echo "python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}"
 python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}
 start_ux=`cat ${hdf5_info_file} | grep "first timestamp" | awk '{print $6;}'`
+
+echo "-----------------------------"
+echo "Info on $hdf5_info_file file:"
+echo "-----------------------------"
+cat ${hdf5_info_file}
+echo "-----------------------------"
 
 if [[ $station_name == "eda2" && $start_ux -gt 1586174400 ]]; then # EDA2 polarisation swap from around 2020-04-06 AWST 
    polarisation_swap=1
@@ -74,8 +81,6 @@ echo "##########################################################################
 
 echo "ls -al station*.hdf5"
 ls -al station*.hdf5
-
-hdf5_info_file=${station_file%%hdf5}hdf5_info
 
 # echo "python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}"
 # python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}
