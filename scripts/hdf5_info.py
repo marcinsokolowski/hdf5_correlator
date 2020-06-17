@@ -93,7 +93,7 @@ def main() :
    (options, args) = parse_options(1)
    
    is_station_beam = False
-   if hdf5file.find("stationbeam_") >= 0 or options.file_type.find("station") >= 0 :
+   if hdf5file.find("stationbeam_") >= 0 or hdf5file.find("station_beam") >= 0 and options.file_type.find("station") >= 0 :
       is_station_beam = True      
       print("is_station_beam set to True")
    print("Station beam = %s" % (is_station_beam))
