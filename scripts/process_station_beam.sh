@@ -45,44 +45,64 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    beam_scripts_path=$7
 fi
 
-polarisation_swap=1 # in EDA2 (not in AAVS2) 
+pol_swap_options=""
+polarisation_swap=0 # in EDA2 (not in AAVS2) 
+start_ux=0
+
+echo "python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}"
+python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}
+start_ux=`cat ${hdf5_info_file} | grep "first timestamp" | awk '{print $6;}'`
+
+if [[ $station_name == "eda2" && $start_ux -gt 1586174400 ]]; then # EDA2 polarisation swap from around 2020-04-06 AWST 
+   polarisation_swap=1
+fi
 if [[ -n "$8" && "$8" != "-" ]]; then
    polarisation_swap=$8
 fi
+if [[ $polarisation_swap -gt 0 ]]; then
+   pol_swap_options="--pol_swap"
+fi   
 
 echo "######################################################################################"
 echo "PARAMETERS:"
 echo "######################################################################################"
+echo "station_name      = $station_name"
 echo "station_file      = $station_file"
-echo "polarisation_swap = $polarisation_swap"
+echo "polarisation_swap = $polarisation_swap ( start_ux = $start_ux ) -> pol_swap_options = $pol_swap_options"
 echo "######################################################################################"
 
 
 echo "ls -al station*.hdf5"
 ls -al station*.hdf5
 
-echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > x.out 2>&1"
-python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > x.out 2>&1
+hdf5_info_file=${station_file%%hdf5}hdf5_info
 
-echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1"
-python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} > y.out 2>&1
+# echo "python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}"
+# python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}
+# start_ux=`cat ${hdf5_info_file} | grep "first timestamp" | awk '{print $6;}'`
+
+echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} $pol_swap_options > x.out 2>&1"
+python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=0 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} $pol_swap_options > x.out 2>&1
+
+echo "python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename=\"${tag}_power_vs_time_ch%d_%s.txt\" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} $pol_swap_options > y.out 2>&1"
+python $beam_scripts_path/hdf5fits_station_beam.py ${station_file} --pol=1 --out_file_basename="${tag}_power_vs_time_ch%d_%s.txt" --last_n_seconds=${last_n_seconds} --freq_channel=${freq_channel} $pol_swap_options > y.out 2>&1
 
 echo "ls -al ${tag}_power_vs_time_ch*"
 ls -al ${tag}_power_vs_time_ch*
 
 # Polarisation swap :
-if [[ $polarisation_swap -gt 0 ]]; then
-   echo "mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp"
-   mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp
-
-   echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt"
-   mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt
-
-   echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt"
-   mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt
-else
-   echo "INFO : no polarisation swap required"
-fi
+#if [[ $polarisation_swap -gt 0 ]]; then
+#   echo "mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp"
+#   mv ${tag}_power_vs_time_ch${freq_channel}_X.txt ${tag}_power_vs_time_ch${freq_channel}_Y.tmp
+#
+#   echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt"
+#   mv ${tag}_power_vs_time_ch${freq_channel}_Y.txt ${tag}_power_vs_time_ch${freq_channel}_X.txt
+#
+#   echo "mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt"
+#   mv ${tag}_power_vs_time_ch${freq_channel}_Y.tmp ${tag}_power_vs_time_ch${freq_channel}_Y.txt
+#else
+#   echo "INFO : no polarisation swap required"
+#fi
 
 ls ${tag}_power_vs_time_ch*.txt > list
 first_file=`head --lines=1 list`

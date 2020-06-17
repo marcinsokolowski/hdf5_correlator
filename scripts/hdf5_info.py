@@ -11,19 +11,13 @@ def parse_options(idx=0):
    parser.add_option('-s','--sample_time',dest="sample_time",default=1.08, help="Sample time in usec [default %default usec]",type="float")
    parser.add_option('-n','--n_chan','--n_channels','--fft_samples',dest="n_fft_samples",default=32, help="Number of FFT samples/channels [default %default]",type="int")
    parser.add_option('-i','--inttime',dest="inttime",default=0.2, help="Requested integration time to calculate number of chunks per uvfits file [default %default sec]",type="float")
+   parser.add_option('-t','--type','--file_type','--filetype',dest="file_type",default="auto", help="Type of file if not specified -> automatic detection from file name [default %default]")
    
    (options, args) = parser.parse_args(sys.argv[idx:])
 
    return (options, args)
 
-
-def main() :   
-   hdf5file="data.hdf5"
-   if len(sys.argv) > 0:
-      hdf5file = sys.argv[1]
-      
-   (options, args) = parse_options(1)   
-      
+def hdf5_file_info( hdf5file , options, station_beam_file=False ) :
    sample_time   = options.sample_time # usec 
    n_fft_samples = options.n_fft_samples
    inttime       = options.inttime
@@ -46,7 +40,9 @@ def main() :
    data_keyword="chan_"
    if is_corr_file :
       data_keyword = "correlation_matrix"
-
+   if station_beam_file : 
+      data_keyword = ("polarization_%d" % (0))
+         
    print("f[data_keyword].keys() = %s" % (f[data_keyword].keys()))
    
    l = len( f[data_keyword]['data'].shape )
@@ -87,7 +83,29 @@ def main() :
    t_end   = timestamps[last-1]
    t_center = (t_start + t_end)/2.00
    print("Unixtime start = %.4f , end = %.4f -> center = %.4f" % (t_start,t_end,t_center))
+
+
+def main() :   
+   hdf5file="data.hdf5"
+   if len(sys.argv) > 0:
+      hdf5file = sys.argv[1]
+      
+   (options, args) = parse_options(1)
    
+   is_station_beam = False
+   if hdf5file.find("stationbeam_") >= 0 or options.file_type.find("station") >= 0 :
+      is_station_beam = True      
+      print("is_station_beam set to True")
+   print("Station beam = %s" % (is_station_beam))
+ 
+   hdf5_file_info( hdf5file , options, station_beam_file=is_station_beam )     
+
+#   if is_station_beam or options.file_type.find("station")>=0 :
+#      station_file_info( hdf5file , options ) 
+#   else "
+      # if not is_station_beam or options.file_type.find("corr")>=0 :
+#      corr_file_info( hdf5file , options )   
+      
 
 if __name__ == "__main__":
    main()
