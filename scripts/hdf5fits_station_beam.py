@@ -14,7 +14,7 @@ def parse_options(idx):
    parser.add_option('-p','--pol',dest="polarisation",default=0, help="Polarisation [default %default]",metavar="int",type="int")
    parser.add_option('-o','--outfilebase','--out_file_base','--out_file_basename',dest="out_file_basename",default="power_vs_time_ch%d_%s.txt", help="Output file name template [default %default]" )
    parser.add_option('-l','--last_n_seconds','--interval',dest="last_n_seconds",default=630720000,help="Save onle the last N seconds [default %default ~= infinitly in the past, i.e. all data]",type="int" )
-   parser.add_option('-s','--swap_pol','--swappol','--swap','--pol_swap','--polswap',,dest="swap_pol",default=False,action="store_true", help="Swap polarisations [default %default]")
+   parser.add_option('-s','--swap_pol','--swappol','--swap','--pol_swap','--polswap',dest="swap_pol",default=False,action="store_true", help="Swap polarisations [default %default]")
    (options, args) = parser.parse_args(sys.argv[idx:])
 
    return (options, args)
