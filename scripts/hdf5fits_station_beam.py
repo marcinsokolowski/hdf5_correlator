@@ -44,9 +44,20 @@ if options.swap_pol :
    else :
       print("ERROR : options.polarisation = %d - not allowed !!!" % (options.polarisation))
       os.exit(0)
+  
+   print("WARNING : swap_pol = True : polarisation = %d is %s" % (options.polarisation,pol_name))
    
    
 f = h5py.File( hdf5file , "r" )
+
+print("#######################################################")
+print("PARAMETERS:")
+print("#######################################################")
+print("hdf5file = %s" % (hdf5file))
+print("options.polarisation = %d -> pol_name = %s" % (options.polarisation,pol_name))
+print("#######################################################")
+
+
 
 print("keys = %s" % (f.name))
 print("keys = %s" % f.keys())
