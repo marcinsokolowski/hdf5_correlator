@@ -52,7 +52,7 @@ start_ux=0
 hdf5_info_file=${station_file%%hdf5}hdf5_info
 echo "python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}"
 python $beam_scripts_path/hdf5_info.py ${station_file} > ${hdf5_info_file}
-start_ux=`cat ${hdf5_info_file} | grep "first timestamp" | awk '{print $6;}'`
+start_ux=`cat ${hdf5_info_file} | grep "first timestamp" | awk '{printf("%d\n",$6);}'`
 
 echo "-----------------------------"
 echo "Info on $hdf5_info_file file:"
