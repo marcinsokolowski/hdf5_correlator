@@ -12,6 +12,8 @@ n_avg=32700 # ~1 second and 2894 was ok for 0.1 second
 n_chan=32
 inttime=1.13246208
 corr_path="/home/rwayth/bin/corr_gpu_complex2"
+gpu_corr=1
+cpu_corr_path="/home/rwayth/bin/corr_multi_complex"
 aavs_calibration_path=~/aavs-calibration/ # WAS : "/home/rwayth/aavs-calibration/" # Lfile2uvfits_eda.sh -i 0.1 -n 11 -R 8.19680715619 -D 19.9892573884 -N 512 -C 32 20190724_041444_eda2_ch32_ant256_midday_avg2894
 force=0
 auto_sun=1 # automatically set phase center to Sun
@@ -37,6 +39,18 @@ if [[ -s /opt/aavs/config/station.yml ]]; then
    echo "Station config file (or symbolik link) exists -> getting station_name = $station_name"
 else
    echo "WARNING : /opt/aavs/config/station.yml file or symbolic link does not exist will use default station_name = $station_name or value passed in parameter -s"   
+fi
+
+if [[ ! -s $corr_path ]]; then
+   echo "WARNING : gpu correlator does not exist at path : $corr_path -> checking CPU correlator ..."
+   gpu_corr=0
+      
+   if [[ -s $cpu_corr_path ]]; then
+      echo "OK : CPU correlator exists at path : $cpu_corr_path -> trying to use this one"
+   else
+      echo "ERROR : no correlator path exists neither GPU $corr_path nor CPU $cpu_corr_path"
+      echo "ERROR : correlation will not work"
+   fi
 fi
 
 function print_usage {
@@ -185,6 +199,8 @@ echo "merged_dir     = $merged_dir"
 echo "n_integrations_per_uvfits = $n_integrations_per_uvfits"
 echo "n_output_channels = $n_chan"
 echo "corr_path      = $corr_path"
+echo "gpu_corr       = $gpu_corr"
+echo "cpu_corr_path  = $cpu_corr_path"
 echo "do_merge       = $do_merge"
 echo "remove_single_hdf5_files = $remove_single_hdf5_files"
 echo "##################################################################"
@@ -378,7 +394,24 @@ do
              echo "rm -f ${merged_bin_file}"
              rm -f ${merged_bin_file}
           else
-             echo "ERROR : ${corr_path} does not exist -> cannot correlate files"
+             echo "WARNING : ${corr_path} does not exist -> trying to use CPU correlator"
+             
+             if [[ -s $cpu_corr_path ]]; then
+                 echo "OK : CPU correlator exists -> running it now"
+                 
+#                 mypipe=`mktemp -u`                 
+#                 echo "mkfifo $mypipe"
+#                 mkfifo $mypipe
+                 
+                  echo "$cpu_corr_path -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file}  -o ${lfile_base} -w 10 -t 2 -d"
+                  $cpu_corr_path -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file}  -o ${lfile_base} -w 10 -t 2 -d 
+
+#                 echo "rm -f $mypipe"
+#                 rm -f $mypipe
+             else
+                 echo "ERROR : CPU correlator path does not exist either -> cannot continue"
+                 exit -1
+             fi
           fi
        else 
           echo "WARNING : correlation is not required"
