@@ -403,8 +403,8 @@ do
 #                 echo "mkfifo $mypipe"
 #                 mkfifo $mypipe
                  
-                  echo "$cpu_corr_path -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file}  -o ${lfile_base} -w 10 -t 2 -d"
-                  $cpu_corr_path -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file}  -o ${lfile_base} -w 10 -t 2 -d 
+                  echo "$cpu_corr_path -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file}  -o ${lfile_base} -w 10 -t 8 -d"
+                  $cpu_corr_path -c ${n_chan} -n 512 -a ${n_avg} -i ${merged_bin_file}  -o ${lfile_base} -w 10 -t 8 -d 
 
 #                 echo "rm -f $mypipe"
 #                 rm -f $mypipe
