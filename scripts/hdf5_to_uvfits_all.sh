@@ -105,6 +105,7 @@ while getopts "HthFclR:D:i:n:zd:L:I:C:f:Nrb:S:T:a:s:" opt; do
         n_chan=$OPTARG
         ;;
     S)
+        keep_lfiles=1
         convert2casa=$OPTARG
         ;;
     F)
@@ -176,6 +177,10 @@ done
 shift $(expr $OPTIND - 1 )
 
 
+if [[ $convert2casa -gt 0 ]]; then
+   keep_lfiles=1
+fi
+
 echo "##################################################################"
 echo "PARAMTERES :"
 echo "##################################################################"
@@ -187,6 +192,7 @@ echo "freq_channel   = $freq_channel_param"
 echo "do_correlation = $do_correlation" 
 echo "bin2lfiles     = $bin2lfiles"
 echo "convert2casa   = $convert2casa"
+echo "keep_lfiles    = $keep_lfiles"
 echo "dumpbinfile    = $dumpbinfile"
 echo "force          = $force"
 echo "ra_hrs         = $ra_hrs"
