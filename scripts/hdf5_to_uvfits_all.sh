@@ -274,10 +274,11 @@ do
     lfile_base_corr=$lfile_base
     if [[ $do_merge -gt 0 ]]; then
        merged_hdf5_file=`echo ${hdf5_file_tile0} | awk '{a=gsub("channel_cont_0_","channel_cont_",$1);print $1;}'`
+       echo "DEBUG : do_merge > 0 -> merged_hdf5_file = $merged_hdf5_file"
     else
        merged_hdf5_file=$hdf5_file_tile0
     fi   
-    echo "DEBUG : merged_hdf5_file = $merged_hdf5_file"
+    echo "DEBUG : merged_hdf5_file = $merged_hdf5_file (do_merge = $do_merge)"
     hdf5_info_file=${hdf5_file_tile0%%hdf5}hdf5_info
     
     echo "python $hdf5_info_path $hdf5_file_tile0 --inttime=${inttime} > ${hdf5_info_file}"
