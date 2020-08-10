@@ -277,6 +277,7 @@ do
     else
        merged_hdf5_file=$hdf5_file_tile0
     fi   
+    echo "DEBUG : merged_hdf5_file = $merged_hdf5_file"
     hdf5_info_file=${hdf5_file_tile0%%hdf5}hdf5_info
     
     echo "python $hdf5_info_path $hdf5_file_tile0 --inttime=${inttime} > ${hdf5_info_file}"
