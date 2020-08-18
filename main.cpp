@@ -57,6 +57,7 @@ int antenna1 = 0;
 int antenna2 = 1;
 int gDebugLevel = 0;
 int gPol=0;
+string gPolName;
 string gOutFileName;
 vector<int> gAntennaListToProcess;
 string      gAntennaListStr;
@@ -885,6 +886,13 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
       szPol = "YY";
    }
    
+   if( strlen( gPolName.c_str() ) ){
+      printf("WARNING : no polarisation name provided -> this may cause problems for stations like EDA2 which has polarisations swapped\n");
+      sleep(300);
+   }else{
+      printf("INFO : external polarisation provided = |%s|",gPolName.c_str());
+   }
+   
    
    // check if pointing direction different than zenith is specified :
    vector<double> geometric_delays;
@@ -1667,6 +1675,10 @@ void parse_cmdline(int argc, char * argv[]) {
             gActionType = eBeamformTest;
             break;
             
+         case 'u' :
+            gPolName = optarg;
+            break;   
+            
          case 'U':
             gFittedCalSolutionsPhase.filename = optarg;
             // gUseFittedCalSolutionPhase = true;
@@ -2081,6 +2093,14 @@ void SavePhaseOffsets( std::vector<double> phase_offsets, int n_iter=-1, int pol
    if( pol > 0 ){
       szPol='Y';
    }   
+   
+   if( strlen( gPolName.c_str() ) ){
+      printf("WARNING : no polarisation name provided -> this may cause problems for stations like EDA2 which has polarisations swapped\n");
+      sleep(300);
+   }else{
+      printf("INFO : external polarisation provided = |%s|",gPolName.c_str());
+   }
+
 
    char szPrefixIter[64];
    strcpy(szPrefixIter,"initial");
