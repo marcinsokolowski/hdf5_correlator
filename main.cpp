@@ -1871,7 +1871,7 @@ void print_parameters()
    printf("Process  = %d antennas (<0 means all)\n",gNumberOfAntennasToProcess);
    printf("Execute loop = %d\n",gExecuteLoop);
    printf("N samples for fine channaliser FFT = %d\n",gNSamples);
-   printf("Polarisation = %d\n",gPol);
+   printf("Polarisation = %d (%s)\n",gPol,gPolName.c_str());
    printf("Phase normalisation = %d\n",gPhaseNormalisation);
    printf("Phase correction = %d\n",gDoPhaseCorrection);   
    printf("Apply calibration coefficients = %d\n",gDoCalibrate);
