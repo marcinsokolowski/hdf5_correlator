@@ -887,10 +887,10 @@ double beamform2( std::vector< complex_t >& data, int n_ants, int n_pols, const 
    }
    
    if( strlen( gPolName.c_str() ) ){
-      printf("WARNING : no polarisation name provided -> this may cause problems for stations like EDA2 which has polarisations swapped\n");
-//      sleep(300);
-   }else{
       printf("INFO : external polarisation provided = |%s|",gPolName.c_str());
+   }else{
+      printf("WARNING : no polarisation name provided -> this may cause problems for stations like EDA2 which has polarisations swapped\n");
+      sleep(300);
    }
    
    
@@ -2096,10 +2096,10 @@ void SavePhaseOffsets( std::vector<double> phase_offsets, int n_iter=-1, int pol
    }   
    
    if( strlen( gPolName.c_str() ) ){
-      printf("WARNING : no polarisation name provided -> this may cause problems for stations like EDA2 which has polarisations swapped\n");
-//      sleep(300);
-   }else{
       printf("INFO : external polarisation provided = |%s|",gPolName.c_str());
+   }else{
+      printf("WARNING : no polarisation name provided -> this may cause problems for stations like EDA2 which has polarisations swapped\n");
+      sleep(300);
    }
 
 
