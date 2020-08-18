@@ -1505,7 +1505,7 @@ void usage()
 }
 
 void parse_cmdline(int argc, char * argv[]) {
-   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:q:H:";   
+   char optstring[] = "a:A:b:Bo:l:t:p:n:f:x:r:D:P:S:c:R:C:dg:X:i:s:z:TF:N:LZ:G:I:J:Oj:YyU:e:E:K:k:q:H:u:";   
    int opt;
         
    while ((opt = getopt(argc, argv, optstring)) != -1) {
