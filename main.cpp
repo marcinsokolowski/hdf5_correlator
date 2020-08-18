@@ -1467,6 +1467,7 @@ void usage()
    printf("\t-f ENABLE/DISABLE_FLAG: enables phase correction based on coefficients in the table [default %d]\n",gDoPhaseCorrection);
    printf("\t-l ANTENNA_LIST : coma separated antenna list (default ALL)\n");
    printf("\t-p POL : polarisation [default %d]\n",gPol);   
+   printf("\t-u POL_NAME : polarisation name [default %s]\n",gPolName.c_str());
    printf("\t-n PHASE_NORM : phase normalisation, 0 : no norm, 1 : 0-360 deg, 2 : -180 - 180 deg [default %d]\n",gPhaseNormalisation);
    printf("\t-x MAX_TIMESTEPS : maximum number of timesteps to use [default %d]\n",gMaxTimeSteps);
    printf("\t-B : enabled beamforming\n");
