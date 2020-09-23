@@ -25,6 +25,10 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    force=$5
 fi
 
+auto=0
+if [[ -n "$6" && "$6" != "-" ]]; then
+   auto=$6
+fi
 
 echo "###########################################################"
 echo "PARAMETERS:"
@@ -36,6 +40,7 @@ echo "do_dspsr = $do_dspsr"
 echo "dspsr_options = $dspsr_options"
 echo "conjugate = $conjugate"
 echo "force    = $force"
+echo "auto     = $auto"
 echo "###########################################################"
 
 
@@ -53,8 +58,8 @@ do
       # only process files >500 MB 
       if [[ $size_mb -gt 500 ]];       
       then
-         echo "dat2dada2.sh ${object} ${ch_val} ${b_dat_file} ${do_dspsr} \"${dspsr_options}\" $conjugate $force"
-         dat2dada2.sh ${object} ${ch_val} ${b_dat_file} ${do_dspsr} "${dspsr_options}" $conjugate $force
+         echo "dat2dada2.sh ${object} ${ch_val} ${b_dat_file} ${do_dspsr} \"${dspsr_options}\" $conjugate $force $auto"
+         dat2dada2.sh ${object} ${ch_val} ${b_dat_file} ${do_dspsr} "${dspsr_options}" $conjugate $force $auto
       else
          echo "WARNING : file $dat_file smaller than limit -> skipped"
       fi

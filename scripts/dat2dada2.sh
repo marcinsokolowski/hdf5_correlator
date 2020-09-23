@@ -9,6 +9,7 @@ freq_ch=204
 if [[ -n "$2" && "$2" != "-" ]]; then
    freq_ch=$2
 fi
+freq_ch_val=`echo $freq_ch | awk '{printf("%d",$1);}'`
 
 prefix="*"
 if [[ -n "$3" && "$3" != "-" ]]; then
@@ -35,6 +36,10 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    force=$7
 fi
 
+auto=0
+if [[ -n "$8" && "$8" != "-" ]]; then
+   auto=$8
+fi
 
 echo "###########################################################"
 echo "PARAMETERS:"
@@ -45,7 +50,8 @@ echo "prefix   = $prefix"
 echo "do_dspsr = $do_dspsr"
 echo "dspsr_options = $dspsr_options"
 echo "conjugate = $conjugate"
-echo "force    = $force"
+echo "force     = $force"
+echo "auto      = $auto"
 echo "###########################################################"
 
 
@@ -72,11 +78,11 @@ do
       echo "size_mb = $size_mb"
    
       if [[ $conjugate -gt 0 ]]; then       
-         echo "python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object} --conjugate"
-         python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object} --conjugate
+         echo "python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch_val} --source=${object} --conjugate"
+         python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch_val} --source=${object} --conjugate
       else
-         echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}"
-         python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch} --source=${object}
+         echo "python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch_val} --source=${object}"
+         python $path ${datfile} --psrdadahdr --outfile=${hdrfile} --unixtime=${unixtime} --freq_ch=${freq_ch_val} --source=${object}
    
          echo "cat ${hdrfile} ${datfile} > ${outfile}"
          cat ${hdrfile} ${datfile} > ${outfile}
@@ -92,6 +98,9 @@ do
       fi
    
       if [[ -s ${object}.eph ]]; then
+         size_mb=`du -smL ${datfile} | awk '{print $1;}'`
+         echo "size_mb = $size_mb"
+      
          echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
          dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
    
@@ -106,12 +115,34 @@ do
          pngfile=${last_ar%%ar}png
          echo "mv pgplot.png $pngfile"
          mv pgplot.png $pngfile
+
+         device1=""
+         device2=""
+         ps_file1=${last_ar%%.ar}_pav1.ps
+         ps_file2=${last_ar%%.ar}_pav2.ps
+         png_file1=${last_ar%%.ar}_pav1.png
+         png_file2=${last_ar%%.ar}_pav2.png
+         auto_cmd=""
+         if [[ $auto -gt 0 ]]; then
+            device1="-g $ps_file1/ps"
+            device2="-g $ps_file2/ps"            
             
-         echo "pav -G -DTp -N1,1 2 $last_ar"
-         pav -G -DTp -N1,1 2 $last_ar
+            auto_cmd="echo | "
+         fi
             
-         echo "pav -F -C -d -G -DTp -N1,1 2 $last_ar"
-         pav -F -C -d -G -DTp -N1,1 2 $last_ar
+         echo "$auto_cmd pav -G -DTp -N1,1 2 $last_ar"
+         $auto_cmd pav -G -DTp -N1,1 2 $last_ar 
+            
+         echo "$auto_cmd pav -F -C -d -G -DTp -N1,1 2 $device2 $last_ar"
+         pav -F -C -d -G -DTp -N1,1 2 $device2 $last_ar
+         
+#         if [[ $auto -gt 0 ]]; then
+#            echo "convert $ps_file1 $png_file1"
+#            convert $ps_file1 $png_file1
+
+#            echo "convert $ps_file2 $png_file2"
+#            convert $ps_file2 $png_file2
+#         fi
       else
          echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
          echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
