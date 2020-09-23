@@ -47,12 +47,14 @@ do
    
    for dat_file in `ls *.dat`
    do  
-      size_mb=`du -sm $dat_file`
+      size_mb=`du -sm $dat_file | awk '{print $1}'`
+      b_dat_file=${dat_file%%.dat}
 
       # only process files >500 MB 
       if [[ $size_mb -gt 500 ]];       
-         echo "dat2dada2.sh ${object} ${ch_val} ${dat_file} ${do_dspsr} "${dspsr_options}" $conjugate $force"
-         dat2dada2.sh ${object} ${ch_val} ${dat_file} ${do_dspsr} "${dspsr_options}" $conjugate $force
+      then
+         echo "dat2dada2.sh ${object} ${ch_val} ${b_dat_file} ${do_dspsr} \"${dspsr_options}\" $conjugate $force"
+         dat2dada2.sh ${object} ${ch_val} ${b_dat_file} ${do_dspsr} "${dspsr_options}" $conjugate $force
       else
          echo "WARNING : file $dat_file smaller than limit -> skipped"
       fi
