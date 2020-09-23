@@ -81,45 +81,44 @@ do
          echo "cat ${hdrfile} ${datfile} > ${outfile}"
          cat ${hdrfile} ${datfile} > ${outfile}
       fi
-            
-   
-      if [[ $do_dspsr -gt 0 ]]; then
-         if [[ ! -s ${object}.eph ]]; then
-            echo "cp ${eph_dir}/${object}.eph ."
-            cp ${eph_dir}/${object}.eph .
-         fi
-   
-         if [[ -s ${object}.eph ]]; then
-            echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
-            dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
-   
-            last_ar=`ls -tr *.ar | tail -1`
-   
-            echo "psrplot -p flux -D /xs $last_ar"
-            psrplot -p flux -D /xs $last_ar
-            
-            echo "psrplot -p flux -D /png $last_ar"
-            psrplot -p flux -D /png $last_ar
-            
-            pngfile=${last_ar%%ar}png
-            echo "mv pgplot.png $pngfile"
-            mv pgplot.png $pngfile
-            
-            echo "pav -G -DTp -N1,1 2 $last_ar"
-            pav -G -DTp -N1,1 2 $last_ar
-            
-            echo "pav -F -C -d -G -DTp -N1,1 2 $last_ar"
-            pav -F -C -d -G -DTp -N1,1 2 $last_ar
-         else
-            echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
-            echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
-            echo "and : psrplot -p flux -D /xs $last_ar"
-         fi
-      else
-         echo "WARNING : dspsr is not required"
-      fi
    else
       echo "WARNING : dada file ${outfile} already exists -> skipped (enable force=1 in order to re-process)"
+   fi            
+   
+   if [[ $do_dspsr -gt 0 ]]; then
+      if [[ ! -s ${object}.eph ]]; then
+         echo "cp ${eph_dir}/${object}.eph ."
+         cp ${eph_dir}/${object}.eph .
+      fi
+   
+      if [[ -s ${object}.eph ]]; then
+         echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
+         dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
+   
+         last_ar=`ls -tr *.ar | tail -1`
+   
+         echo "psrplot -p flux -D /xs $last_ar"
+         psrplot -p flux -D /xs $last_ar
+            
+         echo "psrplot -p flux -D /png $last_ar"
+         psrplot -p flux -D /png $last_ar
+            
+         pngfile=${last_ar%%ar}png
+         echo "mv pgplot.png $pngfile"
+         mv pgplot.png $pngfile
+            
+         echo "pav -G -DTp -N1,1 2 $last_ar"
+         pav -G -DTp -N1,1 2 $last_ar
+            
+         echo "pav -F -C -d -G -DTp -N1,1 2 $last_ar"
+         pav -F -C -d -G -DTp -N1,1 2 $last_ar
+      else
+         echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
+         echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
+         echo "and : psrplot -p flux -D /xs $last_ar"
+      fi
+   else
+      echo "WARNING : dspsr is not required"
    fi
 done
 
