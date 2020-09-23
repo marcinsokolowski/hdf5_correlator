@@ -130,8 +130,8 @@ do
             auto_cmd="echo | "
          fi
             
-         echo "$auto_cmd pav -G -DTp -N1,1 2 $last_ar"
-         $auto_cmd pav -G -DTp -N1,1 2 $last_ar 
+         echo "$auto_cmd pav -G -DTp -N1,1 2 $device1 $last_ar"
+         $auto_cmd pav -G -DTp -N1,1 2 $device1 $last_ar 
             
          echo "$auto_cmd pav -F -C -d -G -DTp -N1,1 2 $device2 $last_ar"
          pav -F -C -d -G -DTp -N1,1 2 $device2 $last_ar
