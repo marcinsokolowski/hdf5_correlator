@@ -10,29 +10,24 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    freq_ch=$2
 fi
 
-prefix="*"
-if [[ -n "$3" && "$3" != "-" ]]; then
-   prefix="$3"
-fi
-
 do_dspsr=1
-if [[ -n "$4" && "$4" != "-" ]]; then
-   do_dspsr=$4
+if [[ -n "$3" && "$3" != "-" ]]; then
+   do_dspsr=$3
 fi
 
 dspsr_options=""
-if [[ -n "$5" && "$5" != "-" ]]; then
-   dspsr_options=$5
+if [[ -n "$4" && "$4" != "-" ]]; then
+   dspsr_options=$4
 fi
 
 conjugate=0
-if [[ -n "$6" && "$6" != "-" ]]; then
-   conjugate=$6
+if [[ -n "$5" && "$5" != "-" ]]; then
+   conjugate=$5
 fi
 
 force=0
-if [[ -n "$7" && "$7" != "-" ]]; then
-   force=$7
+if [[ -n "$6" && "$6" != "-" ]]; then
+   force=$6
 fi
 
 
