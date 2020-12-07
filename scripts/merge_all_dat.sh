@@ -11,9 +11,9 @@ if [[ $count -gt 0 ]]; then
    first_dat=`ls *.dat | head -1`
 
    mkdir -p ALL
-   echo "cat *.dat ALL/${first_dat}"
+   echo "cat *.dat > ALL/${first_dat}"
    echo "It will take a bit of time ..."
-   cat *.dat ALL/${first_dat}
+   cat *.dat > ALL/${first_dat} 
    
    if [[ $do_process -gt 0 ]]; then   
       cd ALL/
