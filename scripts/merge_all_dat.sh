@@ -10,10 +10,14 @@ count=`ls *.dat | wc -l`
 if [[ $count -gt 0 ]]; then
    first_dat=`ls *.dat | head -1`
 
-   mkdir -p ALL
-   echo "cat *.dat > ALL/${first_dat}"
-   echo "It will take a bit of time ..."
-   cat *.dat > ALL/${first_dat} 
+   if [[ ! -s ALL/${first_dat} ]]; then
+      mkdir -p ALL
+      echo "cat *.dat > ALL/${first_dat}"
+      echo "It will take a bit of time ..."
+      cat *.dat > ALL/${first_dat} 
+   else
+      echo "INFO : file ALL/${first_dat} already exists -> merging skipped"
+   fi
    
    if [[ $do_process -gt 0 ]]; then   
       cd ALL/
