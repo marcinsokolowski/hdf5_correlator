@@ -38,11 +38,20 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    sleep_time=$7
 fi
 
-polarisation_swap=1 # in EDA2 (not in AAVS2) 
+polarisation_swap=0 # in EDA2 (not in AAVS2) 
+if [[ $station_name == "eda2" || $station_name == "EDA2" ]]; then
+   echo "EDA2 station -> polarisation swap required (please make sure the .pkl was not swapped at the time of creation)"
+   polarisation_swap=1
+fi
 if [[ -n "$8" && "$8" != "-" ]]; then
    polarisation_swap=$8
 fi
 
+echo "####################################################"
+echo "PARAMETERS: "
+echo "####################################################"
+echo "polarisation_swap = $polarisation_swap"
+echo "####################################################"
 
 while [ 1 ];
 do

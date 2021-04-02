@@ -208,6 +208,11 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
     file_pos = 0
     f = open( data_filename, 'rb')
     
+    conj_f = None
+    if conjugate :
+       # for debugging and test purposes :
+       conj_f = open( "conjugate.bin" , "wb" )
+    
     read_ok = True
     while read_ok :
        f.seek( file_pos )
@@ -220,6 +225,7 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
 
           if conjugate :          
              for i in range(1,len(data),2) :
+#            for i in range(0,len(data),2) :
                 data[i] = -data[i]
 
           # swap RE/IM
@@ -228,8 +234,12 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
 #                tmp = data[i-1]
 #                data[i-1] = data[i]
 #                data[i] = tmp
-                
+                          
           data.astype(numpy.int8).tofile( dada_file )
+          
+          if conj_f is not None :
+             data.astype(numpy.int8).tofile( conj_f )
+          
           read_ok = True
           print("DEBUG : saved %d bytes in total" % (file_pos))
        else :
@@ -253,6 +263,9 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
     
     f.close()
     dada_file.close()
+    
+    if conj_f is not None :
+       conj_f.close()
 
     return True
 
