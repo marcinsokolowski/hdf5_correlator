@@ -93,8 +93,13 @@ do
    
    if [[ $do_dspsr -gt 0 ]]; then
       if [[ ! -s ${object}.eph ]]; then
-         echo "cp ${eph_dir}/${object}.eph ."
-         cp ${eph_dir}/${object}.eph .
+         if [[ -s ${eph_dir}/${object}.eph ]]; then
+            echo "cp ${eph_dir}/${object}.eph ."
+            cp ${eph_dir}/${object}.eph .
+         else
+            echo "psrcat -e ${object} > ${object}.eph"
+            psrcat -e ${object} > ${object}.eph
+         fi
       fi
    
       if [[ -s ${object}.eph ]]; then
@@ -103,6 +108,10 @@ do
       
          echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
          dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
+         
+         mkdir -p backup/
+         echo "cp *.ar backup/"
+         cp *.ar backup/
    
          last_ar=`ls -tr *.ar | tail -1`
    
