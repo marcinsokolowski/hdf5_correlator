@@ -26,7 +26,7 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    dspsr_options=$5
 fi
 
-conjugate=0
+conjugate=1
 if [[ -n "$6" && "$6" != "-" ]]; then
    conjugate=$6
 fi
@@ -36,7 +36,7 @@ if [[ -n "$7" && "$7" != "-" ]]; then
    force=$7
 fi
 
-auto=0
+auto=1
 if [[ -n "$8" && "$8" != "-" ]]; then
    auto=$8
 fi
@@ -106,8 +106,8 @@ do
          size_mb=`du -smL ${datfile} | awk '{print $1;}'`
          echo "size_mb = $size_mb"
       
-         echo "dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}"
-         dspsr -E ${object}.eph -b 64 -U $size_mb ${dspsr_options} ${outfile}
+         echo "dspsr -E ${object}.eph -b 64 -U $size_mb -F 256:D ${dspsr_options} ${outfile}"
+         dspsr -E ${object}.eph -b 64 -U $size_mb -F 256:D ${dspsr_options} ${outfile}
          
          mkdir -p backup/
          echo "cp *.ar backup/"
@@ -154,7 +154,7 @@ do
 #         fi
       else
          echo "WARNING : missing file ${object}.eph , cannot find local version neither in ${eph_dir} - please fix it and re-run dspsr"
-         echo "dspsr -E ${object}.eph -b 64 -U 600 ${dspsr_options} ${outfile}"
+         echo "dspsr -E ${object}.eph -b 64 -U 600 -F 256:D ${dspsr_options} ${outfile}"
          echo "and : psrplot -p flux -D /xs $last_ar"
       fi
    else
