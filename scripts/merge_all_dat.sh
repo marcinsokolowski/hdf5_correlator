@@ -5,6 +5,17 @@ if [[ -n "$1" && "$1" != "-" ]]; then
    do_process=$1
 fi
 
+channel=410
+if [[ -n "$2" && "$2" != "-" ]]; then
+   channel=$2
+fi
+
+object=VELA
+if [[ -n "$3" && "$3" != "-" ]]; then
+   object=$3
+fi
+
+
 count=`ls *.dat | wc -l`
 
 if [[ $count -gt 0 ]]; then
@@ -20,10 +31,14 @@ if [[ $count -gt 0 ]]; then
    fi
    
    if [[ $do_process -gt 0 ]]; then   
+      if [[ -s channel.txt ]]; then
+         channel=`cat channel.txt`
+      fi      
+   
       cd ALL/
-      echo "dat2dada2.sh VELA 410 ${first_dat} 1 \"-F 256:D\" 1 - 1"
+      echo "dat2dada2.sh ${object} ${channel} ${first_dat} 1 \"-F 256:D\" 1 - 1"
       sleep 5
-      dat2dada2.sh VELA 410 ${first_dat} 1 "-F 256:D" 1 - 1 # last 1 is to conjugate !   
+      dat2dada2.sh ${object} ${channel} ${first_dat} 1 "-F 256:D" 1 - 1 # last 1 is to conjugate !   
       cd ..
    else
       echo "WARNING : full .dat file processing is not required, execute this line : merge_all_dat.sh 1"      
