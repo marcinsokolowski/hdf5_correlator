@@ -36,9 +36,10 @@ if [[ $count -gt 0 ]]; then
       fi      
    
       cd ALL/
-      echo "dat2dada2.sh ${object} ${channel} ${first_dat} 1 \"-F 256:D\" 1 - 1"
+      first_dat_b=${first_dat%%.dat}
+      echo "dat2dada2.sh ${object} ${channel} ${first_dat_b} 1 \"-F 256:D\" 1 - 1"
       sleep 5
-      dat2dada2.sh ${object} ${channel} ${first_dat} 1 "-F 256:D" 1 - 1 # last 1 is to conjugate !   
+      dat2dada2.sh ${object} ${channel} ${first_dat_b} 1 "-F 256:D" 1 - 1 # last 1 is to conjugate !   
       cd ..
    else
       echo "WARNING : full .dat file processing is not required, execute this line : merge_all_dat.sh 1"      
