@@ -15,6 +15,11 @@ if [[ -n "$3" && "$3" != "-" ]]; then
    object=$3
 fi
 
+conjugate=1
+if [[ -n "$4" && "$4" != "-" ]]; then
+   conjugate=$4
+fi
+
 
 count=`ls *.dat | wc -l`
 
@@ -37,9 +42,9 @@ if [[ $count -gt 0 ]]; then
    
       cd ALL/
       first_dat_b=${first_dat%%.dat}
-      echo "dat2dada2.sh ${object} ${channel} ${first_dat_b} 1 \"-F 256:D\" 1 - 1"
+      echo "dat2dada2.sh ${object} ${channel} ${first_dat_b} 1 \"-F 256:D\" ${conjugate} - 1"
       sleep 5
-      dat2dada2.sh ${object} ${channel} ${first_dat_b} 1 "-F 256:D" 1 - 1 # last 1 is to conjugate !   
+      dat2dada2.sh ${object} ${channel} ${first_dat_b} 1 "-F 256:D" ${conjugate} - 1 # last 1 is to conjugate !   
       cd ..
    else
       echo "WARNING : full .dat file processing is not required, execute this line : merge_all_dat.sh 1"      
