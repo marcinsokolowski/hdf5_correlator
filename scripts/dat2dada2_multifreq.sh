@@ -1,5 +1,35 @@
 #!/bin/bash
 
+name_template="J"
+if [[ -n "$1" && "$1" != "-" ]]; then
+   name_template="$1"
+fi
+
+phase_bins=64
+if [[ -n "$2" && "$2" != "-" ]]; then
+   phase_bins=$2
+fi
+
+conjugate=1
+if [[ -n "$3" && "$3" != "-" ]]; then
+   conjugate=$3
+fi
+
+outdir=ALL
+if [[ $conjugate -le 0 ]]; then
+   outdir=ALL_noConjugate
+fi
+
+echo "#######################################################"
+echo "PARAMETERS:"
+echo "#######################################################"
+echo "name_template = $name_template"
+echo "phase_bins    = $phase_bins"
+echo "conjugate     = $conjugate"
+echo "outdir        = $outdir"
+echo "#######################################################"
+
+
 # some checks :
 psrcat_path=`which psrcat`
 if [[ -n "$psrcat_path" ]]; then
@@ -11,7 +41,7 @@ fi
 
 channel_file="channel.txt"
 
-for psrname in `ls -d J*`
+for psrname in `ls -d ${name_template}*`
 do
    echo
    cd ${psrname}
@@ -27,11 +57,11 @@ do
          echo "Processing pulsar $psrname observed at channel = $channel_id"
 
          # merge, but do not process :
-         echo "merge_all_dat.sh 0"
-         merge_all_dat.sh 0
+         echo "merge_all_dat.sh 0 - B0950+08 ${conjugate} ${outdir}"
+         merge_all_dat.sh 0 - B0950+08 ${conjugate} ${outdir}
          date
             
-         cd ALL/
+         cd ${outdir}/
       
          # create eph file (if does not exist):
          if [[ -s ${psrname}.eph ]]; then
@@ -41,8 +71,8 @@ do
             psrcat -e ${psrname} > ${psrname}.eph
          fi
       
-         echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" 1 - 1"
-         dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" 1 - 1 
+         echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" 1 - 1 $phase_bins"
+         dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" 1 - 1 $phase_bins
       
       # ?      
 #      pav -GCFDTp *.ar
