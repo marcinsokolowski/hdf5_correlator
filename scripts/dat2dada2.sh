@@ -41,6 +41,12 @@ if [[ -n "$8" && "$8" != "-" ]]; then
    auto=$8
 fi
 
+phase_bins=64
+if [[ -n "$9" && "$9" != "-" ]]; then
+   phase_bins=$9
+fi
+
+
 echo "###########################################################"
 echo "PARAMETERS:"
 echo "###########################################################"
@@ -52,6 +58,7 @@ echo "dspsr_options = $dspsr_options"
 echo "conjugate = $conjugate"
 echo "force     = $force"
 echo "auto      = $auto"
+echo "phase_bins = $phase_bins"
 echo "###########################################################"
 
 
@@ -86,6 +93,8 @@ do
    
          echo "cat ${hdrfile} ${datfile} > ${outfile}"
          cat ${hdrfile} ${datfile} > ${outfile}
+#         echo "python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch_val} --source=${object}"
+#         python $path ${datfile} --dat2dada --outfile=${outfile} --unixtime=${unixtime} --freq_ch=${freq_ch_val} --source=${object}
       fi
    else
       echo "WARNING : dada file ${outfile} already exists -> skipped (enable force=1 in order to re-process)"
@@ -106,8 +115,8 @@ do
          size_mb=`du -smL ${datfile} | awk '{print $1;}'`
          echo "size_mb = $size_mb"
       
-         echo "dspsr -E ${object}.eph -b 64 -U $size_mb -F 256:D ${dspsr_options} ${outfile}"
-         dspsr -E ${object}.eph -b 64 -U $size_mb -F 256:D ${dspsr_options} ${outfile}
+         echo "dspsr -E ${object}.eph -b $phase_bins -U $size_mb -F 256:D ${dspsr_options} ${outfile}"
+         dspsr -E ${object}.eph -b $phase_bins -U $size_mb -F 256:D ${dspsr_options} ${outfile}
          
          mkdir -p backup/
          echo "cp *.ar backup/"

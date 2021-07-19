@@ -57,6 +57,7 @@ do
          echo "Processing pulsar $psrname observed at channel = $channel_id"
 
          # merge, but do not process :
+         which merge_all_dat.sh
          echo "merge_all_dat.sh 0 - B0950+08 ${conjugate} ${outdir}"
          merge_all_dat.sh 0 - B0950+08 ${conjugate} ${outdir}
          date
@@ -71,8 +72,8 @@ do
             psrcat -e ${psrname} > ${psrname}.eph
          fi
       
-         echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" 1 - 1 $phase_bins"
-         dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" 1 - 1 $phase_bins
+         echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" ${conjugate} - 1 $phase_bins"
+         dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" ${conjugate} - 1 $phase_bins
       
       # ?      
 #      pav -GCFDTp *.ar

@@ -25,6 +25,16 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    outdir=$5
 fi
 
+echo "######################################################################################"
+echo "PARAMETERS of merge_all_dat.sh :"
+echo "######################################################################################"
+echo "do_process = $do_process"
+echo "channel    = $channel"
+echo "object     = $object"
+echo "conjugate  = $conjugate"
+echo "outdir     = $outdir"
+echo "######################################################################################"
+
 
 count=`ls *.dat | wc -l`
 
@@ -42,7 +52,15 @@ if [[ $count -gt 0 ]]; then
    
    if [[ $do_process -gt 0 ]]; then   
       if [[ -s channel.txt ]]; then
-         channel=`cat channel.txt`
+         channel_file=`cat channel.txt`
+#         if [[ $channel_file != $channel ]]; then
+#            echo "WARNING : channel in file channel.txt = $channel_file != $channel provided in the command line parameter -> please verify and re-start"
+#            exit;
+#         fi         
+         channel=$channel_file
+      else
+         echo "WARNING : channel.txt does not exist using channel value = $channel from the command line, please verify that it is correct !"
+         sleep 15
       fi      
    
       cd ${outdir}/
