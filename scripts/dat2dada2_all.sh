@@ -1,8 +1,17 @@
 #!/bin/bash
 
+# some checks :
+psrcat_path=`which psrcat`
+if [[ -n "$psrcat_path" ]]; then
+   echo "OK : psrcat installed"
+else
+   echo "ERROR : psrcat not found -> cannot continue. Install from https://www.atnf.csiro.au/people/pulsar/psrcat/download.html"
+   exit   
+fi
+
 channel_file="channel.txt"
 
-for psrname in `ls -d J* V*`
+for psrname in `ls -d J*`
 do
    echo
    cd ${psrname}
@@ -20,8 +29,26 @@ do
       date
             
       cd ALL/
+      
+      # create eph file (if does not exist):
+      if [[ -s ${psrname}.eph ]]; then
+         echo "INFO : ephemeris file ${psrname}.eph already exists - nothing has to be done"       
+      else
+         echo "psrcat -e ${psrname} > ${psrname}.eph"
+         psrcat -e ${psrname} > ${psrname}.eph
+      fi
+      
       echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" 1 - 1"
       dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" 1 - 1 
+      
+      # ?      
+#      pav -GCFDTp *.ar
+ 
+      # The dynamic spectrum is
+#      pav -GCDTpd *.ar
+
+      # Or to fscrunch
+#      pav -GTDTpd -f 16 *.ar
       
       if [[ -s ~/bin/pulsar_post_processing.sh ]]; then
          echo "File ~/bin/pulsar_post_processing.sh exists -> exacuting"

@@ -3,7 +3,7 @@
 end_uxtime=$1
 
 ux=`date +%s`
-while [[ $ux -le $end_uxtime ]];
+while [[ $ux -lt $end_uxtime ]];
 do
    echo "Waiting 10 seconds ..."
    
