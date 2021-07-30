@@ -15,6 +15,7 @@ if [[ -n "$3" && "$3" != "-" ]]; then
    conjugate=$3
 fi
 
+done_file=processed.txt
 
 echo "############################################"
 echo "PARAMETERS:"
@@ -34,7 +35,16 @@ do
    echo "Processing $dir"
    cd ${dir}
    pwd
-   echo "process_all_objects.sh \"J* B*\" ${conjugate}"
-   process_all_objects.sh "J* B*" ${conjugate}   
+   
+   if [[ -s ${done_file} ]]; then
+      echo "\t$dir already processed"
+   else
+      echo "process_all_objects.sh \"J* B*\" ${conjugate}"
+      process_all_objects.sh "J* B*" ${conjugate}   
+      
+      echo "date > ${done_file}"
+      date > ${done_file}
+   fi
    cd ..
 done
+
