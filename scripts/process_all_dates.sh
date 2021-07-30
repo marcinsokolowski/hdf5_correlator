@@ -26,9 +26,14 @@ echo "############################################"
 date
 
 cd $datadir
+pwd
+
 for dir in `ls -d ${template}`
 do
+   echo
+   echo "Processing $dir"
    cd ${dir}
+   pwd
    echo "process_all_objects.sh \"J* B*\" ${conjugate}"
    process_all_objects.sh "J* B*" ${conjugate}   
    cd ..
