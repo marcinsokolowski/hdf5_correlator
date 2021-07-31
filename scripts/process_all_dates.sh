@@ -15,6 +15,8 @@ if [[ -n "$3" && "$3" != "-" ]]; then
    conjugate=$3
 fi
 
+export PATH=$HOME/github/hdf5_correlator/scripts/:$PATH
+
 done_file=processed.txt
 
 echo "############################################"
