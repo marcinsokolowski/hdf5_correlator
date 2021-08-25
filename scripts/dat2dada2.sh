@@ -69,9 +69,12 @@ path=`which hdf5_to_dada_converter.py`
 
 for datfile in `ls ${prefix}.dat`
 do
-   unixtime=`echo $datfile | cut -b 11-25`
-   echo "$datfile -> $unixtime - ok ?"
-   sleep 2
+# 2021-08-24 - no longer works after Alessio changed the code to record >1 channel :
+#   unixtime=`echo $datfile | cut -b 11-25`
+# NEW CODE should handle this new format of dat file name :
+   unixtime=`echo $datfile | awk '{l=length($1);ux=substr($1,l-20,17);print ux;}'`
+   echo "$datfile -> $unixtime - ok ? (new parsing)"
+#   sleep 2
 
    outfile=${datfile%%.dat}_${object}.dada   
    hdrfile=${datfile%%.dat}_${object}.hdr
