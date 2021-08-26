@@ -47,16 +47,23 @@ if [[ -n "$8" && "$8" != "-" ]]; then
    polarisation_swap=$8
 fi
 
+# example : --y_min=0 --y_max=1000
+plot_options=""
+if [[ -n "$9" && "$9" != "-" ]]; then
+   plot_options="$9"
+fi
+
 echo "####################################################"
 echo "PARAMETERS: "
 echo "####################################################"
 echo "polarisation_swap = $polarisation_swap"
+echo "plot_options      = $plot_options"
 echo "####################################################"
 
 while [ 1 ];
 do
-   echo "~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path} ${polarisation_swap}"
-   ~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path} ${polarisation_swap}
+   echo "~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path} ${polarisation_swap} \"${plot_options}\""
+   ~/Software/hdf5_correlator/scripts/process_station_beam.sh - ${freq_channel} ${station_name} ${tag} ${last_n_seconds} ${www_dir} ${beam_scripts_path} ${polarisation_swap} "${plot_options}"
    
    sleep $sleep_time
    echo "sleep $sleep_time"

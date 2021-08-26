@@ -70,12 +70,20 @@ if [[ $polarisation_swap -gt 0 ]]; then
    pol_swap_options="--pol_swap"
 fi   
 
+# example : --y_min=0 --y_max=1000
+plot_options=""
+if [[ -n "$9" && "$9" != "-" ]]; then
+   plot_options="$9"
+fi
+
+
 echo "######################################################################################"
 echo "PARAMETERS:"
 echo "######################################################################################"
 echo "station_name      = $station_name"
 echo "station_file      = $station_file"
 echo "polarisation_swap = $polarisation_swap ( start_ux = $start_ux ) -> pol_swap_options = $pol_swap_options"
+echo "plot options      = $plot_options"
 echo "######################################################################################"
 
 
@@ -130,8 +138,8 @@ if [[ $polarisation_swap -gt 0 ]]; then
    comment="${comment} (pol. swapped)"
 fi
 
-echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment=\"${comment}\"" # --y_min=0 --y_max=1000
-python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment="${comment}" # --y_min=0 --y_max=1000
+echo "python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment=\"${comment}\" $plot_options" # --y_min=0 --y_max=1000
+python $beam_scripts_path/plot_power_vs_time.py ${tag}_power_vs_time_ch${freq_channel} --comment="${comment}" $plot_options # --y_min=0 --y_max=1000
 
 
 png_file=${tag}_power_vs_time_ch${freq_channel}.png
