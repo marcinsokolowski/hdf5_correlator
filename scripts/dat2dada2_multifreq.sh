@@ -48,7 +48,8 @@ do
    pwd
    date
 
-   for ch in `ls -d ?? ???`
+   # | sort -n -r : is to start from highest frequency channels (VELA best detected there):
+   for ch in `ls -d ?? ??? | sort -n -r`
    do
       cd $ch   
       if [[ -s ${channel_file} ]]; then  
@@ -61,40 +62,35 @@ do
          echo "merge_all_dat.sh 0 - B0950+08 ${conjugate} ${outdir}"
          merge_all_dat.sh 0 - B0950+08 ${conjugate} ${outdir}
          date
-            
-         cd ${outdir}/
-      
-         # create eph file (if does not exist):
-         if [[ -s ${psrname}.eph ]]; then
-            echo "INFO : ephemeris file ${psrname}.eph already exists - nothing has to be done"       
-         else
-            echo "psrcat -e ${psrname} > ${psrname}.eph"
-            psrcat -e ${psrname} > ${psrname}.eph
-         fi
-      
-         echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" ${conjugate} - 1 $phase_bins"
-         dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" ${conjugate} - 1 $phase_bins
-      
-      # ?      
-#      pav -GCFDTp *.ar
- 
-      # The dynamic spectrum is
-#      pav -GCDTpd *.ar
 
-      # Or to fscrunch
-#      pav -GTDTpd -f 16 *.ar
+         if [[ -d ${outdir} ]]; then            
+            cd ${outdir}/
       
-         if [[ -s ~/bin/pulsar_post_processing.sh ]]; then
-            echo "File ~/bin/pulsar_post_processing.sh exists -> exacuting"
-            chmod +x ~/bin/pulsar_post_processing.sh
+            # create eph file (if does not exist):
+            if [[ -s ${psrname}.eph ]]; then
+               echo "INFO : ephemeris file ${psrname}.eph already exists - nothing has to be done"       
+            else
+               echo "psrcat -e ${psrname} > ${psrname}.eph"
+               psrcat -e ${psrname} > ${psrname}.eph
+            fi
+      
+            echo "dat2dada2.sh ${psrname} ${channel_id} - 1 \"-F 256:D\" ${conjugate} - 1 $phase_bins"
+            dat2dada2.sh ${psrname} ${channel_id} - 1 "-F 256:D" ${conjugate} - 1 $phase_bins
+      
+            if [[ -s ~/bin/pulsar_post_processing.sh ]]; then
+               echo "File ~/bin/pulsar_post_processing.sh exists -> exacuting"
+               chmod +x ~/bin/pulsar_post_processing.sh
          
-            echo "~/bin/pulsar_post_processing.sh"
-            ~/bin/pulsar_post_processing.sh
-         else
-            echo "WARNING : file ~/bin/pulsar_post_processing.sh does not exist -> no pulsar postprocessing performed on $psrname"
-         fi
+               echo "~/bin/pulsar_post_processing.sh"
+               ~/bin/pulsar_post_processing.sh
+            else
+               echo "WARNING : file ~/bin/pulsar_post_processing.sh does not exist -> no pulsar postprocessing performed on $psrname"
+            fi
       
-         cd ../
+            cd ../
+         else
+            echo "ERROR : directory ${outdir} not created"
+         fi
          date   
       else
          echo "ERROR : file $channel_file does not exist -> cannot process the pulsar"
