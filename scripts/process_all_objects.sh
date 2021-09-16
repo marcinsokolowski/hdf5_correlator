@@ -10,8 +10,10 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    conjugate=$2
 fi
 
-for object in `ls -d ${template}`
+for dir in `ls -d ${template}`
 do
+   object=`echo $dir | cut -b 1-10`    
+
    echo
    echo "----------------------------------------------------------------------------------------------------------------------------"
    date
