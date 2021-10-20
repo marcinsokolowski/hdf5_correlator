@@ -17,6 +17,6 @@ do
    echo
    echo "----------------------------------------------------------------------------------------------------------------------------"
    date
-   echo "dat2dada2_multifreq.sh $object - $conjugate > ${object}_processing.out 2>&1"
-   dat2dada2_multifreq.sh $object - $conjugate > ${object}_processing.out 2>&1
+   echo "dat2dada2_multifreq.sh $object - $conjugate >> ${object}_processing.out 2>&1"
+   dat2dada2_multifreq.sh $object - $conjugate >> ${object}_processing.out 2>&1
 done
