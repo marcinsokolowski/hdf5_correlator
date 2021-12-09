@@ -10,7 +10,7 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    conjugate=$2
 fi
 
-for dir in `ls -d ${template}`
+for dir in `ls -d ${template} 2>/dev/null`
 do
    object=`echo $dir | cut -b 1-10`    
 
