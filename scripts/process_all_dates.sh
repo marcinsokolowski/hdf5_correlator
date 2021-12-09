@@ -45,15 +45,15 @@ do
    cd ${dir}
    pwd
    
-   if [[ -s ${done_file} ]]; then
-      echo "\t$dir already processed"
-   else
-      echo "process_all_objects.sh \"${objects}\" ${conjugate}"
-      process_all_objects.sh "${objects}" ${conjugate}   
+#   if [[ -s ${done_file} ]]; then
+#      echo "\t$dir already processed"
+#   else
+   echo "process_all_objects.sh \"${objects}\" ${conjugate}"
+   process_all_objects.sh "${objects}" ${conjugate}   
       
-      echo "date > ${done_file}"
-      date > ${done_file}
-   fi
-   cd ..
+   echo "date > ${done_file}"
+   date > ${done_file}
+#   fi
+   cd -
 done
 
