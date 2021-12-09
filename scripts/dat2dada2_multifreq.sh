@@ -56,7 +56,7 @@ do
    ls -d [0-9][0-9] [0-9][0-9]_* [0-9][0-9][0-9] [0-9][0-9][0-9]_* 2>/dev/null | sort -n -r
 
    # | sort -n -r : is to start from highest frequency channels (VELA best detected there):
-   for ch in `ls -d [0-9][0-9] [0-9][0-9]_* [0-9][0-9][0-9] [0-9][0-9][0-9]_* | sort -n -r`
+   for ch in `ls -d [0-9][0-9] [0-9][0-9]_* [0-9][0-9][0-9] [0-9][0-9][0-9]_* 2>/dev/null | sort -n -r`
    do
       cd $ch   
       
