@@ -37,10 +37,10 @@ echo "##########################################################################
 
 
 count=`ls *.dat | wc -l`
+first_dat=`ls *.dat | head -1`
+dat_path=`pwd`
 
-if [[ $count -gt 0 ]]; then
-   first_dat=`ls *.dat | head -1`
-
+if [[ $count -gt 1 ]]; then
    if [[ ! -s ${outdir}/${first_dat} ]]; then
       mkdir -p ${outdir}
       echo "cat *.dat > ${outdir}/${first_dat}"
@@ -73,6 +73,15 @@ if [[ $count -gt 0 ]]; then
       echo "WARNING : full .dat file processing is not required, execute this line : merge_all_dat.sh 1"      
    fi
 else
-   echo "WARNING : no .dat files in this directory -> nothing to be done ..."
-   pwd
+   if [[ $count -gt 0 ]]; then
+      echo "DEBUG : just one .dat file found -> creating symbolic link"
+      mkdir -p ${outdir}
+      cd ${outdir}
+      echo "ln -s ${dat_path}/${first_dat}"
+      ln -s ${dat_path}/${first_dat}
+      cd -
+   else
+      echo "WARNING : no .dat files in this directory -> nothing to be done ..."
+      pwd
+   fi
 fi      
