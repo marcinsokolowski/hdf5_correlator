@@ -41,13 +41,20 @@ first_dat=`ls *.dat | head -1`
 dat_path=`pwd`
 
 if [[ $count -gt 1 ]]; then
-   if [[ ! -s ${outdir}/${first_dat} ]]; then
-      mkdir -p ${outdir}
-      echo "cat *.dat > ${outdir}/${first_dat}"
-      echo "It will take a bit of time ..."
-      cat *.dat > ${outdir}/${first_dat} 
+   first_dat_b=${first_dat%%.dat}
+   dadafile=${first_dat_b}.dada
+   
+   if [[ ! -s ${outdir}/${dadafile} ]]; then
+      if [[ ! -s ${outdir}/${first_dat} ]]; then
+         mkdir -p ${outdir}
+         echo "cat *.dat > ${outdir}/${first_dat}"
+         echo "It will take a bit of time ..."
+         cat *.dat > ${outdir}/${first_dat} 
+      else
+         echo "INFO : file ${outdir}/${first_dat} already exists -> merging skipped"
+      fi
    else
-      echo "INFO : file ${outdir}/${first_dat} already exists -> merging skipped"
+      echo "INFO : .dada file already exists -> no merging is required (remove .dada files to force re-mering)"
    fi
    
    if [[ $do_process -gt 0 ]]; then   
