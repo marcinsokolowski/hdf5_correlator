@@ -59,22 +59,32 @@ do
       for object in `ls -d ${objects} 2>/dev/null`
       do
          cd ${object}
-         for channel in `ls -d ??? ?? 2>/dev/null`
-         do
-            cd $channel
-            for dada_file in `ls *.dada 2>/dev/null`
+         
+         if [[ -s ${done_file} ]]; then
+            echo "INFO : processing ${object} ..."
+            for channel in `ls -d ??? ?? 2>/dev/null`
             do
-               processed_file=${dada_file%%dada}processed
+               cd $channel
+               for dada_file in `ls *.dada 2>/dev/null`
+               do
+                  processed_file=${dada_file%%dada}processed
             
-               if [[ -s $processed_file ]]; then
-                  echo "File $dada_file already processed, in order to re-process remove file $processed_file"
-               else
-                  echo "process_skalow_wide_bw_test.sh $dada_file 32 410 1 0 J0835-4510 1 > ${processed_file} 2>&1"
-                  process_skalow_wide_bw_test.sh $dada_file 32 410 1 0 J0835-4510 1 > ${processed_file} 2>&1
-               fi
+                  if [[ -s $processed_file ]]; then
+                     echo "File $dada_file already processed, in order to re-process remove file $processed_file"
+                  else
+                     echo "process_skalow_wide_bw_test.sh $dada_file 32 410 1 0 J0835-4510 1 > ${processed_file} 2>&1"
+                     process_skalow_wide_bw_test.sh $dada_file 32 410 1 0 J0835-4510 1 > ${processed_file} 2>&1
+                  fi
+               done
+               cd ..
             done
-            cd ..
-         done
+         else
+            echo "${object} already processed"
+         fi
+         
+         echo "date > ${done_file}"
+         data > ${done_file}
+         
          cd ..
       done
    else
