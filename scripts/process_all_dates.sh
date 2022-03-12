@@ -85,6 +85,6 @@ do
    echo "date > ${done_file}"
    date > ${done_file}
 #   fi
-   cd -
+   cd ..
 done
 
