@@ -48,6 +48,7 @@ for dir in `ls -d ${template}`
 do
    echo
    echo "Processing $dir"
+   pwd
    cd ${dir}
    pwd
    
