@@ -55,13 +55,13 @@ do
 #      echo "\t$dir already processed"
 #   else
    if [[ $multi_channel -gt 0 ]]; then
-      for object in `ls -d ${objects}`
+      for object in `ls -d ${objects} 2>/dev/null`
       do
          cd ${object}
-         for channel in `ls -d ??? ??`
+         for channel in `ls -d ??? ?? 2>/dev/null`
          do
             cd $channel
-            for dada_file in `ls *.dada`
+            for dada_file in `ls *.dada 2>/dev/null`
             do
                processed_file=${dada_file%%dada}processed
             

@@ -35,6 +35,7 @@ echo "#######################################################"
 
 
 # some checks :
+echo "PSRCAT = $psrcat_path , PATH = $PATH"
 psrcat_path=`which psrcat`
 if [[ -n "$psrcat_path" ]]; then
    echo "OK : psrcat installed"
