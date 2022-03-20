@@ -61,6 +61,8 @@ do
          cd ${object}
          
          if [[ -s ${done_file} ]]; then
+            echo "${object} already processed (remove file ${done_file} to repeat processing)"
+         else         
             echo "INFO : processing ${object} ..."
             for channel in `ls -d ??? ?? 2>/dev/null`
             do
@@ -78,8 +80,6 @@ do
                done
                cd ..
             done
-         else
-            echo "${object} already processed"
          fi
          
          echo "date > ${done_file}"
