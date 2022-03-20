@@ -83,7 +83,7 @@ do
          fi
          
          echo "date > ${done_file}"
-         data > ${done_file}
+         date > ${done_file}
          
          cd ..
       done
