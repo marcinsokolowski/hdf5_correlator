@@ -74,8 +74,8 @@ do
                   if [[ -s $processed_file ]]; then
                      echo "File $dada_file already processed, in order to re-process remove file $processed_file"
                   else
-                     echo "process_skalow_wide_bw_test.sh $dada_file 32 410 1 0 J0835-4510 1 > ${processed_file} 2>&1"
-                     process_skalow_wide_bw_test.sh $dada_file 32 410 1 0 J0835-4510 1 > ${processed_file} 2>&1
+                     echo "process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 1 > ${processed_file} 2>&1"
+                     process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 1 > ${processed_file} 2>&1
                   fi
                done
                cd ..
