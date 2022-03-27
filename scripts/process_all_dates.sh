@@ -25,6 +25,10 @@ if [[ -n "$5" && "$5" != "-" ]]; then
    multi_channel=$5
 fi
 
+force=0
+if [[ -n "$6" && "$6" != "-" ]]; then
+   force=$6
+fi
 
 export PATH=$HOME/github/hdf5_correlator/scripts/:$PATH
 
@@ -38,6 +42,7 @@ echo "template      = $template"
 echo "conjugate     = $conjugate"
 echo "objects       = $objects"
 echo "multi_channel = $multi_channel"
+echo "force         = $force"
 echo "############################################"
 date
 
@@ -60,7 +65,7 @@ do
       do
          cd ${object}
          
-         if [[ -s ${done_file} ]]; then
+         if [[ -s ${done_file} && $force -le 0 ]]; then
             echo "${object} already processed (remove file ${done_file} to repeat processing)"
          else         
             echo "INFO : processing ${object} ..."
@@ -74,8 +79,8 @@ do
                   if [[ -s $processed_file ]]; then
                      echo "File $dada_file already processed, in order to re-process remove file $processed_file"
                   else
-                     echo "process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 1 > ${processed_file} 2>&1"
-                     process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 1 > ${processed_file} 2>&1
+                     echo "process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 $force > ${processed_file} 2>&1"
+                     process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 $force > ${processed_file} 2>&1
                   fi
                done
                cd ..
