@@ -61,8 +61,12 @@ do
 #      echo "\t$dir already processed"
 #   else
    if [[ $multi_channel -gt 0 ]]; then
-      for object in `ls -d ${objects} 2>/dev/null`
+      for subdir in `ls -d ${objects} 2>/dev/null`
       do
+         object=`echo ${subdir} | cut -b 1-10`
+         echo
+         echo "INFO : processing subdirectory $subdir -> object = $object"
+         
          cd ${object}
          
          if [[ -s ${done_file} && $force -le 0 ]]; then
