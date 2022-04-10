@@ -67,12 +67,12 @@ do
          echo
          echo "INFO : processing subdirectory $subdir -> object = $object"
          
-         cd ${object}
+         cd ${subdir}
          
          if [[ -s ${done_file} && $force -le 0 ]]; then
-            echo "${object} already processed (remove file ${done_file} to repeat processing)"
+            echo "${subdir} / object ${object} already processed (remove file ${done_file} to repeat processing)"
          else         
-            echo "INFO : processing ${object} ..."
+            echo "INFO : processing ${subdir} / object ${object} ..."
             for channel in `ls -d ??? ?? 2>/dev/null`
             do
                cd $channel
