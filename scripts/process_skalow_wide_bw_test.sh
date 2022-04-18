@@ -89,8 +89,8 @@ do
       if [[ -s ${ch_str}/test.dat ]]; then
          echo "INFO : file ${ch_str}/test.dat already exists -> nothing to be done"
       else
-         echo "read_binary_station_beam_test_order1_2pol $dat_file  -f ${ch_str}/test -p 0 -C ${n_channels} -c ${ch} -s ${start_byte} -Z $conversion_options"
-         read_binary_station_beam_test_order1_2pol $dat_file  -f ${ch_str}/test -p 0 -C ${n_channels} -c ${ch} -s ${start_byte} -Z $conversion_options
+         echo "read_binary_station_beam_test_order1_2pol $dat_file  -f ${ch_str}/test -p 0 -C ${n_channels} -c ${ch} -s ${start_byte} -Z \"$conversion_options\""
+         read_binary_station_beam_test_order1_2pol $dat_file  -f ${ch_str}/test -p 0 -C ${n_channels} -c ${ch} -s ${start_byte} -Z "$conversion_options"
       fi
       
       if [[ $process_channel -gt 0 ]]; then

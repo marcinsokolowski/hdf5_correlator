@@ -30,6 +30,12 @@ if [[ -n "$6" && "$6" != "-" ]]; then
    force=$6
 fi
 
+conversion_options=""
+if [[ -n "$7" && "$7" != "-" ]]; then
+   conversion_options="$7"   
+fi
+
+
 export PATH=$HOME/github/hdf5_correlator/scripts/:$PATH
 
 done_file=processed.txt
@@ -43,6 +49,7 @@ echo "conjugate     = $conjugate"
 echo "objects       = $objects"
 echo "multi_channel = $multi_channel"
 echo "force         = $force"
+echo "conversion_options = $conversion_options"
 echo "############################################"
 date
 
@@ -83,8 +90,8 @@ do
                   if [[ -s $processed_file ]]; then
                      echo "File $dada_file already processed, in order to re-process remove file $processed_file"
                   else
-                     echo "process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 $force > ${processed_file} 2>&1"
-                     process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 $force > ${processed_file} 2>&1
+                     echo "process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 $force \"$conversion_options\" > ${processed_file} 2>&1"
+                     process_skalow_wide_bw_test.sh $dada_file 32 $channel 1 0 J0835-4510 $force "$conversion_options" > ${processed_file} 2>&1
                   fi
                done
                cd ..
