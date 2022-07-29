@@ -104,7 +104,7 @@ do
                      freq_mhz=`echo "$channel $ch" | awk '{printf("%.6f\n",($1+$2)*(400.00/512.00));}'`
                      ux=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ux;}'`
                      utc=`date -u -d "1970-01-01 UTC $ux seconds" +"%Y%m%dT%H%M%S"`
-                     outfile=${utc}_ch${channel_total}.ar
+                     outfile=${utc}_ch${channel_total}
                      
                      echo ".dada file = $dada_file"
                      echo "ch = $channel + $ch = $channel_total -> freq = $freq_mhz [MHz]"
