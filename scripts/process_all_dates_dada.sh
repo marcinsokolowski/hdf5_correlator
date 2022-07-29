@@ -102,8 +102,13 @@ do
                      ch=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ch;}'`
                      freq_mhz=`echo $ch | awk '{printf("%.6f\n",$1*(400.00/512.00));}'`
                      ux=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ux;}'`
-                     utc=`date -u -d "1970-01-01 UTC $1 seconds" +"%Y%m%dT%T"`
+                     utc=`date -u -d "1970-01-01 UTC $ux seconds" +"%Y%m%dT%T"`
                      outfile=${utc}_ch${ch}.ar
+                     
+                     echo ".dada file = $dada_file"
+                     echo "ch = $ch -> freq = $freq_mhz [MHz]"
+                     echo "ux = $ux -> utc  = $utc"
+                     echo "outfile = $outfile"
                   
                      processed_file=${dada_file%%dada}processed
             
