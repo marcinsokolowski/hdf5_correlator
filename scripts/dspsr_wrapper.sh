@@ -10,6 +10,11 @@ if [[ -n "$2" && "$2" != "-" ]]; then
    object=$2
 fi
 
+channel=410
+if [[ -n "$3" && "$3" != "-" ]]; then
+   channel=$3
+fi
+
 ch=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ch;}'`
 channel_total=`echo "$channel $ch" | awk '{printf("%d\n",($1+$2));}'`
 freq_mhz=`echo "$channel $ch" | awk '{printf("%.6f\n",($1+$2)*(400.00/512.00));}'`

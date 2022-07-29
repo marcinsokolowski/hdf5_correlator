@@ -119,8 +119,8 @@ do
 #                        echo "process_skalow_wide_bw_test.sh $dada_file $n_channels $channel 1 0 J0835-4510 $force \"$conversion_options\" > ${processed_file} 2>&1"
 #                        process_skalow_wide_bw_test.sh $dada_file $n_channels $channel 1 0 J0835-4510 $force "$conversion_options" > ${processed_file} 2>&1
                          if [[ -s $dspsr_script ]]; then
-                             echo "$dspsr_script $dada_file $object"
-                             $dspsr_script $dada_file $object
+                             echo "$dspsr_script $dada_file $object $channel"
+                             $dspsr_script $dada_file $object $channel
                          else
                              if [[ ! -s ${object}.eph ]]; then
                                 echo "psrcat -e ${object} > ${object}.eph"
