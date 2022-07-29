@@ -100,7 +100,7 @@ do
                   do
                      # channel_1_1_1659060532.876270.dada
                      ch=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ch;}'`
-                     freq_mhz=`echo $ch | awk '{printf("%.6f\n",$1*(400.00/512.00));}'`
+                     freq_mhz=`echo "$channel $ch" | awk '{printf("%.6f\n",($1+$2)*(400.00/512.00));}'`
                      ux=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ux;}'`
                      utc=`date -u -d "1970-01-01 UTC $ux seconds" +"%Y%m%dT%T"`
                      outfile=${utc}_ch${ch}.ar
