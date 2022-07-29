@@ -86,55 +86,58 @@ do
          echo
          echo "INFO : processing subdirectory $subdir -> object = $object"
          
-         cd ${subdir}
+         if [[ -d ${subdir} ]]; then
+            cd ${subdir}
          
-         if [[ -s ${done_file} && $force -le 0 ]]; then
-            echo "${subdir} / object ${object} already processed (remove file ${done_file} to repeat processing)"
-         else         
-            echo "INFO : processing ${subdir} / object ${object} ..."
-            for channel in `ls -d ??? ?? 2>/dev/null`
-            do
-               cd $channel
-               for dada_file in `ls *.dada 2>/dev/null`
+            if [[ -s ${done_file} && $force -le 0 ]]; then
+               echo "${subdir} / object ${object} already processed (remove file ${done_file} to repeat processing)"
+            else         
+               echo "INFO : processing ${subdir} / object ${object} ..."
+               for channel in `ls -d ??? ?? 2>/dev/null`
                do
-                  # channel_1_1_1659060532.876270.dada
-                  ch=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ch;}'`
-                  freq_mhz=`echo $ch | awk '{printf("%.6f\n",$1*(400.00/512.00));}'`
-                  ux=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ux;}'`
-                  utc=`date -u -d "1970-01-01 UTC $1 seconds" +"%Y%m%dT%T"`
-                  outfile=${utc}_ch${ch}.ar
+                  cd $channel
+                  for dada_file in `ls *.dada 2>/dev/null`
+                  do
+                     # channel_1_1_1659060532.876270.dada
+                     ch=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ch;}'`
+                     freq_mhz=`echo $ch | awk '{printf("%.6f\n",$1*(400.00/512.00));}'`
+                     ux=`echo $dada_file | awk -F '_' '{ch=$2;ux=substr($4,1,17);print ux;}'`
+                     utc=`date -u -d "1970-01-01 UTC $1 seconds" +"%Y%m%dT%T"`
+                     outfile=${utc}_ch${ch}.ar
                   
-                  processed_file=${dada_file%%dada}processed
+                     processed_file=${dada_file%%dada}processed
             
-                  if [[ -s $processed_file && $force -le 0 ]]; then
-                     echo "File $dada_file already processed, in order to re-process remove file $processed_file"
-                  else
-#                     echo "process_skalow_wide_bw_test.sh $dada_file $n_channels $channel 1 0 J0835-4510 $force \"$conversion_options\" > ${processed_file} 2>&1"
-#                     process_skalow_wide_bw_test.sh $dada_file $n_channels $channel 1 0 J0835-4510 $force "$conversion_options" > ${processed_file} 2>&1
-                      if [[ -s $dspsr_script ]]; then
-                          echo "$dspsr_script $dada_file $object"
-                          $dspsr_script $dada_file $object
-                      else
-                          if [[ ! -s ${object}.eph ]]; then
-                             echo "psrcat -e ${object} > ${object}.eph"
-                             psrcat -e ${object} > ${object}.eph
-                          else
-                             echo "Ephemeris file ${object}.eph already exists"
-                          fi
+                     if [[ -s $processed_file && $force -le 0 ]]; then
+                        echo "File $dada_file already processed, in order to re-process remove file $processed_file"
+                     else
+#                        echo "process_skalow_wide_bw_test.sh $dada_file $n_channels $channel 1 0 J0835-4510 $force \"$conversion_options\" > ${processed_file} 2>&1"
+#                        process_skalow_wide_bw_test.sh $dada_file $n_channels $channel 1 0 J0835-4510 $force "$conversion_options" > ${processed_file} 2>&1
+                         if [[ -s $dspsr_script ]]; then
+                             echo "$dspsr_script $dada_file $object"
+                             $dspsr_script $dada_file $object
+                         else
+                             if [[ ! -s ${object}.eph ]]; then
+                                echo "psrcat -e ${object} > ${object}.eph"
+                                psrcat -e ${object} > ${object}.eph
+                             else
+                                echo "Ephemeris file ${object}.eph already exists"
+                             fi
 
-                          echo "dspsr -E ${object}.eph -b 64 -F 256:D -F 256:D -f ${freq_mhz} -O ${outfile} ${dada_file}"
-                          dspsr -E ${object}.eph -b 64 -F 256:D -F 256:D -f ${freq_mhz} -O ${outfile} ${dada_file}
-                      fi
-                  fi
+                             echo "dspsr -E ${object}.eph -b 64 -F 256:D -F 256:D -f ${freq_mhz} -O ${outfile} ${dada_file}"
+                             dspsr -E ${object}.eph -b 64 -F 256:D -F 256:D -f ${freq_mhz} -O ${outfile} ${dada_file}
+                         fi
+                     fi
+                  done
+                  cd ..
                done
-               cd ..
-            done
-         fi
+            fi
          
-         echo "date > ${done_file}"
-         date > ${done_file}
-         
+            echo "date > ${done_file}"
+            date > ${done_file}         
          cd ..
+         else
+            echo "WARNING : subdirectory $subdir does not exist -> skipped"
+         fi
       done
    else
       # echo "process_all_objects.sh \"${objects}\" ${conjugate}"
