@@ -24,7 +24,7 @@ echo "force    = $force"
 echo "##############################################################"
 
 
-export PATH=/home/msok/github/hdf5_correlator/scripts/:$PATH
+export PATH=/home/msok/github/hdf5_correlator/scripts/:/usr/local/bin/:$PATH
 
 cd ${datadir}
 
