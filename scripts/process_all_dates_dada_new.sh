@@ -41,9 +41,12 @@ do
    if [[ -s processed.txt ]]; then         
       echo "INFO : data in ${dir} already processed -> skipped"
    else
-      echo "process_all_dates_dada.sh /data_archive/ ${dir} 1 "J?????????_flagants_16ch*" 1 1 - 16 > process.out 2>&1"
+      echo "Processing started at :" > processed.txt
+      date >> processed.txt
+      echo "process_all_dates_dada.sh /data_archive/ ${dir} 1 \"J?????????_flagants_16ch*\" 1 1 - 16 > process.out 2>&1"
       process_all_dates_dada.sh /data_archive/ ${dir} 1 "J?????????_flagants_16ch*" 1 1 - 16 > process.out 2>&1 
    
+      echo "Processing finished at :" > processed.txt
       date >> processed.txt
       echo "Processing of $dir done at :"
       date 
