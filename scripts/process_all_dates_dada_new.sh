@@ -25,7 +25,7 @@ echo "##############################################################"
 
 
 # PULSARS :
-export PATH=/home/msok/github/hdf5_correlator/scripts/:/usr/local/bin/:$PATH
+export PATH=/home/msok/github/hdf5_correlator/scripts/:/usr/local/bin/:/home/aavs/bin/psrcat_tar:$PATH
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/data1/msok/anaconda2/lib/:$LD_LIBRARY_PATH # for gfortran in anaconda2
 export TEMPO=/home/aavs/Software/pulsars/tempo
