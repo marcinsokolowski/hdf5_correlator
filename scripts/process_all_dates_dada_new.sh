@@ -24,7 +24,13 @@ echo "force    = $force"
 echo "##############################################################"
 
 
+# PULSARS :
 export PATH=/home/msok/github/hdf5_correlator/scripts/:/usr/local/bin/:$PATH
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/data1/msok/anaconda2/lib/:$LD_LIBRARY_PATH # for gfortran in anaconda2
+export TEMPO=/home/aavs/Software/pulsars/tempo
+export TEMPO2=/usr/share/tempo2/
+
 
 cd ${datadir}
 
