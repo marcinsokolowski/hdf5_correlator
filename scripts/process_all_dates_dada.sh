@@ -45,6 +45,11 @@ if [[ -n "$9" && "$9" != "-" ]]; then
    dspsr_script=$9
 fi
 
+convert2fil=0
+if [[ -n "${10}" && "${10}" != "-" ]]; then
+   convert2fil=${10}
+fi
+
 
 export PATH=$HOME/github/hdf5_correlator/scripts/:$PATH
 
@@ -62,6 +67,7 @@ echo "force         = $force"
 echo "conversion_options = $conversion_options"
 echo "n_channels    = $n_channels"
 echo "dspsr_script  = $dspsr_script"
+echo "convert2fil   = $convert2fil"
 echo "############################################"
 date
 
@@ -132,9 +138,24 @@ do
                              size_mb=`du -smL ${dada_file} | awk '{print $1;}'`
                              echo "dspsr -E ${object}.eph -b 128 -F 256:D -U ${size_mb} -f ${freq_mhz} -O ${outfile} ${dada_file}"
                              dspsr -E ${object}.eph -b 128 -F 256:D -U ${size_mb} -f ${freq_mhz} -O ${outfile} ${dada_file}
-                         fi
+                         fi                         
                      fi
                   done
+                  
+                  if [[ $convert2fil -gt 0 ]]; then
+                     transposed=0
+                     single_file=0 # single big .dada file (1) or one .dada file per channel (0)
+                     
+                     echo "psrcat -e2 ${object} > ${object}_long.eph"
+                     psrcat -e2 ${object} > ${object}_long.eph
+                     psr_period=`cat ${object}_long.eph | awk '{if($1=="P0"){print $2}}'`
+
+                     echo "skalow_station_fold_allcc.sh ${datadir} ${template} ${channel} ${subdir} ${n_channels} 1 \"-a 7234 -T 0\" 32 ${psr_period} - - \"-a 7234 -T 0\" 1 ${single_file} 0 > ../${object}_ch${channel}.out 2>&1"
+                     skalow_station_fold_allcc.sh ${datadir} ${template} ${channel} ${subdir} ${n_channels} 1 "-a 7234 -T 0" 32 ${psr_period} - - "-a 7234 -T 0" 1 ${single_file} 0 > ../${object}_ch${channel}.out 2>&1
+                  else
+                     echo "WARNING : conversion to .fil file is not required"
+                  fi
+                  
                   cd ..
                done
             fi
@@ -157,4 +178,5 @@ do
 #   fi
    cd ..
 done
+
 
