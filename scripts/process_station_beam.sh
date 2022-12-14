@@ -60,9 +60,10 @@ echo "-----------------------------"
 cat ${hdf5_info_file}
 echo "-----------------------------"
 
-if [[ $station_name == "eda2" && $start_ux -gt 1586174400 ]]; then # EDA2 polarisation swap from around 2020-04-06 AWST 
-   polarisation_swap=1
-fi
+# if [[ $station_name == "eda2" && $start_ux -gt 1586174400 ]]; then # EDA2 polarisation swap from around 2020-04-06 AWST 
+#   polarisation_swap=1
+# fi
+polarisation_swap=0 # no polarisation swap after EDA2 was "un-swapped" in 2021 
 if [[ -n "$8" && "$8" != "-" ]]; then
    polarisation_swap=$8
 fi
