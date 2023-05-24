@@ -20,6 +20,12 @@ if [[ -n "$4" && "$4" != "-" ]]; then
    n_channels=$4
 fi
 
+subdir_template="J?????????_flagants_${n_channels}ch*"
+if [[ -n "$5" && "$5" != "-" ]]; then
+   subdir_template="$5"
+fi
+
+
 echo "##############################################################"
 echo "PARAMETERS :"
 echo "##############################################################"
@@ -27,6 +33,7 @@ echo "datadir    = $datadir"
 echo "template   = $template"
 echo "force      = $force"
 echo "n_channels = $n_channels"
+echo "subdir_template = $subdir_template"
 echo "##############################################################"
 
 
@@ -55,8 +62,8 @@ do
    else
       echo "Processing started at :" > processed.txt
       date >> processed.txt
-      echo "process_all_dates_dada.sh /data_archive/ ${dir} 1 \"J?????????_flagants_${n_channels}ch*\" 1 1 - ${n_channels} > process.out 2>&1"
-      process_all_dates_dada.sh /data_archive/ ${dir} 1 "J?????????_flagants_${n_channels}ch*" 1 1 - ${n_channels} > process.out 2>&1 
+      echo "process_all_dates_dada.sh /data_archive/ ${dir} 1 \"${subdir_template}\" 1 1 - ${n_channels} > process.out 2>&1"
+      process_all_dates_dada.sh /data_archive/ ${dir} 1 "${subdir_template}" 1 1 - ${n_channels} > process.out 2>&1 
    
       echo "Processing finished at :" > processed.txt
       date >> processed.txt
