@@ -38,4 +38,8 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 add_executable(hdf5_correlator main.cpp hdf5_commons.cpp eda2_tpm_coefficients.cpp calsolutions.cpp mwaconfig.cpp)
 target_link_libraries(hdf5_correlator ${CFITSIO_LIB} ${LIBNOVA_LIB} ${LIBMSFITS_LIB} ${LIBHDF5} ${HDF5_LIBRARIES} ${LIBNOVA_LIB} ${FFTW3_LIB} ${CFITSIO_LIB})
 
+# ERA beamformer :
+add_executable(beamform_era beamform_era.cpp calsolutions.cpp mwaconfig.cpp)
+target_link_libraries(beamform_era ${CFITSIO_LIB} ${LIBNOVA_LIB} ${LIBMSFITS_LIB} ${LIBHDF5} ${HDF5_LIBRARIES} ${LIBNOVA_LIB} ${FFTW3_LIB} ${CFITSIO_LIB})
+
 install (TARGETS hdf5_correlator DESTINATION bin)
