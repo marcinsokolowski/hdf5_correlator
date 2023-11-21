@@ -2,7 +2,7 @@
 
 datadir="/data_archive/"
 if [[ -n "$1" && "$1" != "-" ]]; then
-   datdir="$1"
+   datadir="$1"
 fi
 
 template="202[2-3]_??_??_pulsars_vela"
