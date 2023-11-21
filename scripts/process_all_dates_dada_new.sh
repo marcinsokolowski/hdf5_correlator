@@ -62,8 +62,8 @@ do
    else
       echo "Processing started at :" > processed.txt
       date >> processed.txt
-      echo "process_all_dates_dada.sh /data_archive/ ${dir} 1 \"${subdir_template}\" 1 1 - ${n_channels} > process.out 2>&1"
-      process_all_dates_dada.sh /data_archive/ ${dir} 1 "${subdir_template}" 1 1 - ${n_channels} > process.out 2>&1 
+      echo "process_all_dates_dada.sh ${datadir} ${dir} 1 \"${subdir_template}\" 1 1 - ${n_channels} > process.out 2>&1"
+      process_all_dates_dada.sh ${datadir} ${dir} 1 "${subdir_template}" 1 1 - ${n_channels} > process.out 2>&1 
    
       echo "Processing finished at :" > processed.txt
       date >> processed.txt
