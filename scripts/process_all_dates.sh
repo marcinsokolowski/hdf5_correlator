@@ -55,7 +55,7 @@ echo "objects       = $objects"
 echo "multi_channel = $multi_channel"
 echo "force         = $force"
 echo "conversion_options = $conversion_options"
-echp "n_channels    = $n_channels"
+echo "n_channels    = $n_channels"
 echo "############################################"
 date
 
