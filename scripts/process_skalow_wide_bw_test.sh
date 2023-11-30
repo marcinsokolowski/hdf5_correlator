@@ -42,6 +42,11 @@ if [[ -n "$8" && "$8" != "-" ]]; then
    conversion_options="$8"   
 fi
 
+do_psr_processing=1
+if [[ -n "$9" && "$9" != "-" ]]; then
+   do_psr_processing=$9
+fi
+
 
 start_byte=0
 if [[ $ext == "dada" ]]; then
@@ -70,6 +75,7 @@ echo "test_pattern_generator = $test_pattern_generator"
 echo "force      = $force"
 echo "proces     = $process_channel"
 echo "conversion_options = $conversion_options"
+echo "do_psr_processing = $do_psr_processing"
 echo "###############################################################"
 
 path_dada_converter=`which dada_header_converter.py`
@@ -111,31 +117,37 @@ do
                echo "cat header.txt test.dat > test.dada"
                cat header.txt test.dat > test.dada
                         
-               if [[ -s ../${object}.eph ]]; then            
-                  echo "cp ../${object}.eph ."
-                  cp ../${object}.eph .
+               if [[ $do_psr_processing -gt 0 ]]; then
+                  echo "INFO : performing pulsar processing"
+                  
+                  if [[ -s ../${object}.eph ]]; then                              
+                     echo "cp ../${object}.eph ."
+                     cp ../${object}.eph .
+                  else
+                     echo "psrcat -e ${object} > ${object}.eph"
+                     psrcat -e ${object} > ${object}.eph                              
+                  fi
+              
+                  if [[ -s ${object}.eph ]]; then
+                     echo "OK : ephemeris file ${object}.eph exists -> processing continues"
+                  else
+                     echo "ERROR : ephemeris file ../${object}.eph not found and could not be generated -> exiting"
+                     exit
+                  fi
+            
+                  size_mb=`du -sm test.dat | awk '{print $1;}'`
+            
+                  echo "dspsr -E ${object}.eph -b 64 -U ${size_mb} -F 256:D -F 256:D test.dada"
+                  dspsr -E ${object}.eph -b 64 -U ${size_mb} -F 256:D -F 256:D test.dada
+            
+                  echo "rm -f test.dat"
+                  rm -f test.dat
                else
-                  echo "psrcat -e ${object} > ${object}.eph"
-                  psrcat -e ${object} > ${object}.eph                              
+                  pwd
+                  echo "ERROR : .dada header template ../header_template.txt not found -> cannot process single channels"
                fi
-            
-               if [[ -s ${object}.eph ]]; then
-                  echo "OK : ephemeris file ${object}.eph exists -> processing continues"
-               else
-                  echo "ERROR : ephemeris file ../${object}.eph not found and could not be generated -> exiting"
-                  exit
-               fi
-            
-               size_mb=`du -sm test.dat | awk '{print $1;}'`
-            
-               echo "dspsr -E ${object}.eph -b 64 -U ${size_mb} -F 256:D -F 256:D test.dada"
-               dspsr -E ${object}.eph -b 64 -U ${size_mb} -F 256:D -F 256:D test.dada
-            
-               echo "rm -f test.dat"
-               rm -f test.dat
             else
-               pwd
-               echo "ERROR : .dada header template ../header_template.txt not found -> cannot process single channels"
+               echo "WARNING : pulsar processing is not required"
             fi
             cd ..
       else 
