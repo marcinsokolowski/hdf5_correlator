@@ -89,6 +89,10 @@ do
       for subdir in `ls -d ${objects} 2>/dev/null`
       do
          object=`echo ${subdir} | cut -b 1-10`
+         epoch=`echo ${subdir} | cut -b 1-1`
+         if [[ $epoch == "B" ]]; then
+            object=`echo ${subdir} | cut -b 1-8`
+         fi
          echo
          echo "INFO : processing subdirectory $subdir -> object = $object"
          
