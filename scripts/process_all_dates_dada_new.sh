@@ -20,7 +20,7 @@ if [[ -n "$4" && "$4" != "-" ]]; then
    n_channels=$4
 fi
 
-subdir_template="J?????????_flagants_${n_channels}ch*"
+subdir_template="J?????????_flagants_${n_channels}ch* B???????_flagants_${n_channels}ch*"
 if [[ -n "$5" && "$5" != "-" ]]; then
    subdir_template="$5"
 fi
