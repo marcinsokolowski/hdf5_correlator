@@ -24,7 +24,7 @@ else
    echo "or both, or wherever hdf5_correlator package is located"
 fi
 
-for hdf5file in `cat channel_cont_0_*.hdf5`
+for hdf5file in `ls channel_cont_0_*.hdf5`
 do
    echo "python $path $hdf5file 16 - --outdir=merged_channel${channel}/ --out_channel=${channel} --n_channels=${n_channels}"
    python $path $hdf5file 16 - --outdir=merged_channel${channel}/ --out_channel=${channel} --n_channels=${n_channels}
