@@ -1,3 +1,4 @@
+from __future__ import print_function
 from time import gmtime, strftime
 import optparse
 
@@ -36,7 +37,7 @@ niter=0 # was 40000
 
 weight='briggs'
 for weight in weights:
-    print 'Imaging %s'%(vis)
+    print('Imaging %s'%(vis))
     name_base=vis 
     for antenna in antennas:
         for stokes in stokeses:
@@ -48,12 +49,12 @@ for weight in weights:
                         else:
                             cyclefactor=10#1.5 #For full MWA have lower cyclefactor
                             threshold='30mJy'
-                        print 'Cleaning %s stokes %s with weight %s (robust=%s), threshold %s,  cyclefactor %s, psfmode %s' % (antenna, stokes, weight, robust, threshold, cyclefactor, psfmode)
-                        print 'Time now is %s' % strftime("%Y-%m-%d %H:%M:%S")
+                        print('Cleaning %s stokes %s with weight %s (robust=%s), threshold %s,  cyclefactor %s, psfmode %s' % (antenna, stokes, weight, robust, threshold, cyclefactor, psfmode))
+                        print('Time now is %s' % strftime("%Y-%m-%d %H:%M:%S"))
 
                         imagename=name_base+'_'+weight+str(robust)+'_TH'+threshold+'_CF'+str(cyclefactor)\
                                 +'_'+psfmode+'_'+antenna+'_'+stokes+'_'+cellside+'_'+str(imsize)+'px'+'_UV'+uvrange
-                        print 'Imagename: %s' % imagename
+                        print('Imagename: %s' % imagename)
                         clean (vis=vis, imagename=imagename, gridmode ='widefield', psfmode=psfmode,
                                robust=robust, weighting=weight, imagermode ='csclean', wprojplanes =1, 
                                facets =1, niter =niter, imsize =[imsize,imsize], cell =[cellside,cellside], 
@@ -62,4 +63,4 @@ for weight in weights:
 
                         exportfits(imagename+'.image', imagename+'.fits')
 
-print 'Imaging completed at %s' % strftime("%Y-%m-%d %H:%M:%S")
+print('Imaging completed at %s' % strftime("%Y-%m-%d %H:%M:%S"))

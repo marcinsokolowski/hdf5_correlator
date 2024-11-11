@@ -211,7 +211,7 @@ def read_and_convert_dat2psrdada_file( data_filename, dada_filename,
     conj_f = None
     if conjugate :
        # for debugging and test purposes :
-       conj_f = open( "conjugate.bin" , "wb" )
+       conj_f = open( "conjugate.dat" , "wb" )
     
     read_ok = True
     while read_ok :

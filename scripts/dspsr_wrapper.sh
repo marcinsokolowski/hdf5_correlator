@@ -36,7 +36,12 @@ fi
 
 size_mb=`du -smL ${dada_file} | awk '{print $1;}'`
 
-echo "dspsr -E ${object}.eph -b 128 -F 256:D -U ${size_mb} -f ${freq_mhz} -O ${outfile} ${dada_file}"
-dspsr -E ${object}.eph -b 128 -F 256:D -U ${size_mb} -f ${freq_mhz} -O ${outfile} ${dada_file}
+# echo "dspsr -E ${object}.eph -b 128 -F 256:D -U ${size_mb} -f ${freq_mhz} -O ${outfile} ${dada_file}"
+# dspsr -E ${object}.eph -b 128 -F 256:D -U ${size_mb} -f ${freq_mhz} -O ${outfile} ${dada_file}
 
+echo "dspsr -E ${object}.eph -b 128 -F 256:D -F 256:D -f ${freq_mhz} -O ${outfile}_old ${dada_file}"
+dspsr -E ${object}.eph -b 128 -F 256:D -F 256:D -f ${freq_mhz} -O ${outfile}_old ${dada_file}
+
+echo "dspsr -E ${object}.eph -b 512 -F 256:D -L 30 -A -O ${outfile} -a PSRFITS -minram=256 -t2 ${dada_file}"                             
+dspsr -E ${object}.eph -b 512 -F 256:D -L 30 -A -O ${outfile} -a PSRFITS -minram=256 -t2 ${dada_file}
 

@@ -1,5 +1,21 @@
 #!/bin/bash
 
+wait_for_file () {
+  file=$1
+  if [[ -n "$1" && "$1" != "-" ]]; then
+     file="$1"
+  fi
+
+   ux=`date +%s`
+   while [[ ! -s ${file} ]];
+   do
+      ux=`date +%s`
+      echo "Waiting 10 seconds for file $file to be created (ux = $ux) ..."
+      sleep 10
+   done   
+}
+
+
 datadir="/data_archive/"
 if [[ -n "$1" && "$1" != "-" ]]; then
    datadir="$1"
@@ -15,12 +31,12 @@ if [[ -n "$3" && "$3" != "-" ]]; then
    force=$3
 fi
 
-n_channels=16
+n_channels=40
 if [[ -n "$4" && "$4" != "-" ]]; then
    n_channels=$4
 fi
 
-subdir_template="J?????????_flagants_${n_channels}ch* B???????_flagants_${n_channels}ch*"
+subdir_template="J?????????_flagants_ch${n_channels}* B???????_flagants_ch${n_channels}*"
 if [[ -n "$5" && "$5" != "-" ]]; then
    subdir_template="$5"
 fi
@@ -50,11 +66,20 @@ cd ${datadir}
 for dir in `ls -d ${template}`
 do
    cd ${dir}
+   pwd
    
    if [[ $force -gt 0 ]]; then      
       echo "force = $force -> removing file processed.txt"
       echo "rm -f processed.txt"
       rm -f processed.txt
+   fi
+   
+   if [[ -s copied.txt ]]; then
+      echo "INFO : data copied already -> can process"
+   else
+      echo "WARNING : data not fully copied yet -> waiting for it to be copied ..."
+      echo "wait_for_file copied.txt"
+      wait_for_file copied.txt      
    fi
    
    if [[ -s processed.txt ]]; then         
