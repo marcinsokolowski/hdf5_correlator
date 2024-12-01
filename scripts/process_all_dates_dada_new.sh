@@ -63,7 +63,7 @@ export TEMPO2=/usr/share/tempo2/
 
 cd ${datadir}
 
-for dir in `ls -d ${template}`
+for dir in `ls -trd ${template} | tail -5` # last 5 newest datasets only so that it does not get bogged down in old observations
 do
    cd ${dir}
    pwd
