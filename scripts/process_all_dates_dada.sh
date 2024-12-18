@@ -74,7 +74,7 @@ date
 cd $datadir
 pwd
 
-for dir in `ls -d ${template}`
+for dir in `ls -ad ${template}`
 do
    echo
    echo "Processing $dir"
@@ -106,6 +106,16 @@ do
                for channel in `ls -d ??? ?? 2>/dev/null`
                do
                   cd $channel
+                  pwd
+                  
+                  echo "INFO : decompressing .dada.gz files may take a while ..."
+                  echo "gzip -d *.dada.gz"
+                  gzip -d *.dada.gz
+                  
+                  mkdir -p OLD_ar/
+                  echo "mv *.ar OLD_ar/"
+                  mv *.ar OLD_ar/
+                  
                   for dada_file in `ls *.dada 2>/dev/null`
                   do
                      # channel_1_1_1659060532.876270.dada
