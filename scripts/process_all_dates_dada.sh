@@ -50,6 +50,11 @@ if [[ -n "${10}" && "${10}" != "-" ]]; then
    convert2fil=${10}
 fi
 
+merge_all_ar=1
+if [[ -n "${11}" && "${11}" != "-" ]]; then
+   merge_all_ar=${11}
+fi
+
 
 export PATH=$HOME/github/hdf5_correlator/scripts/:$PATH
 
@@ -68,6 +73,7 @@ echo "conversion_options = $conversion_options"
 echo "n_channels    = $n_channels"
 echo "dspsr_script  = $dspsr_script"
 echo "convert2fil   = $convert2fil"
+echo "merge_all_ar  = $merge_all_ar"
 echo "############################################"
 date
 
@@ -158,6 +164,11 @@ do
                          fi                         
                      fi
                   done
+                  
+                  if [[ $merge_all_ar -gt 0 ]]; then
+                     echo "~/github/psr_msok/scripts/process_all.sh - 0 "
+                     ~/github/psr_msok/scripts/process_all.sh - 0 
+                  fi
                   
                   if [[ $convert2fil -gt 0 ]]; then
                      transposed=0
